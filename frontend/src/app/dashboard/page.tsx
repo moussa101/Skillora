@@ -30,6 +30,8 @@ export default function Dashboard() {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
             setError(null);
+            setResult(null);  // Clear previous result for new comparison
+            // Note: jobDescription is preserved for easy comparison of different resumes
         }
     }, []);
 

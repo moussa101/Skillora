@@ -15,23 +15,28 @@ try:
 except ImportError:
     SENTENCE_TRANSFORMER_AVAILABLE = False
 
-# Common tech skills for extraction
+# Common tech skills for extraction (expanded list)
 TECH_SKILLS = {
     # Programming Languages
-    "python", "javascript", "typescript", "java", "c++", "c#", "ruby", "go", "rust", "php", "swift", "kotlin",
+    "python", "javascript", "typescript", "java", "c++", "c#", "c", "ruby", "go", "golang", "rust", "php", "swift", "kotlin", "scala", "perl", "r", "matlab", "lua", "dart", "objective-c", "shell", "bash", "powershell",
     # Frontend
-    "react", "angular", "vue", "svelte", "next.js", "nextjs", "html", "css", "sass", "tailwind", "bootstrap",
+    "react", "reactjs", "react.js", "angular", "angularjs", "vue", "vuejs", "vue.js", "svelte", "next.js", "nextjs", "nuxt", "gatsby", "html", "html5", "css", "css3", "sass", "scss", "less", "tailwind", "tailwindcss", "bootstrap", "material-ui", "mui", "chakra", "styled-components", "webpack", "vite", "babel", "jquery",
     # Backend
-    "node.js", "nodejs", "express", "fastapi", "django", "flask", "spring", "nestjs", "rails",
+    "node.js", "nodejs", "node", "express", "expressjs", "fastapi", "django", "flask", "spring", "spring boot", "springboot", "nestjs", "rails", "ruby on rails", "laravel", "asp.net", ".net", "dotnet", "gin", "fiber", "fastify", "koa",
     # Databases
-    "sql", "postgresql", "mysql", "mongodb", "redis", "elasticsearch", "dynamodb", "sqlite",
+    "sql", "postgresql", "postgres", "mysql", "mariadb", "mongodb", "mongo", "redis", "elasticsearch", "elastic", "dynamodb", "sqlite", "oracle", "cassandra", "couchdb", "neo4j", "graphql", "prisma", "sequelize", "typeorm", "mongoose",
     # Cloud & DevOps
-    "aws", "gcp", "azure", "docker", "kubernetes", "k8s", "terraform", "ci/cd", "jenkins", "github actions",
+    "aws", "amazon web services", "gcp", "google cloud", "azure", "microsoft azure", "docker", "kubernetes", "k8s", "terraform", "ansible", "puppet", "chef", "ci/cd", "cicd", "jenkins", "github actions", "gitlab ci", "circleci", "travis", "heroku", "vercel", "netlify", "digitalocean", "linode", "cloudflare",
     # Data & ML
-    "machine learning", "deep learning", "tensorflow", "pytorch", "pandas", "numpy", "scikit-learn",
-    # Tools
-    "git", "jira", "agile", "scrum", "rest api", "graphql", "microservices"
+    "machine learning", "ml", "deep learning", "dl", "artificial intelligence", "ai", "tensorflow", "pytorch", "keras", "pandas", "numpy", "scikit-learn", "sklearn", "opencv", "nlp", "natural language processing", "computer vision", "data science", "data analysis", "data engineering", "spark", "hadoop", "airflow", "kafka", "databricks",
+    # Tools & Practices
+    "git", "github", "gitlab", "bitbucket", "jira", "confluence", "agile", "scrum", "kanban", "rest", "rest api", "restful", "api", "apis", "microservices", "monorepo", "tdd", "testing", "unit testing", "jest", "mocha", "pytest", "selenium", "cypress", "playwright",
+    # Mobile
+    "ios", "android", "react native", "flutter", "xamarin", "ionic", "mobile", "app development",
+    # Other
+    "linux", "unix", "windows", "macos", "devops", "sre", "backend", "frontend", "full stack", "fullstack", "software engineer", "developer", "programming", "coding", "api design", "system design", "architecture", "security", "cybersecurity", "networking", "tcp/ip", "http", "https", "websocket", "oauth", "jwt", "authentication", "authorization"
 }
+
 
 
 class ResumeAnalyzer:
@@ -78,25 +83,65 @@ class ResumeAnalyzer:
         return list(set(found_skills))
     
     def calculate_semantic_similarity(self, resume_text: str, job_description: str) -> float:
-        """Calculate semantic similarity using sentence embeddings"""
-        if self.model is None:
-            # Fallback to keyword matching if no model
-            return self._keyword_similarity(resume_text, job_description)
+        """
+        Fast keyword-based scoring for instant results.
+        Strong matches (all skills) should get 85%+
+        """
+        # Get skills from both texts
+        resume_skills = set(self.extract_skills(resume_text))
+        jd_skills = set(self.extract_skills(job_description))
         
-        try:
-            # Get embeddings
-            resume_embedding = self.model.encode([resume_text], convert_to_numpy=True)
-            jd_embedding = self.model.encode([job_description], convert_to_numpy=True)
-            
-            # Calculate cosine similarity
-            similarity = cosine_similarity(resume_embedding, jd_embedding)[0][0]
-            
-            # Convert to percentage (0-100)
-            score = float(similarity * 100)
-            return max(0, min(100, score))  # Clamp between 0-100
-        except Exception as e:
-            print(f"Error calculating similarity: {e}")
-            return self._keyword_similarity(resume_text, job_description)
+        # Debug logging
+        print(f"[DEBUG] Resume skills found: {resume_skills}")
+        print(f"[DEBUG] JD skills found: {jd_skills}")
+        
+        # Calculate skill match score (this is the primary factor)
+        if jd_skills:
+            matched_skills = resume_skills.intersection(jd_skills)
+            match_ratio = len(matched_skills) / len(jd_skills)
+            print(f"[DEBUG] Matched skills: {matched_skills} ({len(matched_skills)}/{len(jd_skills)} = {match_ratio:.2f})")
+            # Scale: 0% match = 20, 50% match = 55, 100% match = 90
+            skill_score = 20 + (match_ratio * 70)
+        else:
+            # No skills in JD - default to word overlap
+            print("[DEBUG] No skills found in JD, using word overlap only")
+            skill_score = 50.0
+            match_ratio = 0
+            matched_skills = set()
+        
+        # Word overlap bonus (up to +15 points)
+        resume_words = set(resume_text.lower().split())
+        jd_words = set(job_description.lower().split())
+        common_words = {'the', 'a', 'an', 'is', 'are', 'and', 'or', 'to', 'for', 'with', 'in', 'on', 'of', 'we', 'you', 'will', 'be', 'as', 'at', 'by', 'have', 'has', 'this', 'that', 'our', 'your'}
+        resume_words = resume_words - common_words
+        jd_words = jd_words - common_words
+        
+        if jd_words:
+            word_overlap = len(resume_words.intersection(jd_words)) / len(jd_words)
+            word_bonus = min(word_overlap * 20, 15)  # Up to +15 bonus
+        else:
+            word_bonus = 5
+        
+        final_score = skill_score + word_bonus
+        
+        # Bonus for perfect or near-perfect skill match
+        if match_ratio >= 1.0:
+            final_score += 5  # Perfect match bonus
+        elif match_ratio >= 0.8:
+            final_score += 3  # 80%+ match bonus
+        
+        # Bonus for having many relevant skills in resume
+        if len(resume_skills) >= 8:
+            final_score += 3
+        elif len(resume_skills) >= 5:
+            final_score += 2
+        
+        print(f"[DEBUG] Final score: {final_score:.1f} (skill_score={skill_score:.1f}, word_bonus={word_bonus:.1f})")
+        
+        return max(0, min(100, final_score))
+
+
+
     
     def _keyword_similarity(self, resume_text: str, job_description: str) -> float:
         """Fallback keyword-based similarity"""

@@ -4,7 +4,7 @@ FastAPI application for resume parsing and analysis
 With Adversarial Defense (SRS v1.1)
 """
 
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -45,7 +45,8 @@ app.add_middleware(
 
 # Request/Response Models
 class AnalyzeRequest(BaseModel):
-    file_path: str
+    file_path: Optional[str] = None
+    resume_text: Optional[str] = None  # Can pass text directly instead of file
     job_description: str
 
 
@@ -112,12 +113,16 @@ async def security_scan(file_path: str):
 async def analyze_resume(request: AnalyzeRequest):
     """
     Analyze a resume against a job description.
-    Includes adversarial defense checks (SRS v1.1)
+    Accepts either file_path or resume_text directly.
     """
     
-    # Run security scan if available
+    # Determine resume text source
+    resume_text = request.resume_text
+    file_exists = request.file_path and os.path.exists(request.file_path)
+    
+    # Run security scan if file exists
     security_info = None
-    if ResumeSecurityScanner is not None and os.path.exists(request.file_path):
+    if ResumeSecurityScanner is not None and file_exists:
         scanner = ResumeSecurityScanner()
         scan_result = scanner.scan_pdf(request.file_path)
         security_info = SecurityInfo(
@@ -131,18 +136,36 @@ async def analyze_resume(request: AnalyzeRequest):
     # Use real analyzer if available
     if ANALYZER_AVAILABLE and get_analyzer is not None:
         analyzer = get_analyzer()
-        result = analyzer.analyze(request.file_path, request.job_description)
-        score = result["score"]
-        skills_found = result["skills_found"]
-        missing_keywords = result["missing_keywords"]
-        feedback = result["feedback"]
+        
+        if resume_text:
+            # Direct text analysis
+            skills_found = analyzer.extract_skills(resume_text)
+            score = analyzer.calculate_semantic_similarity(resume_text, request.job_description)
+            missing_keywords = analyzer.find_missing_keywords(resume_text, request.job_description)
+            feedback = analyzer._generate_feedback(score, skills_found, missing_keywords)
+        elif file_exists:
+            # File-based analysis
+            result = analyzer.analyze(request.file_path, request.job_description)
+            score = result["score"]
+            skills_found = result["skills_found"]
+            missing_keywords = result["missing_keywords"]
+            feedback = result["feedback"]
+        else:
+            # No valid input
+            score = 0.0
+            skills_found = []
+            missing_keywords = []
+            feedback = {
+                "summary": "No resume text or valid file provided",
+                "suggestions": ["Upload a resume file or paste resume text"]
+            }
     else:
-        # Fallback to keyword-based scoring
+        # Fallback when analyzer not available
         score = 50.0
-        skills_found = ["Unable to analyze - dependencies not installed"]
+        skills_found = ["Analyzer not available"]
         missing_keywords = []
         feedback = {
-            "summary": "Analysis requires sentence-transformers to be installed",
+            "summary": "Analysis requires sentence-transformers",
             "suggestions": ["Run: pip install sentence-transformers"]
         }
     
@@ -154,12 +177,12 @@ async def analyze_resume(request: AnalyzeRequest):
         suspicious_reason = "Score >= 95% indicates possible JD copy-paste. Manual review required."
     
     return AnalyzeResponse(
-        score=score,
+        score=round(score, 1),
         suspicious=suspicious,
         suspicious_reason=suspicious_reason,
         security=security_info,
-        skills_found=skills_found,
-        missing_keywords=missing_keywords,
+        skills_found=skills_found[:10],
+        missing_keywords=missing_keywords[:8],
         feedback=feedback
     )
 
@@ -181,15 +204,112 @@ async def extract_text(file: UploadFile = File(...)):
             detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
         )
     
-    # Placeholder - actual implementation will extract text
-    return {
-        "filename": file.filename,
-        "text": "Extracted text will appear here",
-        "status": "success"
-    }
+    try:
+        content = await file.read()
+        text = ""
+        
+        if file_ext == '.pdf':
+            # Use PyMuPDF for PDF extraction
+            import fitz
+            doc = fitz.open(stream=content, filetype="pdf")
+            for page in doc:
+                text += page.get_text()
+            doc.close()
+        
+        elif file_ext == '.docx':
+            # Use python-docx for DOCX extraction
+            import docx
+            from io import BytesIO
+            doc = docx.Document(BytesIO(content))
+            text = "\n".join([para.text for para in doc.paragraphs])
+        
+        elif file_ext == '.txt':
+            text = content.decode('utf-8')
+        
+        return {
+            "filename": file.filename,
+            "text": text,
+            "length": len(text),
+            "status": "success"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to extract text: {str(e)}")
+
+
+# File upload + analyze endpoint (combines upload and analysis)
+@app.post("/analyze-file", response_model=AnalyzeResponse)
+async def analyze_file(file: UploadFile = File(...), job_description: str = Form(...)):
+    """
+    Upload a resume file and analyze it against a job description.
+    Extracts text from PDF/DOCX/TXT and performs analysis.
+    """
+    
+    allowed_extensions = ['.pdf', '.docx', '.txt']
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    
+    if file_ext not in allowed_extensions:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
+        )
+    
+    try:
+        content = await file.read()
+        text = ""
+        
+        if file_ext == '.pdf':
+            import fitz
+            doc = fitz.open(stream=content, filetype="pdf")
+            for page in doc:
+                text += page.get_text()
+            doc.close()
+        
+        elif file_ext == '.docx':
+            import docx
+            from io import BytesIO
+            doc = docx.Document(BytesIO(content))
+            text = "\n".join([para.text for para in doc.paragraphs])
+        
+        elif file_ext == '.txt':
+            text = content.decode('utf-8')
+        
+        if not text or len(text) < 10:
+            raise HTTPException(status_code=400, detail="Could not extract text from file")
+        
+        # Now analyze using the extracted text
+        if ANALYZER_AVAILABLE and get_analyzer is not None:
+            analyzer = get_analyzer()
+            skills_found = analyzer.extract_skills(text)
+            score = analyzer.calculate_semantic_similarity(text, job_description)
+            missing_keywords = analyzer.find_missing_keywords(text, job_description)
+            feedback = analyzer._generate_feedback(score, skills_found, missing_keywords)
+        else:
+            score = 50.0
+            skills_found = ["Analyzer not available"]
+            missing_keywords = []
+            feedback = {"summary": "Install dependencies", "suggestions": []}
+        
+        # Anomaly detection
+        suspicious = score >= 95.0
+        suspicious_reason = "Score >= 95% indicates possible JD copy-paste." if suspicious else None
+        
+        return AnalyzeResponse(
+            score=round(score, 1),
+            suspicious=suspicious,
+            suspicious_reason=suspicious_reason,
+            security=None,
+            skills_found=skills_found[:10],
+            missing_keywords=missing_keywords[:8],
+            feedback=feedback
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
