@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 
 interface AnalysisResult {
     score: number;
@@ -30,8 +31,7 @@ export default function Dashboard() {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
             setError(null);
-            setResult(null);  // Clear previous result for new comparison
-            // Note: jobDescription is preserved for easy comparison of different resumes
+            setResult(null);
         }
     }, []);
 
@@ -45,12 +45,10 @@ export default function Dashboard() {
         setError(null);
 
         try {
-            // Create FormData for file upload
             const formData = new FormData();
             formData.append("file", file);
             formData.append("job_description", jobDescription);
 
-            // Use analyze-file endpoint that handles PDF/DOCX extraction server-side
             const mlResponse = await fetch("http://localhost:8000/analyze-file", {
                 method: "POST",
                 body: formData,
@@ -84,31 +82,54 @@ export default function Dashboard() {
         }
     };
 
+    const getScoreColor = (score: number) => {
+        if (score >= 80) return "var(--success)";
+        if (score >= 60) return "var(--warning)";
+        return "var(--error)";
+    };
+
+    const circumference = 2 * Math.PI * 45;
+    const strokeDashoffset = result
+        ? circumference - (result.score / 100) * circumference
+        : circumference;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-            <div className="container mx-auto px-4 py-8">
+        <div className="min-h-screen bg-[var(--background)]">
+            {/* Navigation */}
+            <nav className="w-full py-4 px-6 border-b border-[var(--gray-200)]">
+                <div className="max-w-6xl mx-auto flex justify-between items-center">
+                    <Link href="/" className="text-[var(--foreground)] font-semibold text-lg tracking-tight">
+                        Resume Analyzer
+                    </Link>
+                    <span className="text-[var(--gray-400)] text-sm">Dashboard</span>
+                </div>
+            </nav>
+
+            <main className="max-w-6xl mx-auto px-6 py-12">
                 {/* Header */}
-                <header className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-white mb-2">
-                        AI Resume Analyzer
+                <header className="mb-12">
+                    <h1 className="text-3xl font-semibold text-[var(--foreground)] tracking-tight">
+                        Resume Analysis
                     </h1>
-                    <p className="text-purple-200">
-                        Analyze your resume against job descriptions with ML-powered insights
+                    <p className="mt-2 text-[var(--gray-500)]">
+                        Upload your resume and paste a job description to get started
                     </p>
                 </header>
 
                 <div className="grid lg:grid-cols-2 gap-8">
                     {/* Upload Section */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                        <h2 className="text-xl font-semibold text-white mb-6">
-                            📄 Upload Resume
+                    <div className="glass-card apple-shadow p-8">
+                        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-6">
+                            Upload Resume
                         </h2>
 
                         {/* File Upload */}
                         <div
-                            className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
-                ${file ? "border-green-400 bg-green-400/10" : "border-white/30 hover:border-purple-400"}`}
+                            className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer hover-lift
+                                ${file
+                                    ? "border-[var(--success)] bg-[rgba(52,199,89,0.05)]"
+                                    : "border-[var(--gray-300)] hover:border-[var(--accent)]"
+                                }`}
                             onClick={() => document.getElementById("file-input")?.click()}
                         >
                             <input
@@ -119,36 +140,40 @@ export default function Dashboard() {
                                 className="hidden"
                             />
                             {file ? (
-                                <div className="text-green-400">
-                                    <span className="text-2xl">✓</span>
-                                    <p className="mt-2 font-medium">{file.name}</p>
-                                    <p className="text-sm text-green-300">{(file.size / 1024).toFixed(1)} KB</p>
+                                <div className="text-[var(--success)]">
+                                    <svg className="w-8 h-8 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <p className="font-medium text-[var(--foreground)]">{file.name}</p>
+                                    <p className="text-sm text-[var(--gray-500)] mt-1">{(file.size / 1024).toFixed(1)} KB</p>
                                 </div>
                             ) : (
-                                <div className="text-white/60">
-                                    <span className="text-4xl">📁</span>
-                                    <p className="mt-2">Drop your resume here or click to browse</p>
-                                    <p className="text-sm text-white/40">PDF, DOCX, or TXT (max 5MB)</p>
+                                <div className="text-[var(--gray-500)]">
+                                    <svg className="w-10 h-10 mx-auto mb-3 text-[var(--gray-400)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <p className="font-medium">Drop your resume here</p>
+                                    <p className="text-sm text-[var(--gray-400)] mt-1">PDF, DOCX, or TXT (max 5MB)</p>
                                 </div>
                             )}
                         </div>
 
                         {/* Job Description */}
                         <div className="mt-6">
-                            <label className="block text-white/80 mb-2 font-medium">
-                                💼 Job Description
+                            <label className="block text-[var(--foreground)] mb-2 font-medium text-sm">
+                                Job Description
                             </label>
                             <textarea
                                 value={jobDescription}
                                 onChange={(e) => setJobDescription(e.target.value)}
                                 placeholder="Paste the job description here..."
-                                className="w-full h-40 bg-white/5 border border-white/20 rounded-xl p-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none"
+                                className="input-field w-full h-40 resize-none"
                             />
                         </div>
 
                         {/* Error */}
                         {error && (
-                            <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300">
+                            <div className="mt-4 p-4 bg-[rgba(255,59,48,0.1)] border border-[rgba(255,59,48,0.2)] rounded-xl text-[var(--error)] text-sm">
                                 {error}
                             </div>
                         )}
@@ -157,78 +182,133 @@ export default function Dashboard() {
                         <button
                             onClick={handleAnalyze}
                             disabled={loading}
-                            className={`w-full mt-6 py-4 rounded-xl font-semibold text-lg transition-all
-                ${loading
-                                    ? "bg-purple-400/50 text-white/50 cursor-wait"
-                                    : "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-lg hover:shadow-purple-500/30"
-                                }`}
+                            className="btn-primary w-full mt-6 flex items-center justify-center gap-2"
                         >
-                            {loading ? "🔄 Analyzing..." : "🚀 Analyze Resume"}
+                            {loading ? (
+                                <>
+                                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                    </svg>
+                                    Analyzing...
+                                </>
+                            ) : (
+                                "Analyze Resume"
+                            )}
                         </button>
                     </div>
 
                     {/* Results Section */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                        <h2 className="text-xl font-semibold text-white mb-6">
-                            📊 Analysis Results
+                    <div className="glass-card apple-shadow p-8">
+                        <h2 className="text-lg font-semibold text-[var(--foreground)] mb-6">
+                            Analysis Results
                         </h2>
 
                         {result ? (
-                            <div className="space-y-6">
-                                {/* Score */}
-                                <div className="text-center">
-                                    <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full border-4 
-                    ${result.score >= 80 ? "border-green-400" : result.score >= 60 ? "border-yellow-400" : "border-red-400"}`}>
-                                        <span className="text-4xl font-bold text-white">{result.score}%</span>
+                            <div className="space-y-8">
+                                {/* Score Circle */}
+                                <div className="flex flex-col items-center">
+                                    <div className="relative w-32 h-32">
+                                        <svg className="w-full h-full transform -rotate-90">
+                                            <circle
+                                                cx="64"
+                                                cy="64"
+                                                r="45"
+                                                stroke="var(--gray-200)"
+                                                strokeWidth="8"
+                                                fill="none"
+                                            />
+                                            <circle
+                                                cx="64"
+                                                cy="64"
+                                                r="45"
+                                                stroke={getScoreColor(result.score)}
+                                                strokeWidth="8"
+                                                fill="none"
+                                                strokeLinecap="round"
+                                                strokeDasharray={circumference}
+                                                strokeDashoffset={strokeDashoffset}
+                                                className="transition-all duration-1000 ease-out"
+                                            />
+                                        </svg>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-3xl font-semibold text-[var(--foreground)]">
+                                                {result.score}%
+                                            </span>
+                                        </div>
                                     </div>
+                                    <p className="mt-3 text-sm text-[var(--gray-500)]">Match Score</p>
+
                                     {result.suspicious && (
-                                        <div className="mt-2 p-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-sm">
-                                            ⚠️ {result.suspiciousReason || "Flagged for review"}
+                                        <div className="mt-3 px-4 py-2 bg-[rgba(255,159,10,0.1)] border border-[rgba(255,159,10,0.2)] rounded-lg text-[var(--warning)] text-sm">
+                                            Score above 95% may indicate copy-paste
                                         </div>
                                     )}
                                 </div>
 
                                 {/* Security Status */}
                                 {result.security && (
-                                    <div className={`p-3 rounded-lg ${result.security.isSafe ? "bg-green-500/20" : "bg-red-500/20"}`}>
-                                        <span className={result.security.isSafe ? "text-green-400" : "text-red-400"}>
-                                            {result.security.isSafe ? "✓ Security Check Passed" : "⚠️ Security Issues Detected"}
+                                    <div className={`p-4 rounded-xl flex items-center gap-3 ${result.security.isSafe
+                                            ? "bg-[rgba(52,199,89,0.1)]"
+                                            : "bg-[rgba(255,59,48,0.1)]"
+                                        }`}>
+                                        {result.security.isSafe ? (
+                                            <svg className="w-5 h-5 text-[var(--success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            </svg>
+                                        ) : (
+                                            <svg className="w-5 h-5 text-[var(--error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        )}
+                                        <span className={result.security.isSafe ? "text-[var(--success)]" : "text-[var(--error)]"}>
+                                            {result.security.isSafe ? "Security Check Passed" : "Security Issues Detected"}
                                         </span>
                                     </div>
                                 )}
 
-                                {/* Skills */}
+                                {/* Skills Found */}
                                 <div>
-                                    <h3 className="text-white/80 font-medium mb-2">✅ Skills Found</h3>
+                                    <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Skills Found</h3>
                                     <div className="flex flex-wrap gap-2">
-                                        {result.skillsFound.map((skill) => (
-                                            <span key={skill} className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">
-                                                {skill}
-                                            </span>
-                                        ))}
+                                        {result.skillsFound.length > 0 ? (
+                                            result.skillsFound.map((skill) => (
+                                                <span key={skill} className="tag tag-success">
+                                                    {skill}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span className="text-[var(--gray-400)] text-sm">No skills detected</span>
+                                        )}
                                     </div>
                                 </div>
 
                                 {/* Missing Keywords */}
                                 <div>
-                                    <h3 className="text-white/80 font-medium mb-2">❌ Missing Keywords</h3>
+                                    <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Missing Keywords</h3>
                                     <div className="flex flex-wrap gap-2">
-                                        {result.missingKeywords.map((keyword) => (
-                                            <span key={keyword} className="px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-sm">
-                                                {keyword}
-                                            </span>
-                                        ))}
+                                        {result.missingKeywords.length > 0 ? (
+                                            result.missingKeywords.map((keyword) => (
+                                                <span key={keyword} className="tag tag-error">
+                                                    {keyword}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span className="text-[var(--gray-400)] text-sm">No missing keywords</span>
+                                        )}
                                     </div>
                                 </div>
 
-                                {/* Feedback */}
-                                {result.feedback && (
+                                {/* Suggestions */}
+                                {result.feedback && result.feedback.suggestions.length > 0 && (
                                     <div>
-                                        <h3 className="text-white/80 font-medium mb-2">💡 Suggestions</h3>
+                                        <h3 className="text-sm font-medium text-[var(--foreground)] mb-3">Suggestions</h3>
                                         <ul className="space-y-2">
                                             {result.feedback.suggestions.map((suggestion, i) => (
-                                                <li key={i} className="text-white/70 flex items-start gap-2">
-                                                    <span className="text-purple-400">→</span>
+                                                <li key={i} className="flex items-start gap-3 text-sm text-[var(--gray-500)]">
+                                                    <svg className="w-4 h-4 text-[var(--accent)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                                    </svg>
                                                     {suggestion}
                                                 </li>
                                             ))}
@@ -237,16 +317,18 @@ export default function Dashboard() {
                                 )}
                             </div>
                         ) : (
-                            <div className="h-full flex items-center justify-center text-white/40">
+                            <div className="h-80 flex items-center justify-center text-[var(--gray-400)]">
                                 <div className="text-center">
-                                    <span className="text-6xl">📋</span>
-                                    <p className="mt-4">Upload a resume and click analyze to see results</p>
+                                    <svg className="w-16 h-16 mx-auto mb-4 text-[var(--gray-300)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <p className="text-sm">Upload a resume to see analysis results</p>
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }
