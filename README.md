@@ -1,103 +1,380 @@
 # AI Resume Analyzer
 
-A powerful, AI-powered tool that analyzes resumes against job descriptions to provide intelligent scoring, skill extraction, and detailed feedback. Now featuring enhanced profile analysis for GitHub and LinkedIn.
+> An intelligent, AI-powered platform that analyzes resumes against job descriptions using advanced NLP to provide match scoring, skill extraction, and actionable feedback.
 
-![AI Resume Analyzer Dashboard](https://github.com/user-attachments/assets/placeholder-image)
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen.svg)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Key Features
+## Overview
 
-*   **Intelligent Matching**: Uses advanced NLP (spaCy + Sentence Transformers) to calculate semantic similarity scores between resumes and job descriptions.
-*   **Skill Extraction**: Automatically identifies technical skills, programming languages, and tools from resumes.
-*   **Keyword Analysis**: Highlights missing keywords and skills that are critical for the specific job role.
-*   **Profile Analysis (NEW)**:
-    *   **GitHub**: Extracts GitHub handles and uses the GitHub API to fetch rich profile data (stars, repos, followers, recent activity) and calculate a developer "Profile Score".
-    *   **LinkedIn**: Identifies and links to LinkedIn profiles.
-*   **Security & Anti-Cheat**: Detects invisible text, extensive copy-pasting, and other adversarial attempts to "game" the system.
-*   **Modern UI**: Clean, Apple-inspired interface built with Next.js and Tailwind CSS, featuring drag-and-drop file upload and interactive results.
-*   **File Support**: Supports PDF, DOCX, and TXT resume formats.
+AI Resume Analyzer helps job seekers optimize their resumes by comparing them against target job descriptions. Using semantic similarity algorithms and NLP techniques, it identifies skill gaps, suggests improvements, and provides a comprehensive match score to increase your chances of landing interviews.
+
+**Key capabilities:**
+- 🎯 **Smart Matching** - Semantic similarity scoring using spaCy and Sentence Transformers
+- 🔍 **Skill Detection** - Automatic extraction of technical skills, languages, and tools
+- 📊 **GitHub Profile Analysis** - Evaluates developer profiles with repo stats, activity, and scoring
+- 🛡️ **Security Scanning** - Detects resume manipulation attempts (invisible text, homoglyphs)
+- 📝 **Multi-Format Support** - PDF, DOCX, and TXT file uploads
+- 💡 **Actionable Feedback** - Detailed suggestions to improve resume-job alignment
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the Application](#running-the-application)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [Configuration](#configuration)
+- [Security Features](#security-features)
+- [Contributing](#contributing)
+- [Support](#support)
+- [License](#license)
+
+## Features
+
+### Core Functionality
+
+- **Intelligent Resume Matching**
+  - Calculates semantic similarity between resume content and job descriptions
+  - Uses NLP models (spaCy + Sentence Transformers) for context-aware analysis
+  - Provides percentage-based match scores with detailed breakdowns
+
+- **Skill Extraction & Analysis**
+  - Identifies 100+ technical skills, programming languages, and frameworks
+  - Highlights missing keywords critical for the target role
+  - Maps found vs. required skills for easy comparison
+
+- **Enhanced Profile Analysis**
+  - **GitHub Integration**: Automatically extracts GitHub usernames and fetches profile data (repositories, stars, followers, recent activity)
+  - **LinkedIn Detection**: Identifies and links to LinkedIn profiles
+  - **Profile Scoring**: Calculates a developer profile score based on open-source contributions
+
+- **Security & Anti-Cheat**
+  - Detects invisible text (white text on white background)
+  - Identifies homoglyph character substitution attacks
+  - Flags suspiciously high matches that indicate copy-pasting
+
+- **Modern User Interface**
+  - Clean, responsive design inspired by modern web standards
+  - Drag-and-drop file upload
+  - Real-time analysis results with interactive visualizations
 
 ## Tech Stack
 
-*   **Frontend**: Next.js 14, React, Tailwind CSS, TypeScript
-*   **Backend**: NestJS, TypeScript, PostgreSQL (Prisma ORM)
-*   **ML Service**: FastAPI, Python, spaCy, Sentence-Transformers, PyMuPDF
-*   **Infrastructure**: Docker, Docker Compose
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
+| **Backend API** | NestJS 11, TypeScript, PostgreSQL, Prisma ORM |
+| **ML Service** | FastAPI, Python 3.9+, spaCy 3.7, Sentence-Transformers |
+| **Infrastructure** | Docker, Docker Compose, PostgreSQL 15 |
+| **Security** | JWT Authentication, PyMuPDF (PDF scanning), bcrypt |
 
-## Prerequisites
+## Getting Started
 
-*   **Docker Desktop**: Ensure Docker and Docker Compose are installed and running.
-*   **GitHub Token (Optional)**: For higher rate limits on GitHub profile analysis.
+### Prerequisites
 
-## Quick Start
+Before you begin, ensure you have the following installed:
 
-1.  **Clone the repository**:
-    ```bash
-    git clone <repository-url>
-    cd AI-Resume-Analyzer
-    ```
+- **Docker Desktop** (v20.10+) - [Download](https://www.docker.com/products/docker-desktop)
+- **Docker Compose** (v2.0+) - Usually included with Docker Desktop
+- **Git** - For cloning the repository
 
-2.  **Environment Setup**:
-    The project creates necessary `.env` files automatically, but you can configure them if needed.
+**Optional:**
+- **GitHub Personal Access Token** - For enhanced GitHub profile analysis (increases rate limits from 60 to 5,000 requests/hour)
 
-    *   **GitHub Token (Recommended)**:
-        Add your GitHub Personal Access Token to `ml_service/.env` or the root `.env` to increase API rate limits (from 60 to 5000 requests/hr).
-        ```env
-        GITHUB_TOKEN=your_github_token_here
-        ```
+### Installation
 
-3.  **Run with Docker**:
-    Build and start all services with a single command:
-    ```bash
-    docker compose up --build
-    ```
+1. **Clone the repository**
 
-4.  **Access the Application**:
-    *   **Frontend Dashboard**: [http://localhost:3001](http://localhost:3001)
-    *   **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
+   ```bash
+   git clone https://github.com/moussa101/AI-Resume-Analyzer.git
+   cd AI-Resume-Analyzer
+   ```
 
-## Usage Guide
+2. **Configure environment variables (optional)**
 
-1.  **Navigate to the Dashboard**: Open [http://localhost:3001](http://localhost:3001).
-2.  **Upload Resume**: Drag and drop a PDF, DOCX, or TXT file, or click to select one.
-3.  **Enter Job Description**: Paste the job description text for the role you are targeting.
-4.  **Analyze**: Click the "Analyze Resume" button.
-5.  **View Results**:
-    *   **Match Score**: See how well the resume matches the job.
-    *   **Profile Analysis**: View GitHub stats (repos, stars, followers) and distinct profile insights if a GitHub link is found.
-    *   **Skills & Keywords**: Review found skills and identifying missing keywords.
-    *   **Suggestions**: Read actionable feedback to improve the resume.
+   The application works out-of-the-box with default settings. For customization:
 
-## Testing
+   ```bash
+   cp .env.example .env
+   ```
 
-The project includes a comprehensive test suite with real-world scenarios.
+   Edit `.env` to configure:
+   - Database credentials
+   - JWT secret key
+   - Service URLs
+   - GitHub API token (recommended for profile analysis)
 
-1.  **Run Automated Tests**:
-    ```bash
-    python3 test_data/real_world/run_tests.py
-    ```
-    This script tests the analyzer against varying candidate profiles (Senior SWE, Data Scientist, Junior Dev) and job descriptions (Google, Amazon, Meta) to verify scoring accuracy.
+   ```env
+   # Add to ml_service/.env for GitHub integration
+   GITHUB_TOKEN=your_github_personal_access_token
+   ```
+
+### Running the Application
+
+**Start all services with Docker Compose:**
+
+```bash
+docker compose up --build
+```
+
+This command will:
+1. Build all Docker images (frontend, backend, ML service)
+2. Start PostgreSQL database
+3. Initialize database schema
+4. Launch all services
+
+**Access the application:**
+
+- **Frontend Dashboard**: http://localhost:3001
+- **Backend API**: http://localhost:3000
+- **ML Service API Docs**: http://localhost:8000/docs
+- **Database**: `postgresql://postgres:postgres@localhost:5432/resume_analyzer`
+
+**To stop the services:**
+
+```bash
+docker compose down
+```
+
+**To stop and remove all data:**
+
+```bash
+docker compose down -v
+```
+
+## Usage
+
+### Analyzing a Resume
+
+1. **Open the dashboard** at http://localhost:3001
+
+2. **Upload your resume**
+   - Drag and drop a file (PDF, DOCX, or TXT)
+   - Or click the upload area to browse files
+
+3. **Enter the job description**
+   - Paste the complete job posting text
+   - Include requirements, responsibilities, and desired skills
+
+4. **Click "Analyze Resume"**
+
+5. **Review the results:**
+   - **Match Score**: Overall compatibility percentage (0-100%)
+   - **Skills Found**: Technical skills detected in your resume
+   - **Missing Keywords**: Important skills from the job description not found in your resume
+   - **GitHub Profile**: Developer stats and profile score (if GitHub link detected)
+   - **Feedback**: Actionable suggestions to improve your resume
+
+### Example Workflow
+
+```bash
+# 1. Upload: senior_software_engineer_resume.pdf
+# 2. Paste job description for "Senior Backend Engineer at Google"
+# 3. Results:
+#    - Match Score: 87%
+#    - Skills Found: Python, Docker, Kubernetes, PostgreSQL, REST APIs
+#    - Missing: Go, gRPC, Prometheus
+#    - Suggestions: Add distributed systems experience, quantify impact
+```
 
 ## Project Structure
 
 ```
 AI-Resume-Analyzer/
-├── frontend/             # Next.js Frontend application
-├── backend/              # NestJS Backend API (Application Logic)
-├── ml_service/           # Python/FastAPI ML Service (Analysis Core)
-│   ├── analyzer.py       # Core NLP analysis logic
-│   ├── profile_analyzer.py # GitHub/LinkedIn profile extraction
-│   └── main.py           # API Endpoints
-├── test_data/            # Test resumes and job descriptions
-└── docker-compose.yml    # Docker orchestration
+├── frontend/                   # Next.js frontend application
+│   ├── src/
+│   │   ├── app/               # App router pages
+│   │   └── components/        # React components
+│   ├── Dockerfile
+│   └── package.json
+│
+├── backend/                    # NestJS backend API
+│   ├── src/
+│   │   ├── auth/              # Authentication module
+│   │   ├── resumes/           # Resume management
+│   │   └── ml-service/        # ML service integration
+│   ├── prisma/                # Database schema
+│   ├── Dockerfile
+│   └── package.json
+│
+├── ml_service/                 # Python ML analysis service
+│   ├── main.py                # FastAPI endpoints
+│   ├── analyzer.py            # Core NLP analysis logic
+│   ├── profile_analyzer.py    # GitHub/LinkedIn extraction
+│   ├── security_scanner.py    # Resume security checks
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── test_data/                  # Test resumes and job descriptions
+│   ├── resumes/               # Sample resume files
+│   ├── job_descriptions/      # Sample job postings
+│   └── real_world/            # Realistic test scenarios
+│       └── run_tests.py       # Automated test runner
+│
+├── uploads/                    # Uploaded resume storage
+├── docker-compose.yml          # Service orchestration
+├── .env.example               # Environment template
+└── README.md
 ```
+
+### Key Components
+
+- **`frontend/`**: User-facing web application built with Next.js and Tailwind CSS
+- **`backend/`**: REST API handling authentication, file uploads, and database operations
+- **`ml_service/`**: Python service performing NLP analysis, skill extraction, and profile scanning
+- **`test_data/`**: Comprehensive test suite with real-world resumes and job descriptions
+
+## Testing
+
+### Automated Testing
+
+Run the comprehensive test suite to verify analysis accuracy:
+
+```bash
+python3 test_data/real_world/run_tests.py
+```
+
+This script tests the analyzer against multiple scenarios:
+
+| Scenario | Resume | Job Description | Expected Score |
+|----------|--------|-----------------|----------------|
+| High Match | Senior SWE | Google Senior Engineer | 85-100% |
+| Medium Match | Data Scientist | Amazon Backend Engineer | 50-75% |
+| Low Match | Junior Developer | Meta Senior Architect | 20-40% |
+
+### Manual Testing
+
+Sample test data is provided in `test_data/`:
+
+```bash
+test_data/
+├── resumes/
+│   ├── software_engineer_resume.pdf
+│   ├── data_scientist_resume.pdf
+│   └── junior_developer_resume.pdf
+└── job_descriptions/
+    ├── google_senior_swe.txt
+    ├── amazon_backend_engineer.txt
+    └── meta_data_scientist.txt
+```
+
+Upload any combination to test different match scenarios.
+
+## Configuration
+
+### Environment Variables
+
+#### Root `.env`
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/resume_analyzer
+JWT_SECRET=your-secret-key-change-in-production
+ML_SERVICE_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+#### ML Service Configuration
+```env
+# ml_service/.env
+ML_PORT=8000
+GITHUB_TOKEN=ghp_your_token_here  # Optional, increases API rate limits
+```
+
+### Docker Compose Customization
+
+Modify `docker-compose.yml` to adjust:
+- Port mappings
+- Resource limits
+- Volume mounts
+- Environment variables
 
 ## Security Features
 
-The analyzer includes specific checks to prevent common resume "hacks":
-*   **Invisible Text Detection**: Flags text colored white or matching the background.
-*   **Homoglyph Attacks**: Detects character substitution attempts.
-*   **Copy-Paste Detection**: Flags unusually high 95%+ matches that suggest direct copying of the JD.
+The analyzer includes built-in protection against common resume manipulation techniques:
+
+| Feature | Detection Method | Impact |
+|---------|-----------------|--------|
+| **Invisible Text** | Analyzes PDF text rendering properties to detect white-on-white text | Flags suspicious resumes |
+| **Homoglyph Attacks** | Identifies Unicode character substitutions (e.g., Cyrillic 'а' vs Latin 'a') | Prevents fake skill injection |
+| **Copy-Paste Detection** | Flags matches >95% that suggest direct JD copying | Identifies unoriginal applications |
+| **Metadata Analysis** | Checks PDF metadata for manipulation signs | Enhanced fraud detection |
+
+**Note**: Security features are informational and help recruiters identify potentially manipulated resumes.
+
+## Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+4. **Push to the branch** (`git push origin feature/amazing-feature`)
+5. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow existing code style (ESLint/Prettier for TS, Black for Python)
+- Add tests for new features
+- Update documentation as needed
+- Ensure Docker builds succeed
+
+For detailed contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md) (if available).
+
+## Support
+
+### Getting Help
+
+- **Documentation**: Check the [Documentation](Documentation/) folder for detailed guides
+- **Deployment Guide**: See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment instructions
+- **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/moussa101/AI-Resume-Analyzer/issues)
+
+### Common Issues
+
+**Problem**: Docker containers fail to start
+```bash
+# Solution: Reset Docker environment
+docker compose down -v
+docker compose up --build
+```
+
+**Problem**: ML service can't load models
+```bash
+# Solution: Ensure sufficient memory allocated to Docker (recommend 4GB+)
+# Check Docker Desktop → Settings → Resources
+```
+
+**Problem**: Database connection errors
+```bash
+# Solution: Verify PostgreSQL is running
+docker compose ps
+docker compose logs postgres-db
+```
+
+## Roadmap
+
+- [ ] Support for more file formats (RTF, HTML)
+- [ ] Multi-language resume analysis
+- [ ] ATS (Applicant Tracking System) compatibility scoring
+- [ ] Resume template suggestions
+- [ ] Cover letter analysis
+- [ ] Batch processing for recruiters
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Maintainers
+
+- **moussa101** - [GitHub Profile](https://github.com/moussa101)
+
+---
+
+**⭐ If you find this project useful, please consider giving it a star!**
+
+Built with ❤️ using Next.js, NestJS, and FastAPI
