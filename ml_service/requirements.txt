@@ -18,3 +18,4 @@ PyMuPDF==1.23.8  # For PDF security scanning (FR-SEC-01, FR-SEC-03)
 
 # Utilities
 python-dotenv==1.0.1
+httpx==0.27.0  # Async HTTP client for GitHub API
