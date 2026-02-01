@@ -1,0 +1,50 @@
+Data Scientist
+
+Company: AI Solutions Corp
+Location: New York, NY (Remote)
+Salary: $130,000 - $170,000
+
+About the Role:
+AI Solutions Corp is looking for a talented Data Scientist to join our growing analytics team. You will work on cutting-edge machine learning projects and help drive data-driven decision making across the organization.
+
+Job Summary:
+As a Data Scientist, you will develop and deploy machine learning models to solve complex business problems. You'll work closely with stakeholders to understand requirements and translate them into actionable insights.
+
+Key Responsibilities:
+- Develop and deploy machine learning models for prediction and classification
+- Build NLP pipelines for text analysis and sentiment detection
+- Perform exploratory data analysis on large datasets
+- Create data visualizations and dashboards for stakeholders
+- Collaborate with engineering teams to productionize ML models
+- Design and analyze A/B tests to measure impact
+- Stay current with latest ML research and techniques
+- Document methods, findings, and recommendations
+
+Required Qualifications:
+- Master's degree in Data Science, Statistics, Computer Science, or related field
+- 3+ years of experience in data science or machine learning
+- Expert proficiency in Python and SQL
+- Strong experience with scikit-learn, TensorFlow, or PyTorch
+- Experience with NLP libraries (spaCy, NLTK, Hugging Face)
+- Proficiency in data visualization (Matplotlib, Tableau)
+- Experience with cloud ML platforms (AWS SageMaker, GCP AI Platform)
+- Strong statistical analysis and hypothesis testing skills
+- Excellent communication and presentation skills
+
+Preferred Qualifications:
+- PhD in a quantitative field
+- Experience with deep learning and neural networks
+- Knowledge of MLOps and model deployment
+- Experience with big data technologies (Spark, Hadoop)
+- Published research or conference presentations
+
+What We Offer:
+- Competitive compensation package
+- Stock options
+- Flexible work arrangements
+- Professional development opportunities
+- Health and wellness benefits
+- Collaborative and innovative work environment
+
+To Apply:
+Send your resume and portfolio to jobs@aisolutions.com

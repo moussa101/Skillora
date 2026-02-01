@@ -1,0 +1,48 @@
+Senior Software Engineer - Full Stack
+
+Company: TechStartup Inc.
+Location: San Francisco, CA (Hybrid)
+Salary: $150,000 - $200,000
+
+About Us:
+TechStartup Inc. is a fast-growing technology company building the next generation of enterprise software solutions. We're looking for talented engineers to join our team and help scale our platform.
+
+Job Description:
+We are seeking a Senior Software Engineer to join our engineering team. You will be responsible for designing, developing, and maintaining our core platform services. This role requires strong technical skills and the ability to work across the full stack.
+
+Responsibilities:
+- Design and implement scalable microservices architecture
+- Build responsive web applications using React and TypeScript
+- Develop RESTful APIs using Node.js and NestJS
+- Write clean, maintainable, and well-tested code
+- Collaborate with product managers to define technical requirements
+- Mentor junior engineers and conduct code reviews
+- Participate in on-call rotation for production support
+- Optimize application performance and reliability
+
+Requirements:
+- 5+ years of experience in software development
+- Strong proficiency in JavaScript/TypeScript and Python
+- Experience with React, Node.js, and modern frontend frameworks
+- Solid understanding of SQL and NoSQL databases (PostgreSQL, MongoDB)
+- Experience with cloud platforms (AWS preferred)
+- Familiarity with Docker and container orchestration (Kubernetes)
+- Strong problem-solving and communication skills
+- BS/MS in Computer Science or equivalent experience
+
+Nice to Have:
+- Experience with machine learning and NLP
+- Contributions to open-source projects
+- Experience with GraphQL
+- Knowledge of Terraform and infrastructure as code
+
+Benefits:
+- Competitive salary and equity
+- Health, dental, and vision insurance
+- Unlimited PTO
+- Remote work flexibility
+- Learning and development budget
+- 401(k) matching
+
+How to Apply:
+Submit your resume and cover letter to careers@techstartup.com

@@ -1,0 +1,56 @@
+SARAH JOHNSON
+Data Scientist
+sarah.johnson@email.com | (555) 987-6543 | linkedin.com/in/sarahjohnson
+
+PROFESSIONAL SUMMARY
+Data Scientist with 4+ years of experience in machine learning, statistical analysis, and data visualization. Expert in developing predictive models and deriving actionable insights from complex datasets. Passionate about leveraging AI to solve business problems.
+
+SKILLS
+Programming: Python, R, SQL, Scala
+Machine Learning: scikit-learn, TensorFlow, PyTorch, XGBoost, LightGBM, Keras
+Data Processing: Pandas, NumPy, PySpark, Apache Spark, Hadoop
+Visualization: Matplotlib, Seaborn, Plotly, Tableau, Power BI
+Deep Learning: CNNs, RNNs, LSTMs, Transformers, GANs
+NLP: spaCy, NLTK, Hugging Face, BERT, GPT
+Cloud: AWS SageMaker, Google AI Platform, Azure ML
+MLOps: MLflow, Kubeflow, Docker, Airflow
+
+PROFESSIONAL EXPERIENCE
+
+Senior Data Scientist | DataDriven Corp | Seattle, WA | Mar 2021 - Present
+- Developed customer churn prediction model achieving 92% accuracy, saving $2M annually
+- Built NLP pipeline for sentiment analysis processing 1M+ customer reviews daily
+- Created recommendation engine increasing cross-sell revenue by 25%
+- Led A/B testing initiatives for product optimization
+- Collaborated with engineering team to deploy models to production
+
+Data Scientist | Analytics Pro | Chicago, IL | Jul 2019 - Feb 2021
+- Built fraud detection system using ensemble methods, reducing fraud by 40%
+- Implemented time series forecasting for demand prediction
+- Developed automated reporting dashboards in Tableau
+- Performed statistical analysis and hypothesis testing for marketing campaigns
+
+Data Analyst | InsightCo | Austin, TX | Jun 2018 - Jun 2019
+- Conducted exploratory data analysis on customer behavior datasets
+- Created ETL pipelines for data warehousing
+- Built interactive dashboards for executive team
+- Automated weekly reporting processes
+
+EDUCATION
+
+Master of Science in Data Science | Stanford University | 2018
+- Thesis: "Deep Learning Approaches for Natural Language Understanding"
+- GPA: 3.9/4.0
+
+Bachelor of Science in Statistics | UC Berkeley | 2016
+- Minor in Computer Science
+- GPA: 3.7/4.0
+
+PUBLICATIONS & PRESENTATIONS
+- "Improving Customer Segmentation with Deep Clustering" - KDD 2022
+- Speaker at PyData Conference 2021
+
+CERTIFICATIONS
+- AWS Machine Learning Specialty (2022)
+- Google Professional Machine Learning Engineer (2021)
+- Deep Learning Specialization - Coursera (2020)

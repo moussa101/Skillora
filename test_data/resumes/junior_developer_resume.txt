@@ -1,0 +1,56 @@
+ALEX CHEN
+Junior Software Developer
+alex.chen@email.com | (555) 456-7890 | github.com/alexchen
+
+OBJECTIVE
+Entry-level software developer seeking to leverage programming skills and enthusiasm for learning in a challenging role. Recent computer science graduate with hands-on project experience.
+
+EDUCATION
+
+Bachelor of Science in Computer Science | State University | 2024
+- GPA: 3.5/4.0
+- Dean's List: Fall 2022, Spring 2023
+- Relevant Courses: Data Structures, Web Development, Database Management, Software Engineering
+
+TECHNICAL SKILLS
+Languages: Java, Python, JavaScript, HTML, CSS
+Frameworks: React, Spring Boot, Node.js
+Databases: MySQL, PostgreSQL
+Tools: Git, VS Code, IntelliJ, Postman
+Other: REST APIs, Agile methodology, Linux
+
+PROJECTS
+
+E-Commerce Website (Capstone Project)
+- Built full-stack e-commerce platform using React and Node.js
+- Implemented user authentication and shopping cart functionality
+- Deployed on AWS EC2 with MySQL database
+- Team size: 4 developers
+
+Task Management App
+- Created a to-do application with React and Firebase
+- Features include user login, task CRUD operations, and due date reminders
+- Over 100 active users
+
+Weather Dashboard
+- Developed weather app consuming OpenWeather API
+- Displays 5-day forecast with interactive charts
+- Built with vanilla JavaScript and Chart.js
+
+EXPERIENCE
+
+Software Development Intern | LocalTech Solutions | Summer 2023
+- Assisted in developing features for internal CRM system
+- Fixed 20+ bugs in legacy codebase
+- Participated in daily standups and sprint planning
+- Technologies: Java, Spring Boot, PostgreSQL
+
+Teaching Assistant | State University CS Department | 2022-2023
+- Helped students with programming assignments in Java
+- Held office hours and graded assignments
+- Assisted professor with course material preparation
+
+ACTIVITIES
+- Member, Computer Science Club
+- Participant, University Hackathon 2023 (2nd Place)
+- Volunteer, Code.org Hour of Code

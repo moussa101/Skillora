@@ -1,0 +1,1130 @@
+[
+  {
+    "resume": "Software Engineer",
+    "format": ".txt",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 98.6,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [
+        "Graphql"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Add experience with: Graphql",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.030172348022460938
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".txt",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 67.5,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [
+        "Deep Learning",
+        "Gcp",
+        "Data Analysis",
+        "Data Science",
+        "Hadoop",
+        "Spark",
+        "Testing"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Good match with room for improvement. Consider adding missing skills.",
+        "suggestions": [
+          "Add experience with: Deep Learning, Gcp, Data Analysis",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.015620946884155273
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".txt",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 100.0,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.016127824783325195
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".pdf",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 98.6,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [
+        "Graphql"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Add experience with: Graphql",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.019283056259155273
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".pdf",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 67.5,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [
+        "Deep Learning",
+        "Gcp",
+        "Data Analysis",
+        "Data Science",
+        "Hadoop",
+        "Spark",
+        "Testing"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Good match with room for improvement. Consider adding missing skills.",
+        "suggestions": [
+          "Add experience with: Deep Learning, Gcp, Data Analysis",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.01685500144958496
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".pdf",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 100.0,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.01626300811767578
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".docx",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 98.6,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [
+        "Graphql"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Add experience with: Graphql",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.22478103637695312
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".docx",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 67.5,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [
+        "Deep Learning",
+        "Gcp",
+        "Data Analysis",
+        "Data Science",
+        "Hadoop",
+        "Spark",
+        "Testing"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Good match with room for improvement. Consider adding missing skills.",
+        "suggestions": [
+          "Add experience with: Deep Learning, Gcp, Data Analysis",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.02425408363342285
+  },
+  {
+    "resume": "Software Engineer",
+    "format": ".docx",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 100.0,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Vue.Js",
+        "Next.Js",
+        "Tensorflow",
+        "React Native",
+        "Express",
+        "Api",
+        "Spring",
+        "Go"
+      ],
+      "missing_keywords": [],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.019438743591308594
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".txt",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 42.7,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Graphql",
+        "Software Engineer",
+        "Javascript",
+        "Typescript",
+        "Frontend",
+        "Restful",
+        "Terraform",
+        "Architecture"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Moderate match. You may need to tailor your resume more specifically.",
+        "suggestions": [
+          "Add experience with: Graphql, Software Engineer, Javascript",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.015250921249389648
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".txt",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 97.4,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Gcp"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Add experience with: Gcp",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.015149116516113281
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".txt",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 30.2,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Backend",
+        "Javascript",
+        "Html",
+        "Typescript",
+        "Css",
+        "Git",
+        "Frontend",
+        "Node.Js"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Low match. Consider gaining experience in the required areas.",
+        "suggestions": [
+          "Add experience with: Backend, Javascript, Html",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.015119075775146484
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".pdf",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 42.7,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Graphql",
+        "Software Engineer",
+        "Javascript",
+        "Typescript",
+        "Frontend",
+        "Restful",
+        "Terraform",
+        "Architecture"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Moderate match. You may need to tailor your resume more specifically.",
+        "suggestions": [
+          "Add experience with: Graphql, Software Engineer, Javascript",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.01676797866821289
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".pdf",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 97.4,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Gcp"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Add experience with: Gcp",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.01689600944519043
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".pdf",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 30.2,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Backend",
+        "Javascript",
+        "Html",
+        "Typescript",
+        "Css",
+        "Git",
+        "Frontend",
+        "Node.Js"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Low match. Consider gaining experience in the required areas.",
+        "suggestions": [
+          "Add experience with: Backend, Javascript, Html",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.01757216453552246
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".docx",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 42.7,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Graphql",
+        "Software Engineer",
+        "Javascript",
+        "Typescript",
+        "Frontend",
+        "Restful",
+        "Terraform",
+        "Architecture"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Moderate match. You may need to tailor your resume more specifically.",
+        "suggestions": [
+          "Add experience with: Graphql, Software Engineer, Javascript",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.025294780731201172
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".docx",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 97.4,
+      "suspicious": true,
+      "suspicious_reason": "Score >= 95% indicates possible JD copy-paste.",
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Gcp"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Excellent match! Your resume aligns well with the job requirements.",
+        "suggestions": [
+          "Add experience with: Gcp",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.023298025131225586
+  },
+  {
+    "resume": "Data Scientist",
+    "format": ".docx",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 30.2,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Deep Learning",
+        "Tensorflow",
+        "Numpy",
+        "Azure",
+        "Sql",
+        "Scikit-Learn",
+        "Keras",
+        "Ai",
+        "Airflow",
+        "Nlp"
+      ],
+      "missing_keywords": [
+        "Backend",
+        "Javascript",
+        "Html",
+        "Typescript",
+        "Css",
+        "Git",
+        "Frontend",
+        "Node.Js"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Low match. Consider gaining experience in the required areas.",
+        "suggestions": [
+          "Add experience with: Backend, Javascript, Html",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.022639989852905273
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".txt",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 49.0,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Graphql",
+        "Sql",
+        "Software Engineer",
+        "Typescript",
+        "Frontend",
+        "Docker",
+        "Restful",
+        "Terraform"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Moderate match. You may need to tailor your resume more specifically.",
+        "suggestions": [
+          "Add experience with: Graphql, Sql, Software Engineer",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.013810157775878906
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".txt",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 32.5,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Deep Learning",
+        "Sql",
+        "Scikit-Learn",
+        "Gcp",
+        "Tensorflow",
+        "Pytorch",
+        "Data Analysis",
+        "Data Science"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Low match. Consider gaining experience in the required areas.",
+        "suggestions": [
+          "Add experience with: Deep Learning, Sql, Scikit-Learn",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.013432979583740234
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".txt",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 74.8,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Backend",
+        "Sql",
+        "Typescript",
+        "Frontend"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Good match with room for improvement. Consider adding missing skills.",
+        "suggestions": [
+          "Add experience with: Backend, Sql, Typescript",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.013055801391601562
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".pdf",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 49.0,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Graphql",
+        "Sql",
+        "Software Engineer",
+        "Typescript",
+        "Frontend",
+        "Docker",
+        "Restful",
+        "Terraform"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Moderate match. You may need to tailor your resume more specifically.",
+        "suggestions": [
+          "Add experience with: Graphql, Sql, Software Engineer",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.014968156814575195
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".pdf",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 32.5,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Deep Learning",
+        "Sql",
+        "Scikit-Learn",
+        "Gcp",
+        "Tensorflow",
+        "Pytorch",
+        "Data Analysis",
+        "Data Science"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Low match. Consider gaining experience in the required areas.",
+        "suggestions": [
+          "Add experience with: Deep Learning, Sql, Scikit-Learn",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.01469278335571289
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".pdf",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 74.8,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Backend",
+        "Sql",
+        "Typescript",
+        "Frontend"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Good match with room for improvement. Consider adding missing skills.",
+        "suggestions": [
+          "Add experience with: Backend, Sql, Typescript",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.014633893966674805
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".docx",
+    "job_description": "Senior SWE JD",
+    "result": {
+      "score": 49.0,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Graphql",
+        "Sql",
+        "Software Engineer",
+        "Typescript",
+        "Frontend",
+        "Docker",
+        "Restful",
+        "Terraform"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Moderate match. You may need to tailor your resume more specifically.",
+        "suggestions": [
+          "Add experience with: Graphql, Sql, Software Engineer",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.023112773895263672
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".docx",
+    "job_description": "Data Scientist JD",
+    "result": {
+      "score": 32.5,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Deep Learning",
+        "Sql",
+        "Scikit-Learn",
+        "Gcp",
+        "Tensorflow",
+        "Pytorch",
+        "Data Analysis",
+        "Data Science"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Low match. Consider gaining experience in the required areas.",
+        "suggestions": [
+          "Add experience with: Deep Learning, Sql, Scikit-Learn",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.018464088439941406
+  },
+  {
+    "resume": "Junior Developer",
+    "format": ".docx",
+    "job_description": "Junior Dev JD",
+    "result": {
+      "score": 74.8,
+      "suspicious": false,
+      "suspicious_reason": null,
+      "security": null,
+      "skills_found": [
+        "Javascript",
+        "Git",
+        "Rest",
+        "Api",
+        "Spring",
+        "Agile",
+        "Html",
+        "Spring Boot",
+        "Node.Js",
+        "Node"
+      ],
+      "missing_keywords": [
+        "Backend",
+        "Sql",
+        "Typescript",
+        "Frontend"
+      ],
+      "contact_info": null,
+      "education": null,
+      "experience": null,
+      "feedback": {
+        "summary": "Good match with room for improvement. Consider adding missing skills.",
+        "suggestions": [
+          "Add experience with: Backend, Sql, Typescript",
+          "Quantify achievements with numbers and metrics",
+          "Use action verbs to describe accomplishments"
+        ]
+      }
+    },
+    "time": 0.017731189727783203
+  }
+]

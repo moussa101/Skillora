@@ -1,0 +1,50 @@
+Junior Software Developer
+
+Company: WebDev Agency
+Location: Austin, TX (On-site)
+Salary: $60,000 - $80,000
+
+About WebDev Agency:
+WebDev Agency is a digital agency specializing in building custom web applications for clients across various industries. We're looking for enthusiastic junior developers to join our team and grow their careers.
+
+Position Overview:
+We're seeking a Junior Software Developer to contribute to our client projects. This is an excellent opportunity for recent graduates or developers with 0-2 years of experience to learn from experienced mentors and work on real-world projects.
+
+What You'll Do:
+- Develop and maintain web applications using JavaScript and React
+- Write clean, efficient code following best practices
+- Collaborate with design team to implement user interfaces
+- Fix bugs and improve existing functionality
+- Participate in Agile ceremonies (standups, retrospectives, sprint planning)
+- Learn new technologies and frameworks as needed
+- Write unit tests and documentation
+
+What We're Looking For:
+- Bachelor's degree in Computer Science or related field
+- 0-2 years of professional software development experience
+- Knowledge of HTML, CSS, and JavaScript
+- Familiarity with React or similar frontend framework
+- Basic understanding of backend development (Node.js preferred)
+- Experience with Git version control
+- Strong problem-solving abilities
+- Eagerness to learn and grow
+- Good communication skills
+- Ability to work in a team environment
+
+Bonus Points:
+- Personal projects or portfolio
+- Internship experience
+- Knowledge of TypeScript
+- Experience with databases (SQL or NoSQL)
+- Contributions to open-source projects
+
+What We Offer:
+- Competitive entry-level salary
+- Mentorship from senior developers
+- Training and professional development
+- Health benefits
+- Friendly and supportive work environment
+- Opportunity for rapid growth
+
+Apply Now:
+Submit your resume and any portfolio links to careers@webdevagency.com
