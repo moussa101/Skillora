@@ -1,0 +1,41 @@
+ASHLEY NGUYEN
+Denver, CO | ashley.nguyen@yahoo.com | (720) 555-0167 | linkedin.com/in/ashleynguyen
+
+EDUCATION
+Colorado State University, Fort Collins, CO
+Bachelor of Science in Information Technology                             Aug 2019 - May 2023
+- GPA: 3.2/4.0
+- Relevant Coursework: Web Development, Database Management, Data Structures
+
+SKILLS
+Languages: HTML, CSS, JavaScript, Python (basic)
+Frameworks: React (learning), Bootstrap, jQuery
+Tools: VS Code, Git, GitHub, Figma
+Databases: MySQL (basic), Firebase
+
+EXPERIENCE
+Junior Web Developer | TechStartup Inc.                                   Jun 2023 - Present
+Denver, CO
+- Build and maintain company website using HTML, CSS, and JavaScript
+- Create responsive landing pages for marketing campaigns
+- Collaborate with senior developers on React-based projects
+- Fixed 50+ bugs in existing codebase
+
+IT Support Intern | Local Business Solutions                              Jan 2023 - May 2023
+Fort Collins, CO
+- Provided technical support for small business clients
+- Updated company website content using WordPress
+- Created documentation for common technical issues
+
+PROJECTS
+Personal Portfolio Website
+- Built responsive portfolio using HTML, CSS, and vanilla JavaScript
+- Deployed on GitHub Pages
+
+Weather App (Coursework)
+- Created weather application using JavaScript and OpenWeather API
+- Implemented search functionality and loading states
+
+CERTIFICATIONS
+- freeCodeCamp Responsive Web Design (2022)
+- Google IT Support Professional Certificate (2022)

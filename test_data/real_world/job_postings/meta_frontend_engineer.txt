@@ -1,0 +1,44 @@
+FRONTEND ENGINEER - META
+
+Location: Menlo Park, CA
+Team: Facebook Core Product
+
+About the Role:
+Meta builds technologies that help people connect, find communities, and grow businesses. Our Frontend Engineers are responsible for building the interfaces that billions of people use every day. We're looking for engineers who are passionate about creating seamless, accessible, and performant user experiences.
+
+Minimum Qualifications:
+- Bachelor's degree in Computer Science, Engineering, or a related technical field, or 4+ years of equivalent professional experience
+- 4+ years of programming experience in JavaScript
+- 4+ years of experience building user interfaces with React or similar frameworks
+- Experience with web technologies including HTML5, CSS3, and responsive design
+- Experience with state management solutions (Redux, MobX, Recoil)
+
+Preferred Qualifications:
+- Experience with TypeScript
+- Experience with GraphQL or RESTful APIs
+- Experience with testing frameworks (Jest, React Testing Library, Cypress)
+- Experience with build tools and bundlers (Webpack, Vite, Babel)
+- Experience with performance optimization and debugging
+- Contributions to open source projects
+- Experience with mobile development (React Native)
+
+Responsibilities:
+- Build and maintain user-facing features using React and modern JavaScript
+- Collaborate with designers, product managers, and backend engineers
+- Write clean, maintainable, and well-tested code
+- Participate in code reviews and provide constructive feedback
+- Optimize applications for maximum speed and scalability
+- Stay up-to-date with emerging technologies and industry trends
+- Mentor junior engineers and contribute to engineering best practices
+
+Tech Stack:
+React, TypeScript, GraphQL, Relay, Jest, Flow
+
+Compensation:
+- Total compensation range: $180,000 - $280,000
+- Benefits include health insurance, 401(k), RSUs, and more
+- Flexible work arrangements
+
+Meta is proud to be an Equal Employment Opportunity employer. We do not discriminate based upon race, religion, color, national origin, sex, sexual orientation, gender identity, age, status as a protected veteran, disability, or other applicable legally protected characteristics.
+
+Apply at: metacareers.com

@@ -1,0 +1,58 @@
+JAMES THOMPSON
+Austin, TX | james.thompson@outlook.com | (512) 555-0234 | linkedin.com/in/jamesthompson-fe | github.com/jthompson-dev
+
+SUMMARY
+Frontend Engineer with 5 years of experience building high-performance web applications. Expert in React ecosystem with deep knowledge of JavaScript, TypeScript, and modern frontend tooling. Passionate about creating accessible, responsive, and delightful user experiences.
+
+EDUCATION
+University of Texas at Austin
+Bachelor of Science in Computer Science                                   Aug 2014 - May 2018
+- Minor: Human-Computer Interaction
+- Senior Capstone: Built accessible e-commerce platform for visually impaired users
+
+TECHNICAL SKILLS
+Languages: JavaScript (ES6+), TypeScript, HTML5, CSS3, SASS/SCSS
+Frameworks & Libraries: React, Next.js, Redux, MobX, React Query, Styled Components, Tailwind CSS
+Testing: Jest, React Testing Library, Cypress, Playwright
+Build Tools: Webpack, Vite, Babel, esbuild, Rollup
+APIs: GraphQL, Apollo Client, REST, WebSockets
+Performance: Lighthouse, Web Vitals, React DevTools Profiler
+Other: Git, CI/CD (GitHub Actions, CircleCI), Figma, Storybook
+
+PROFESSIONAL EXPERIENCE
+Senior Frontend Engineer | Airbnb                                         Mar 2021 - Present
+San Francisco, CA (Remote)
+- Lead development of the search experience used by 100M+ monthly active users
+- Reduced page load time by 45% through code splitting, lazy loading, and implementing React Server Components
+- Built component library used by 50+ engineers, documented with Storybook and published internally
+- Implemented comprehensive accessibility improvements achieving WCAG 2.1 AA compliance
+- Mentored 4 junior engineers and conducted 200+ code reviews per quarter
+- Collaborated closely with designers and product managers to ship features on aggressive timelines
+
+Frontend Engineer | Shopify                                               Jul 2018 - Feb 2021
+Remote
+- Built merchant dashboard features using React and GraphQL, serving 1.7M+ businesses
+- Developed real-time inventory management system using WebSockets and Redux
+- Improved Core Web Vitals scores by 35% through performance optimization initiatives
+- Contributed to Polaris, Shopify's open-source React component library (15+ merged PRs)
+- Led migration from class components to functional components with hooks
+
+Software Engineering Intern | IBM                                          May 2017 - Aug 2017
+Austin, TX
+- Developed internal analytics dashboard using React and D3.js
+- Built RESTful APIs using Node.js and Express
+
+OPEN SOURCE CONTRIBUTIONS
+- React (facebook/react): Fixed hydration mismatch bug in concurrent mode
+- Next.js (vercel/next.js): Contributed documentation improvements for App Router
+- Chakra UI (chakra-ui/chakra-ui): Added RTL support for select components
+
+PROJECTS
+Accessible Component Library (Personal Project)
+- Built open-source React component library focused on accessibility with TypeScript
+- 500+ GitHub stars, used by 50+ production applications
+- Full test coverage with Jest and React Testing Library
+
+TALKS & ARTICLES
+- "Building Performant React Applications at Scale" - React Conf 2022
+- "A Practical Guide to React Server Components" - Medium (50K+ views)

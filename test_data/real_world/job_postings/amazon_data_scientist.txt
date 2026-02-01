@@ -1,0 +1,47 @@
+DATA SCIENTIST II - AMAZON
+
+Location: Seattle, WA
+Team: Amazon Retail Analytics
+
+About Amazon:
+Amazon is guided by four principles: customer obsession rather than competitor focus, passion for invention, commitment to operational excellence, and long-term thinking. We are driven by the excitement of building technologies, inventing products, and providing services that change lives.
+
+Job Summary:
+We are looking for a passionate, talented, and inventive Data Scientist to help build industry-leading machine learning solutions. You will work with a team of scientists and engineers to research, design, and implement scalable machine learning solutions for various domains at Amazon.
+
+Basic Qualifications:
+- Master's degree in Statistics, Machine Learning, Computer Science, Economics, or a related quantitative field
+- 3+ years of experience in data science, machine learning, or related quantitative field
+- 3+ years of experience with data querying languages (SQL) and scripting languages (Python, R)
+- 3+ years of experience with statistical modeling, machine learning, or data mining techniques
+
+Preferred Qualifications:
+- PhD in Statistics, Machine Learning, Computer Science, or related field
+- 5+ years of industry experience as a data scientist or machine learning engineer
+- Experience with big data technologies (Spark, Hadoop, EMR)
+- Experience with AWS services (SageMaker, EC2, S3, Redshift)
+- Experience with deep learning frameworks (TensorFlow, PyTorch)
+- Strong publication record in top-tier venues (NeurIPS, ICML, KDD)
+- Experience leading technical projects
+
+Key Responsibilities:
+- Develop machine learning models to solve complex business problems
+- Analyze large datasets to extract actionable insights
+- Design and implement A/B tests to measure model impact
+- Collaborate with engineering teams to deploy models to production
+- Present findings to stakeholders and senior leadership
+- Mentor junior data scientists and contribute to team knowledge sharing
+- Stay current with latest research and apply cutting-edge techniques
+
+Leadership Principles:
+Candidates should be prepared to demonstrate alignment with Amazon's Leadership Principles including Customer Obsession, Ownership, Invent and Simplify, Learn and Be Curious, and Deliver Results.
+
+Compensation:
+- Base salary: $150,000 - $212,000 depending on experience
+- Sign-on bonus and stock options
+- Comprehensive benefits package
+- Relocation assistance available
+
+Amazon is an Equal Opportunity Employer. We are committed to providing a workplace that embraces diverse backgrounds and perspectives.
+
+Apply at: amazon.jobs

@@ -1,0 +1,52 @@
+MICHAEL CHEN
+San Francisco, CA | michael.chen@gmail.com | (415) 555-0142 | linkedin.com/in/michaelchen-dev | github.com/mchen-dev
+
+SUMMARY
+Software Engineer with 3 years of experience building scalable distributed systems and cloud infrastructure. Proficient in multiple programming languages including Python, Java, and Go. Passionate about designing efficient solutions for complex technical challenges.
+
+EDUCATION
+Stanford University, Stanford, CA
+Master of Science in Computer Science                                    Sep 2019 - Jun 2021
+- Concentration: Systems and Distributed Computing
+- Relevant Coursework: Distributed Systems, Operating Systems, Database Systems, Computer Networks
+
+University of California, Berkeley
+Bachelor of Science in Electrical Engineering & Computer Science          Aug 2015 - May 2019
+- GPA: 3.8/4.0
+- Dean's List all semesters
+
+TECHNICAL SKILLS
+Languages: Python, Java, Go, C++, JavaScript, SQL
+Cloud & Infrastructure: Google Cloud Platform (BigQuery, Dataflow, Pub/Sub), AWS (EC2, S3, Lambda), Kubernetes, Docker, Terraform
+Databases: PostgreSQL, MySQL, MongoDB, Redis, Cassandra
+Tools & Frameworks: gRPC, Protocol Buffers, Apache Kafka, Git, Jenkins, Prometheus
+
+PROFESSIONAL EXPERIENCE
+Software Engineer | Stripe                                               Jul 2021 - Present
+San Francisco, CA
+- Designed and implemented a high-throughput payment processing pipeline handling 50,000+ transactions per second using Go and Apache Kafka
+- Reduced payment latency by 35% by optimizing database queries and implementing connection pooling in PostgreSQL
+- Built monitoring and alerting infrastructure using Prometheus and Grafana, reducing incident detection time by 60%
+- Collaborated with cross-functional teams to migrate legacy systems to microservices architecture on Kubernetes
+- Reviewed code from peers and enforced best practices through design documents and technical specifications
+
+Software Engineering Intern | Google                                      Jun 2020 - Sep 2020
+Mountain View, CA
+- Developed a data pipeline for analyzing user engagement metrics using Python and Apache Beam on Dataflow
+- Implemented unit and integration tests achieving 95% code coverage
+- Participated in design reviews and contributed to technical documentation
+
+Research Assistant | Stanford Computer Systems Lab                        Sep 2019 - Jun 2021
+Stanford, CA
+- Researched optimization techniques for distributed consensus algorithms
+- Co-authored paper on fault-tolerant distributed systems presented at academic symposium
+
+PROJECTS
+Cloud-Native Task Scheduler (Personal Project)
+- Built a distributed task scheduling system using Go, gRPC, and etcd for coordination
+- Implemented fair scheduling algorithms with support for priority queues and resource constraints
+- Deployed on GCP Kubernetes Engine with auto-scaling capabilities
+
+CERTIFICATIONS
+- Google Cloud Professional Cloud Architect (2022)
+- AWS Solutions Architect Associate (2021)

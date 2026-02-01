@@ -1,0 +1,56 @@
+RACHEL MARTINEZ
+New York, NY | rachel.martinez@email.com | (212) 555-0198 | linkedin.com/in/rachelmartinez | github.com/r-martinez
+
+EDUCATION
+Columbia University, New York, NY
+Ph.D. in Statistics                                                       Sep 2016 - May 2021
+- Dissertation: "Scalable Bayesian Methods for Large-Scale Recommendation Systems"
+- Advisor: Dr. David Blei
+- Published 4 papers in top-tier venues (NeurIPS, ICML, AISTATS)
+
+Massachusetts Institute of Technology, Cambridge, MA
+Bachelor of Science in Mathematics with Computer Science                  Sep 2012 - May 2016
+- GPA: 3.9/4.0, Phi Beta Kappa
+
+SKILLS
+Programming: Python (NumPy, Pandas, scikit-learn), R, SQL, Scala, Java
+Machine Learning: TensorFlow, PyTorch, XGBoost, LightGBM, Keras
+Big Data: Apache Spark, Hadoop, Hive, Presto, Airflow
+Cloud: AWS (SageMaker, EMR, Redshift, S3, EC2), Google Cloud Platform
+Visualization: Tableau, Matplotlib, Seaborn, Plotly
+Statistical Methods: Bayesian inference, causal inference, A/B testing, time series analysis
+
+PROFESSIONAL EXPERIENCE
+Senior Data Scientist | Netflix                                           Jun 2021 - Present
+Los Gatos, CA
+- Lead development of personalization algorithms for content recommendations serving 230M+ subscribers
+- Built causal inference framework to measure true impact of product changes, improving experiment accuracy by 40%
+- Designed and deployed deep learning models using TensorFlow on AWS SageMaker, reducing model training time by 65%
+- Mentored team of 3 junior data scientists and established best practices for ML model development
+- Presented quarterly business reviews to VP-level stakeholders on recommendation system performance
+
+Data Scientist | Two Sigma                                                Jul 2021 - May 2021
+New York, NY (Part-time during PhD)
+- Developed machine learning models for quantitative trading strategies
+- Analyzed large-scale financial datasets using Python and Spark on AWS EMR
+- Implemented backtesting framework for evaluating model performance
+
+Research Intern | Microsoft Research                                      Jun 2019 - Sep 2019
+Redmond, WA
+- Researched neural collaborative filtering methods for recommendation systems
+- Developed probabilistic models for user preference learning
+- Published findings at RecSys 2020 conference
+
+SELECTED PUBLICATIONS
+1. Martinez, R., et al. "Scalable Variational Inference for Deep Recommendation Systems" NeurIPS 2020
+2. Martinez, R., et al. "Causal Bandits for Personalization at Scale" ICML 2019
+3. Martinez, R., et al. "Bayesian Matrix Factorization Meets Transformers" AISTATS 2021
+
+AWARDS & HONORS
+- NeurIPS Outstanding Paper Award Finalist (2020)
+- NSF Graduate Research Fellowship (2017-2020)
+- Columbia Presidential Fellowship (2016)
+
+CERTIFICATIONS
+- AWS Machine Learning Specialty (2022)
+- Deep Learning Specialization - Coursera (2018)

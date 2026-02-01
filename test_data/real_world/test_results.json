@@ -1,0 +1,267 @@
+[
+  {
+    "resume": "Michael Chen (SWE)",
+    "job": "Google SWE III",
+    "score": 100.0,
+    "actual_level": "HIGH",
+    "expected_level": "HIGH",
+    "match": true,
+    "skills_found": [
+      "Javascript",
+      "C",
+      "Git",
+      "Cassandra",
+      "Go"
+    ],
+    "missing_keywords": [],
+    "suspicious": true
+  },
+  {
+    "resume": "Michael Chen (SWE)",
+    "job": "Amazon Data Scientist",
+    "score": 44.5,
+    "actual_level": "LOW",
+    "expected_level": "LOW",
+    "match": true,
+    "skills_found": [
+      "Javascript",
+      "C",
+      "Git",
+      "Cassandra",
+      "Go"
+    ],
+    "missing_keywords": [
+      "Deep Learning",
+      "R",
+      "Tensorflow",
+      "Pytorch",
+      "Data Science"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "Michael Chen (SWE)",
+    "job": "Meta Frontend",
+    "score": 33.0,
+    "actual_level": "LOW",
+    "expected_level": "MEDIUM",
+    "match": false,
+    "skills_found": [
+      "Javascript",
+      "C",
+      "Git",
+      "Cassandra",
+      "Go"
+    ],
+    "missing_keywords": [
+      "Graphql",
+      "Backend",
+      "Css3",
+      "Typescript",
+      "Frontend"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "Rachel Martinez (DS)",
+    "job": "Google SWE III",
+    "score": 56.8,
+    "actual_level": "MEDIUM",
+    "expected_level": "MEDIUM",
+    "match": true,
+    "skills_found": [
+      "Deep Learning",
+      "Tensorflow",
+      "Numpy",
+      "Google Cloud",
+      "Sql"
+    ],
+    "missing_keywords": [
+      "Software Engineer",
+      "Javascript",
+      "C",
+      "Architecture",
+      "Go"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "Rachel Martinez (DS)",
+    "job": "Amazon Data Scientist",
+    "score": 93.1,
+    "actual_level": "HIGH",
+    "expected_level": "HIGH",
+    "match": true,
+    "skills_found": [
+      "Deep Learning",
+      "Tensorflow",
+      "Numpy",
+      "Google Cloud",
+      "Sql"
+    ],
+    "missing_keywords": [
+      "Data Science"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "Rachel Martinez (DS)",
+    "job": "Meta Frontend",
+    "score": 31.8,
+    "actual_level": "LOW",
+    "expected_level": "LOW",
+    "match": true,
+    "skills_found": [
+      "Deep Learning",
+      "Tensorflow",
+      "Numpy",
+      "Google Cloud",
+      "Sql"
+    ],
+    "missing_keywords": [
+      "Graphql",
+      "Backend",
+      "Javascript",
+      "Css3",
+      "Typescript"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "James Thompson (FE)",
+    "job": "Google SWE III",
+    "score": 33.6,
+    "actual_level": "LOW",
+    "expected_level": "MEDIUM",
+    "match": false,
+    "skills_found": [
+      "Playwright",
+      "Circleci",
+      "Javascript",
+      "Git",
+      "Next.Js"
+    ],
+    "missing_keywords": [
+      "Software Engineer",
+      "Python",
+      "Programming",
+      "C",
+      "Architecture"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "James Thompson (FE)",
+    "job": "Amazon Data Scientist",
+    "score": 25.1,
+    "actual_level": "LOW",
+    "expected_level": "LOW",
+    "match": true,
+    "skills_found": [
+      "Playwright",
+      "Circleci",
+      "Javascript",
+      "Git",
+      "Next.Js"
+    ],
+    "missing_keywords": [
+      "Deep Learning",
+      "Sql",
+      "R",
+      "Python",
+      "Tensorflow"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "James Thompson (FE)",
+    "job": "Meta Frontend",
+    "score": 83.9,
+    "actual_level": "HIGH",
+    "expected_level": "HIGH",
+    "match": true,
+    "skills_found": [
+      "Playwright",
+      "Circleci",
+      "Javascript",
+      "Git",
+      "Next.Js"
+    ],
+    "missing_keywords": [
+      "Programming",
+      "Backend",
+      "React Native",
+      "Mobile"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "Ashley Nguyen (Junior)",
+    "job": "Google SWE III",
+    "score": 40.5,
+    "actual_level": "LOW",
+    "expected_level": "LOW",
+    "match": true,
+    "skills_found": [
+      "Html",
+      "Javascript",
+      "Python",
+      "Css",
+      "Git"
+    ],
+    "missing_keywords": [
+      "Software Engineer",
+      "Programming",
+      "C",
+      "Architecture",
+      "Go"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "Ashley Nguyen (Junior)",
+    "job": "Amazon Data Scientist",
+    "score": 30.7,
+    "actual_level": "LOW",
+    "expected_level": "LOW",
+    "match": true,
+    "skills_found": [
+      "Html",
+      "Javascript",
+      "Python",
+      "Css",
+      "Git"
+    ],
+    "missing_keywords": [
+      "Deep Learning",
+      "Sql",
+      "R",
+      "Tensorflow",
+      "Pytorch"
+    ],
+    "suspicious": false
+  },
+  {
+    "resume": "Ashley Nguyen (Junior)",
+    "job": "Meta Frontend",
+    "score": 32.1,
+    "actual_level": "LOW",
+    "expected_level": "LOW",
+    "match": true,
+    "skills_found": [
+      "Html",
+      "Javascript",
+      "Python",
+      "Css",
+      "Git"
+    ],
+    "missing_keywords": [
+      "Graphql",
+      "Backend",
+      "Css3",
+      "Typescript",
+      "Frontend"
+    ],
+    "suspicious": false
+  }
+]
