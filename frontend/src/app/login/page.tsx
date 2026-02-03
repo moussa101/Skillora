@@ -1,21 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-export default function LoginPage() {
+function LoginContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (searchParams.get('verified') === 'true') {
+            setSuccess("Email verified successfully! You can now log in.");
+        }
+    }, [searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        setSuccess("");
         setLoading(true);
 
         try {
@@ -28,12 +37,18 @@ export default function LoginPage() {
             const data = await res.json();
 
             if (!res.ok) {
+                if (res.status === 401 && data.message.includes('verify')) {
+                    router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+                    return;
+                }
                 throw new Error(data.message || "Login failed");
             }
 
             // Store token and user info
             localStorage.setItem("token", data.access_token);
             localStorage.setItem("user", JSON.stringify(data.user));
+
+
 
             router.push("/dashboard");
         } catch (err: any) {
@@ -44,7 +59,7 @@ export default function LoginPage() {
     };
 
     const handleOAuthLogin = (provider: string) => {
-        window.location.href = `${API_URL}/auth/${provider}`;
+        if (typeof window !== "undefined") window.location.href = `${API_URL}/auth/${provider}`;
     };
 
     return (
@@ -110,6 +125,11 @@ export default function LoginPage() {
 
                     {/* Email/Password Form */}
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {success && (
+                            <div className="p-3 bg-green-50 border border-green-200 rounded-xl text-green-600 text-sm">
+                                {success}
+                            </div>
+                        )}
                         {error && (
                             <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
                                 {error}
@@ -131,9 +151,17 @@ export default function LoginPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--foreground)] mb-1">
-                                Password
-                            </label>
+                            <div className="flex justify-between items-center mb-1">
+                                <label className="block text-sm font-medium text-[var(--foreground)]">
+                                    Password
+                                </label>
+                                <Link
+                                    href="/forgot-password"
+                                    className="text-sm text-[var(--accent)] hover:underline"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </div>
                             <input
                                 type="password"
                                 value={password}
@@ -162,5 +190,17 @@ export default function LoginPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }

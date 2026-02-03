@@ -6,9 +6,12 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { GithubStrategy } from './strategies/github.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { AppleStrategy } from './strategies/apple.strategy';
+// Apple OAuth requires paid developer account - uncomment when configured
+// import { AppleStrategy } from './strategies/apple.strategy';
 import { PrismaService } from '../prisma.service';
 import { TierGuard, UsageLimitGuard } from './guards/tier.guard';
+import { UsersModule } from '../users/users.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
     imports: [
@@ -17,6 +20,8 @@ import { TierGuard, UsageLimitGuard } from './guards/tier.guard';
             secret: process.env.JWT_SECRET || 'skillora-secret-key-change-in-production',
             signOptions: { expiresIn: '7d' },
         }),
+        UsersModule,
+        EmailModule,
     ],
     controllers: [AuthController],
     providers: [
@@ -25,7 +30,7 @@ import { TierGuard, UsageLimitGuard } from './guards/tier.guard';
         JwtStrategy,
         GithubStrategy,
         GoogleStrategy,
-        AppleStrategy,
+        // AppleStrategy, // Uncomment when Apple OAuth is configured
         TierGuard,
         UsageLimitGuard,
     ],

@@ -6,9 +6,16 @@ import { AuthService } from '../auth.service';
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     constructor(private authService: AuthService) {
+        const clientID = process.env.GITHUB_CLIENT_ID;
+        const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+        
+        if (!clientID || !clientSecret) {
+            console.warn('GitHub OAuth not configured: GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET missing');
+        }
+        
         super({
-            clientID: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            clientID: clientID || 'not-configured',
+            clientSecret: clientSecret || 'not-configured',
             callbackURL: process.env.GITHUB_CALLBACK_URL || 'http://localhost:3000/auth/github/callback',
             scope: ['user:email'],
         });

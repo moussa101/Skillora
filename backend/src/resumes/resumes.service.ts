@@ -21,9 +21,23 @@ export class ResumesService {
         });
     }
 
-    async findOne(id: number) {
+    async findOne(id: number, userId?: number) {
+        const where: Prisma.ResumeWhereUniqueInput = { id };
+
+        // If userId is provided, ensure ownership is verified manually in controller or here? 
+        // Better to return valid resume and let controller check, OR simple where check
+        // But Prisma findUnique only accepts unique identifiers.
+        // So we use findFirst if checking userId
+
+        if (userId) {
+            return this.prisma.resume.findFirst({
+                where: { id, userId },
+                include: { analyses: true },
+            });
+        }
+
         return this.prisma.resume.findUnique({
-            where: { id },
+            where,
             include: { analyses: true },
         });
     }

@@ -6,6 +6,26 @@ import { RegisterDto } from './dto/register.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import type { Response, Request } from 'express';
 
+// DTOs for new endpoints
+class VerifyEmailDto {
+    email: string;
+    code: string;
+}
+
+class ForgotPasswordDto {
+    email: string;
+}
+
+class ResetPasswordDto {
+    email: string;
+    code: string;
+    newPassword: string;
+}
+
+class ResendVerificationDto {
+    email: string;
+}
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -13,7 +33,7 @@ export class AuthController {
 
     @Post('register')
     @ApiOperation({ summary: 'Register a new user with email/password' })
-    @ApiResponse({ status: 201, description: 'User successfully registered' })
+    @ApiResponse({ status: 201, description: 'User registered, verification email sent' })
     @ApiResponse({ status: 409, description: 'Email already exists' })
     async register(@Body() registerDto: RegisterDto) {
         return this.authService.register(registerDto);
@@ -23,9 +43,51 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Login user with email/password' })
     @ApiResponse({ status: 200, description: 'Login successful' })
-    @ApiResponse({ status: 401, description: 'Invalid credentials' })
+    @ApiResponse({ status: 401, description: 'Invalid credentials or email not verified' })
     async login(@Body() loginDto: LoginDto) {
         return this.authService.login(loginDto);
+    }
+
+    // ============================================
+    // EMAIL VERIFICATION
+    // ============================================
+
+    @Post('verify-email')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Verify email with 6-digit code' })
+    @ApiResponse({ status: 200, description: 'Email verified successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid or expired code' })
+    async verifyEmail(@Body() dto: VerifyEmailDto) {
+        return this.authService.verifyEmail(dto.email, dto.code);
+    }
+
+    @Post('resend-verification')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Resend verification email' })
+    @ApiResponse({ status: 200, description: 'Verification code sent' })
+    async resendVerification(@Body() dto: ResendVerificationDto) {
+        return this.authService.resendVerificationCode(dto.email);
+    }
+
+    // ============================================
+    // PASSWORD RESET
+    // ============================================
+
+    @Post('forgot-password')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Request password reset code' })
+    @ApiResponse({ status: 200, description: 'Reset code sent if account exists' })
+    async forgotPassword(@Body() dto: ForgotPasswordDto) {
+        return this.authService.forgotPassword(dto.email);
+    }
+
+    @Post('reset-password')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Reset password with code' })
+    @ApiResponse({ status: 200, description: 'Password reset successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid or expired code' })
+    async resetPassword(@Body() dto: ResetPasswordDto) {
+        return this.authService.resetPassword(dto.email, dto.code, dto.newPassword);
     }
 
     // ============================================
@@ -70,24 +132,16 @@ export class AuthController {
     }
 
     // ============================================
-    // APPLE OAuth
+    // APPLE OAuth (disabled - requires paid developer account)
     // ============================================
 
-    @Get('apple')
-    @UseGuards(AuthGuard('apple'))
-    @ApiOperation({ summary: 'Initiate Apple OAuth login' })
-    async appleAuth() {
-        // Guard redirects to Apple
-    }
+    // @Get('apple')
+    // @UseGuards(AuthGuard('apple'))
+    // async appleAuth() {}
 
-    @Post('apple/callback')
-    @UseGuards(AuthGuard('apple'))
-    @ApiOperation({ summary: 'Apple OAuth callback (POST for Apple)' })
-    async appleAuthCallback(@Req() req: Request, @Res() res: Response) {
-        const authResponse = await this.authService.generateAuthResponse(req.user);
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
-        res.redirect(`${frontendUrl}/auth/callback?token=${authResponse.access_token}`);
-    }
+    // @Post('apple/callback')
+    // @UseGuards(AuthGuard('apple'))
+    // async appleAuthCallback(@Req() req: Request, @Res() res: Response) {}
 
     // ============================================
     // USER INFO
@@ -97,8 +151,9 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ summary: 'Get current user info' })
     async getMe(@Req() req: Request) {
-        const user = await this.authService.findUserById((req.user as any).sub);
-        const features = await this.authService.getUserFeatures((req.user as any).sub);
+        const userId = (req.user as any).id;
+        const user = await this.authService.findUserById(userId);
+        const features = await this.authService.getUserFeatures(userId);
         return { ...user, features };
     }
 
@@ -106,8 +161,9 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ summary: 'Get current usage stats' })
     async getUsage(@Req() req: Request) {
-        const user = await this.authService.findUserById((req.user as any).sub);
-        const features = await this.authService.getUserFeatures((req.user as any).sub);
+        const userId = (req.user as any).id;
+        const user = await this.authService.findUserById(userId);
+        const features = await this.authService.getUserFeatures(userId);
         return {
             tier: user?.tier,
             analysesThisMonth: user?.analysesThisMonth,

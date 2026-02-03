@@ -52,6 +52,9 @@ model User {
   role      UserRole @default(CANDIDATE)
   tier      UserTier @default(GUEST)
 
+  // Email verification
+  emailVerified Boolean @default(false)
+
   // OAuth fields
   provider   AuthProvider @default(EMAIL)
   providerId String?      // ID from OAuth provider
@@ -119,4 +122,25 @@ model Analysis {
   resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
   @@index([resumeId])
+}
+
+// ============================================
+// VERIFICATION CODES
+// ============================================
+
+enum VerificationCodeType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+model VerificationCode {
+  id        Int                  @id @default(autoincrement())
+  email     String
+  code      String
+  type      VerificationCodeType
+  expiresAt DateTime
+  used      Boolean              @default(false)
+  createdAt DateTime             @default(now())
+
+  @@index([email, code, type])
 }

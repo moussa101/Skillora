@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ResumesService } from './resumes.service';
+import { AuthService } from '../auth/auth.service';
 import { multerOptions } from './multer.config';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -26,6 +27,7 @@ export class ResumesController {
     constructor(
         private readonly resumesService: ResumesService,
         private readonly mlService: MlService,
+        private readonly authService: AuthService,
     ) { }
 
     @Post()
@@ -71,10 +73,21 @@ export class ResumesController {
     async analyzeResume(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: { jobDescription: string },
+        @Request() req,
     ) {
-        const resume = await this.resumesService.findOne(id);
+        // 1. Verify ownership
+        const resume = await this.resumesService.findOne(id, req.user.id);
         if (!resume) {
             return { error: 'Resume not found' };
+        }
+
+        // 2. Check usage limits
+        const usage = await this.authService.checkAndIncrementUsage(req.user.id);
+        if (!usage.allowed) {
+            return {
+                error: 'Monthly analysis limit reached. Upgrade to Pro for more.',
+                limitReached: true,
+            };
         }
 
         const analysis = await this.mlService.analyzeResume(resume.filePath, body.jobDescription);
@@ -89,9 +102,15 @@ export class ResumesController {
             resume: { connect: { id } },
         });
 
+        // Get updated remaining count
+        const remaining = usage.remaining;
+
         return {
             analysis: savedAnalysis,
             details: analysis,
+            usage: {
+                remaining,
+            },
         };
     }
 
@@ -103,8 +122,9 @@ export class ResumesController {
 
     @Get(':id')
     @ApiOperation({ summary: 'Get a specific resume' })
-    async findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.resumesService.findOne(id);
+    async findOne(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        // Verify ownership
+        return this.resumesService.findOne(id, req.user.id);
     }
 }
 

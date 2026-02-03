@@ -1,6 +1,7 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma.service';
+import { EmailService } from '../email/email.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { TIER_LIMITS } from './guards/tier.guard';
@@ -19,6 +20,7 @@ export class AuthService {
     constructor(
         private prisma: PrismaService,
         private jwtService: JwtService,
+        private emailService: EmailService,
     ) { }
 
     async register(registerDto: RegisterDto) {
@@ -38,11 +40,18 @@ export class AuthService {
                 password: hashedPassword,
                 name: registerDto.name,
                 provider: 'EMAIL',
+                emailVerified: false,
             },
         });
 
+        // Send verification email
+        await this.sendVerificationCode(user.email, user.name || undefined);
+
         const { password, ...result } = user;
-        return result;
+        return {
+            ...result,
+            message: 'Registration successful. Please check your email for verification code.',
+        };
     }
 
     async login(loginDto: LoginDto) {
@@ -60,8 +69,164 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
+        // Check if email is verified
+        if (!user.emailVerified && user.provider === 'EMAIL') {
+            throw new UnauthorizedException('Please verify your email before logging in');
+        }
+
         return this.generateAuthResponse(user);
     }
+
+    // ============================================
+    // EMAIL VERIFICATION
+    // ============================================
+
+    async sendVerificationCode(email: string, name?: string): Promise<void> {
+        const code = this.emailService.generateCode();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+        // Delete any existing codes for this email
+        await this.prisma.verificationCode.deleteMany({
+            where: {
+                email,
+                type: 'EMAIL_VERIFICATION',
+            },
+        });
+
+        // Create new code
+        await this.prisma.verificationCode.create({
+            data: {
+                email,
+                code,
+                type: 'EMAIL_VERIFICATION',
+                expiresAt,
+            },
+        });
+
+        // Send email
+        await this.emailService.sendVerificationEmail(email, code, name);
+    }
+
+    async verifyEmail(email: string, code: string): Promise<{ success: boolean; message: string }> {
+        const verification = await this.prisma.verificationCode.findFirst({
+            where: {
+                email,
+                code,
+                type: 'EMAIL_VERIFICATION',
+                used: false,
+                expiresAt: { gt: new Date() },
+            },
+        });
+
+        if (!verification) {
+            throw new BadRequestException('Invalid or expired verification code');
+        }
+
+        // Mark code as used
+        await this.prisma.verificationCode.update({
+            where: { id: verification.id },
+            data: { used: true },
+        });
+
+        // Mark user as verified
+        await this.prisma.user.update({
+            where: { email },
+            data: { emailVerified: true },
+        });
+
+        return { success: true, message: 'Email verified successfully' };
+    }
+
+    async resendVerificationCode(email: string): Promise<{ success: boolean; message: string }> {
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+        });
+
+        if (!user) {
+            throw new BadRequestException('User not found');
+        }
+
+        if (user.emailVerified) {
+            throw new BadRequestException('Email is already verified');
+        }
+
+        await this.sendVerificationCode(email, user.name || undefined);
+        return { success: true, message: 'Verification code sent' };
+    }
+
+    // ============================================
+    // PASSWORD RESET
+    // ============================================
+
+    async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+        const user = await this.prisma.user.findUnique({
+            where: { email },
+        });
+
+        // Don't reveal if user exists
+        if (!user || user.provider !== 'EMAIL') {
+            return { success: true, message: 'If an account exists, a reset code has been sent' };
+        }
+
+        const code = this.emailService.generateCode();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+        // Delete any existing codes
+        await this.prisma.verificationCode.deleteMany({
+            where: {
+                email,
+                type: 'PASSWORD_RESET',
+            },
+        });
+
+        // Create new code
+        await this.prisma.verificationCode.create({
+            data: {
+                email,
+                code,
+                type: 'PASSWORD_RESET',
+                expiresAt,
+            },
+        });
+
+        await this.emailService.sendPasswordResetEmail(email, code);
+        return { success: true, message: 'If an account exists, a reset code has been sent' };
+    }
+
+    async resetPassword(email: string, code: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+        const verification = await this.prisma.verificationCode.findFirst({
+            where: {
+                email,
+                code,
+                type: 'PASSWORD_RESET',
+                used: false,
+                expiresAt: { gt: new Date() },
+            },
+        });
+
+        if (!verification) {
+            throw new BadRequestException('Invalid or expired reset code');
+        }
+
+        // Mark code as used
+        await this.prisma.verificationCode.update({
+            where: { id: verification.id },
+            data: { used: true },
+        });
+
+        // Update password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await this.prisma.user.update({
+            where: { email },
+            data: { password: hashedPassword },
+        });
+
+        return { success: true, message: 'Password reset successfully' };
+    }
+
+    // ============================================
+    // OAUTH
+    // ============================================
 
     async validateOAuthUser(data: OAuthUserData) {
         // Check if user exists with this provider ID
@@ -87,10 +252,11 @@ export class AuthService {
                         providerId: data.providerId,
                         image: data.image || user.image,
                         name: data.name || user.name,
+                        emailVerified: true, // OAuth emails are verified
                     },
                 });
             } else {
-                // Create new user
+                // Create new user (OAuth users are auto-verified)
                 user = await this.prisma.user.create({
                     data: {
                         email: data.email,
@@ -99,6 +265,7 @@ export class AuthService {
                         provider: data.provider,
                         providerId: data.providerId,
                         tier: 'GUEST',
+                        emailVerified: true,
                     },
                 });
             }
@@ -106,6 +273,10 @@ export class AuthService {
 
         return user;
     }
+
+    // ============================================
+    // HELPERS
+    // ============================================
 
     async generateAuthResponse(user: any) {
         const payload = {
@@ -124,6 +295,7 @@ export class AuthService {
                 image: user.image,
                 role: user.role,
                 tier: user.tier,
+                emailVerified: user.emailVerified,
                 analysesThisMonth: user.analysesThisMonth,
                 analysesLimit: TIER_LIMITS[user.tier as keyof typeof TIER_LIMITS]?.analysesPerMonth || 1,
             },
@@ -199,6 +371,7 @@ export class AuthService {
                 image: true,
                 role: true,
                 tier: true,
+                emailVerified: true,
                 analysesThisMonth: true,
                 analysesResetDate: true,
                 createdAt: true,

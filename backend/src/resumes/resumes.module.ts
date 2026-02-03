@@ -5,9 +5,10 @@ import { ResumesService } from './resumes.service';
 import { ResumesController } from './resumes.controller';
 import { PrismaService } from '../prisma.service';
 import { MlService } from './ml.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [HttpModule],
+    imports: [HttpModule, AuthModule],
     controllers: [ResumesController],
     providers: [ResumesService, PrismaService, MlService],
 })

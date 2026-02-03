@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 interface GitHubProfile {
     username: string;
@@ -50,11 +52,20 @@ interface AnalysisResult {
 }
 
 export default function Dashboard() {
+    const { user, loading: authLoading, logout } = useAuth();
+    const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
     const [jobDescription, setJobDescription] = useState("");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<AnalysisResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/login");
+        }
+    }, [user, authLoading, router]);
 
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -129,6 +140,20 @@ export default function Dashboard() {
         ? circumference - (result.score / 100) * circumference
         : circumference;
 
+    // Show loading spinner while checking auth
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
+    // Don't render anything if not authenticated (will redirect)
+    if (!user) {
+        return null;
+    }
+
     return (
         <div className="min-h-screen bg-[var(--background)]">
             {/* Navigation */}
@@ -137,7 +162,17 @@ export default function Dashboard() {
                     <Link href="/" className="text-[var(--foreground)] font-semibold text-lg tracking-tight">
                         Skillora
                     </Link>
-                    <span className="text-[var(--gray-400)] text-sm">Dashboard</span>
+                    <div className="flex items-center gap-4">
+                        <span className="text-[var(--gray-500)] text-sm">
+                            {user.email}
+                        </span>
+                        <button
+                            onClick={logout}
+                            className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+                        >
+                            Sign out
+                        </button>
+                    </div>
                 </div>
             </nav>
 

@@ -49,6 +49,14 @@ services:
       - ML_SERVICE_URL=http://ml-service:8000
       - JWT_SECRET=${JWT_SECRET:-change-this-secret}
       - JWT_EXPIRES_IN=7d
+      # OAuth
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - GITHUB_CALLBACK_URL=${GITHUB_CALLBACK_URL:-http://localhost:3000/auth/github/callback}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-http://localhost:3000/auth/google/callback}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3001}
     volumes:
       - ./uploads:/app/uploads
     depends_on:

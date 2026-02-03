@@ -32,27 +32,15 @@ export default function SignupPage() {
                 throw new Error(data.message || "Registration failed");
             }
 
-            // Auto-login after registration
-            const loginRes = await fetch(`${API_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+            // Redirect to verification page
+            router.push(`/verify-email?email=${encodeURIComponent(email)}`);
 
-            const loginData = await loginRes.json();
-
-            if (loginRes.ok) {
-                localStorage.setItem("token", loginData.access_token);
-                localStorage.setItem("user", JSON.stringify(loginData.user));
-                router.push("/dashboard");
-            } else {
-                router.push("/login");
-            }
         } catch (err: any) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
+
     };
 
     const handleOAuthLogin = (provider: string) => {
