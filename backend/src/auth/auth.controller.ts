@@ -4,25 +4,37 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 import type { Response, Request } from 'express';
 
 // DTOs for new endpoints
 class VerifyEmailDto {
+    @IsEmail()
     email: string;
+
+    @IsString()
     code: string;
 }
 
 class ForgotPasswordDto {
+    @IsEmail()
     email: string;
 }
 
 class ResetPasswordDto {
+    @IsEmail()
     email: string;
+
+    @IsString()
     code: string;
+
+    @IsString()
+    @MinLength(8)
     newPassword: string;
 }
 
 class ResendVerificationDto {
+    @IsEmail()
     email: string;
 }
 

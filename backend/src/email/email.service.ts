@@ -1,9 +1,31 @@
 import { Injectable } from '@nestjs/common';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
-    private readonly resendApiKey = process.env.RESEND_API_KEY;
-    private readonly fromEmail = process.env.EMAIL_FROM || 'Skillora <noreply@skillora.app>';
+    private transporter: nodemailer.Transporter | null = null;
+    private readonly fromEmail: string;
+
+    constructor() {
+        const gmailUser = process.env.GMAIL_USER;
+        const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+
+        this.fromEmail = gmailUser || 'noreply@skillora.app';
+
+        if (gmailUser && gmailAppPassword) {
+            this.transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: gmailUser,
+                    pass: gmailAppPassword,
+                },
+            });
+            console.log('✅ Email service configured with Gmail SMTP');
+        } else {
+            console.log('⚠️ Email service running in dev mode (no GMAIL_USER/GMAIL_APP_PASSWORD)');
+            console.log('   Verification codes will be logged to console');
+        }
+    }
 
     async sendVerificationEmail(email: string, code: string, name?: string): Promise<boolean> {
         const subject = 'Verify your Skillora account';
@@ -21,7 +43,7 @@ export class EmailService {
             </div>
         `;
 
-        return this.sendEmail(email, subject, html);
+        return this.sendEmail(email, subject, html, code);
     }
 
     async sendPasswordResetEmail(email: string, code: string): Promise<boolean> {
@@ -40,50 +62,38 @@ export class EmailService {
             </div>
         `;
 
-        return this.sendEmail(email, subject, html);
+        return this.sendEmail(email, subject, html, code);
     }
 
-    private async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-        // If no API key, log to console (development mode)
-        if (!this.resendApiKey) {
-            console.log('========================================');
-            console.log('EMAIL (dev mode - no RESEND_API_KEY set)');
-            console.log(`To: ${to}`);
-            console.log(`Subject: ${subject}`);
-            console.log('----------------------------------------');
-            // Extract code from HTML for easy testing
-            const codeMatch = html.match(/letter-spacing: 8px[^>]*>(\d{6})</);
-            if (codeMatch) {
-                console.log(`VERIFICATION CODE: ${codeMatch[1]}`);
+    private async sendEmail(to: string, subject: string, html: string, code?: string): Promise<boolean> {
+        // If no transporter configured, log to console (development mode)
+        if (!this.transporter) {
+            console.log('');
+            console.log('╔════════════════════════════════════════════════════════════╗');
+            console.log('║  📧 EMAIL (dev mode - Gmail not configured)                ║');
+            console.log('╠════════════════════════════════════════════════════════════╣');
+            console.log(`║  To: ${to.padEnd(52)}║`);
+            console.log(`║  Subject: ${subject.padEnd(48)}║`);
+            if (code) {
+                console.log('╠════════════════════════════════════════════════════════════╣');
+                console.log(`║  🔑 VERIFICATION CODE: ${code}                              ║`);
             }
-            console.log('========================================');
+            console.log('╚════════════════════════════════════════════════════════════╝');
+            console.log('');
             return true;
         }
 
         try {
-            const response = await fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${this.resendApiKey}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    from: this.fromEmail,
-                    to: [to],
-                    subject,
-                    html,
-                }),
+            await this.transporter.sendMail({
+                from: `Skillora <${this.fromEmail}>`,
+                to,
+                subject,
+                html,
             });
-
-            if (!response.ok) {
-                const error = await response.json();
-                console.error('Failed to send email:', error);
-                return false;
-            }
-
+            console.log(`✅ Email sent to ${to}`);
             return true;
         } catch (error) {
-            console.error('Email send error:', error);
+            console.error('❌ Email send error:', error);
             return false;
         }
     }
