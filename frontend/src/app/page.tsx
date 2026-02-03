@@ -56,12 +56,20 @@ export default function Home() {
         <div className="text-[var(--foreground)] font-semibold text-xl tracking-tight">
           Skillora
         </div>
-        <Link
-          href="/dashboard"
-          className="text-[var(--accent)] text-sm font-medium hover:underline"
-        >
-          Start Analyzing
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/login"
+            className="text-[var(--foreground)] text-sm font-medium hover:text-[var(--accent)] transition-colors"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/signup"
+            className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-full hover:bg-[var(--accent-hover)] transition-colors"
+          >
+            Get Started
+          </Link>
+        </div>
       </nav>
 
       {/* Hero Section */}
