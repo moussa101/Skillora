@@ -1,5 +1,5 @@
-// Prisma schema for AI Resume Analyzer
-// User, Resume, and Analysis models
+// Prisma schema for Skillora (AI Resume Analyzer)
+// User, Resume, Analysis, and Organization models
 
 generator client {
   provider = "prisma-client-js"
@@ -9,22 +9,85 @@ datasource db {
   provider = "postgresql"
 }
 
+// ============================================
+// ENUMS
+// ============================================
+
 enum UserRole {
   CANDIDATE
   RECRUITER
   ADMIN
 }
 
+enum UserTier {
+  GUEST
+  PRO
+  RECRUITER
+}
+
+enum SubscriptionStatus {
+  NONE
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+}
+
+enum AuthProvider {
+  EMAIL
+  GITHUB
+  GOOGLE
+  APPLE
+}
+
+// ============================================
+// MODELS
+// ============================================
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String
+  password  String?  // Optional for OAuth users
   name      String?
+  image     String?  // Profile picture from OAuth
   role      UserRole @default(CANDIDATE)
+  tier      UserTier @default(GUEST)
+
+  // OAuth fields
+  provider   AuthProvider @default(EMAIL)
+  providerId String?      // ID from OAuth provider
+
+  // Subscription (Stripe prep)
+  stripeCustomerId    String?
+  subscriptionStatus  SubscriptionStatus @default(NONE)
+  subscriptionEndDate DateTime?
+
+  // Usage tracking
+  analysesThisMonth Int      @default(0)
+  analysesResetDate DateTime @default(now())
+
+  // Organization (for Recruiter tier)
+  organizationId Int?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   resumes Resume[]
+
+  @@index([email])
+  @@index([providerId])
+}
+
+model Organization {
+  id           Int      @id @default(autoincrement())
+  name         String
+  billingEmail String
+  stripeCustomerId String?
+  apiKey       String   @unique @default(uuid())
+
+  members   User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Resume {
