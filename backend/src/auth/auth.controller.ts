@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength, Matches } from 'class-validator';
 import type { Response, Request } from 'express';
 
 // DTOs for new endpoints
@@ -29,7 +29,10 @@ class ResetPasswordDto {
     code: string;
 
     @IsString()
-    @MinLength(8)
+    @MinLength(8, { message: 'Password must be at least 8 characters long' })
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
+        message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)'
+    })
     newPassword: string;
 }
 
