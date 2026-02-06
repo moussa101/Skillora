@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "Skillora - AI-Powered Resume Analysis",
   description: "Analyze your resume against job descriptions with ML-powered insights. Get intelligent feedback on skill matching, keyword gaps, and profile analysis.",
   keywords: ["Skillora", "resume", "analyzer", "AI", "machine learning", "job description", "NLP", "skills"],
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
