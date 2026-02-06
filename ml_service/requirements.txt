@@ -15,6 +15,13 @@ PyPDF2==3.0.1
 pdfminer.six==20231228
 python-docx==1.1.0
 PyMuPDF==1.23.8  # For PDF security scanning (FR-SEC-01, FR-SEC-03)
+striprtf==0.0.26  # For RTF file support
+beautifulsoup4==4.12.3  # For HTML file support
+lxml==5.1.0  # HTML parser for BeautifulSoup
+
+# Security
+python-magic==0.4.27  # MIME type validation
+slowapi==0.1.9  # Rate limiting
 
 # Utilities
 python-dotenv==1.0.1
