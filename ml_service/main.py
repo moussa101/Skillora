@@ -4,11 +4,30 @@ FastAPI application for resume parsing and analysis
 With Adversarial Defense (SRS v1.1)
 """
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, Form
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import os
+
+# Rate limiting imports
+try:
+    from slowapi import Limiter, _rate_limit_exceeded_handler
+    from slowapi.util import get_remote_address
+    from slowapi.errors import RateLimitExceeded
+    limiter = Limiter(key_func=get_remote_address)
+    RATE_LIMITING_AVAILABLE = True
+except ImportError:
+    limiter = None
+    RATE_LIMITING_AVAILABLE = False
+
+# File validation imports
+try:
+    from security.file_validator import full_file_validation, MAX_FILE_SIZE
+    FILE_VALIDATION_AVAILABLE = True
+except ImportError:
+    FILE_VALIDATION_AVAILABLE = False
+    MAX_FILE_SIZE = 10 * 1024 * 1024
 
 # Security imports
 try:
@@ -38,8 +57,13 @@ except ImportError:
 app = FastAPI(
     title="Skillora - ML Service",
     description="ML service for resume parsing, NER extraction, and semantic similarity scoring with adversarial defense",
-    version="1.1.0"
+    version="1.2.0"
 )
+
+# Add rate limiting if available
+if RATE_LIMITING_AVAILABLE:
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS configuration
 app.add_middleware(
@@ -220,23 +244,36 @@ async def analyze_resume(request: AnalyzeRequest):
 
 # Text extraction endpoint
 @app.post("/extract-text")
-async def extract_text(file: UploadFile = File(...)):
+async def extract_text(request: Request, file: UploadFile = File(...)):
     """
     Extract text from an uploaded resume file.
-    Supports PDF, DOCX, and TXT formats.
+    Supports PDF, DOCX, TXT, RTF, and HTML formats.
+    Max file size: 10MB. Rate limited: 30 requests/minute.
     """
-    
-    allowed_extensions = ['.pdf', '.docx', '.txt']
-    file_ext = os.path.splitext(file.filename)[1].lower()
-    
-    if file_ext not in allowed_extensions:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
-        )
     
     try:
         content = await file.read()
+        
+        # Security validation
+        if FILE_VALIDATION_AVAILABLE:
+            is_valid, error, safe_filename = full_file_validation(file.filename, content)
+            if not is_valid:
+                raise HTTPException(status_code=400, detail=error)
+        else:
+            # Fallback validation
+            safe_filename = file.filename
+            if len(content) > MAX_FILE_SIZE:
+                raise HTTPException(status_code=400, detail=f"File too large. Max size: {MAX_FILE_SIZE // (1024*1024)}MB")
+        
+        file_ext = os.path.splitext(safe_filename)[1].lower()
+        allowed_extensions = ['.pdf', '.docx', '.txt', '.rtf', '.html', '.htm']
+        
+        if file_ext not in allowed_extensions:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
+            )
+        
         text = ""
         
         if file_ext == '.pdf':
@@ -257,35 +294,64 @@ async def extract_text(file: UploadFile = File(...)):
         elif file_ext == '.txt':
             text = content.decode('utf-8')
         
+        elif file_ext == '.rtf':
+            # Use striprtf for RTF extraction
+            from striprtf.striprtf import rtf_to_text
+            text = rtf_to_text(content.decode('utf-8', errors='ignore'))
+        
+        elif file_ext in ['.html', '.htm']:
+            # Use BeautifulSoup for HTML extraction
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(content.decode('utf-8', errors='ignore'), 'lxml')
+            # Remove script and style elements
+            for script in soup(["script", "style"]):
+                script.decompose()
+            text = soup.get_text(separator='\n', strip=True)
+        
         return {
-            "filename": file.filename,
+            "filename": safe_filename,
             "text": text,
             "length": len(text),
             "status": "success"
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to extract text: {str(e)}")
 
 
 # File upload + analyze endpoint (combines upload and analysis)
 @app.post("/analyze-file", response_model=AnalyzeResponse)
-async def analyze_file(file: UploadFile = File(...), job_description: str = Form(...)):
+async def analyze_file(request: Request, file: UploadFile = File(...), job_description: str = Form(...)):
     """
     Upload a resume file and analyze it against a job description.
-    Extracts text from PDF/DOCX/TXT and performs analysis.
+    Extracts text from PDF/DOCX/TXT/RTF/HTML and performs analysis.
+    Max file size: 10MB.
     """
-    
-    allowed_extensions = ['.pdf', '.docx', '.txt']
-    file_ext = os.path.splitext(file.filename)[1].lower()
-    
-    if file_ext not in allowed_extensions:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
-        )
     
     try:
         content = await file.read()
+        
+        # Security validation
+        if FILE_VALIDATION_AVAILABLE:
+            is_valid, error, safe_filename = full_file_validation(file.filename, content)
+            if not is_valid:
+                raise HTTPException(status_code=400, detail=error)
+        else:
+            # Fallback validation
+            safe_filename = file.filename
+            if len(content) > MAX_FILE_SIZE:
+                raise HTTPException(status_code=400, detail=f"File too large. Max size: {MAX_FILE_SIZE // (1024*1024)}MB")
+        
+        file_ext = os.path.splitext(safe_filename)[1].lower()
+        allowed_extensions = ['.pdf', '.docx', '.txt', '.rtf', '.html', '.htm']
+        
+        if file_ext not in allowed_extensions:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Unsupported file type. Allowed: {', '.join(allowed_extensions)}"
+            )
+        
         text = ""
         
         if file_ext == '.pdf':
@@ -303,6 +369,20 @@ async def analyze_file(file: UploadFile = File(...), job_description: str = Form
         
         elif file_ext == '.txt':
             text = content.decode('utf-8')
+        
+        elif file_ext == '.rtf':
+            # Use striprtf for RTF extraction
+            from striprtf.striprtf import rtf_to_text
+            text = rtf_to_text(content.decode('utf-8', errors='ignore'))
+        
+        elif file_ext in ['.html', '.htm']:
+            # Use BeautifulSoup for HTML extraction
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(content.decode('utf-8', errors='ignore'), 'lxml')
+            # Remove script and style elements
+            for script in soup(["script", "style"]):
+                script.decompose()
+            text = soup.get_text(separator='\n', strip=True)
         
         if not text or len(text) < 10:
             raise HTTPException(status_code=400, detail="Could not extract text from file")
