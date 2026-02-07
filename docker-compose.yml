@@ -1,25 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres-db:
-    image: postgres:15-alpine
-    container_name: resume_analyzer_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-resume_analyzer}
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Python FastAPI ML Service
   ml-service:
     build:
@@ -45,7 +26,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/resume_analyzer
+      - DATABASE_URL=${DATABASE_URL}
       - ML_SERVICE_URL=http://ml-service:8000
       - JWT_SECRET=${JWT_SECRET:-change-this-secret}
       - JWT_EXPIRES_IN=7d
@@ -63,8 +44,6 @@ services:
     volumes:
       - ./uploads:/app/uploads
     depends_on:
-      postgres-db:
-        condition: service_healthy
       ml-service:
         condition: service_started
 
@@ -82,5 +61,4 @@ services:
     depends_on:
       - backend-api
 
-volumes:
-  pgdata:
+volumes: {}
