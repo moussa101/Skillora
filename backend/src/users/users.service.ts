@@ -20,4 +20,21 @@ export class UsersService {
             data,
         });
     }
+
+    async updateUser(
+        where: Prisma.UserWhereUniqueInput,
+        data: Prisma.UserUpdateInput,
+    ): Promise<User> {
+        return this.prisma.user.update({
+            where,
+            data,
+        });
+    }
+
+    async updateProfileImage(userId: number, imageDataUrl: string): Promise<User> {
+        return this.prisma.user.update({
+            where: { id: userId },
+            data: { image: imageDataUrl },
+        });
+    }
 }

@@ -51,11 +51,14 @@ Skillora helps job seekers optimize their resumes by comparing them against targ
 **Key capabilities:**
 - 🎯 **Smart Matching** - Semantic similarity scoring using spaCy and Sentence Transformers
 - 🔍 **Skill Detection** - Automatic extraction of technical skills, languages, and tools
+- 🌐 **Multi-Language Support** - Analyze resumes in English, Spanish, French, German, Arabic, Chinese & more
 - 📊 **GitHub Profile Analysis** - Evaluates developer profiles with repo stats, activity, and scoring
 - 🛡️ **Security Scanning** - Detects resume manipulation attempts (invisible text, homoglyphs)
 - 📝 **Multi-Format Support** - PDF, DOCX, TXT, RTF, and HTML file uploads
-- 🔐 **Authentication** - OAuth (GitHub, Google, Apple), email verification, password reset
-- 📧 **Email System** - Automated verification and password reset emails
+- 🔐 **Authentication** - OAuth (GitHub, Google), email verification, password reset
+- 📧 **Email System** - Automated verification and password reset via Resend
+- 👤 **User Profiles** - Profile page with avatar upload, usage stats, and tier management
+- 🖼️ **Secure Image Upload** - Profile images with Sharp resizing and security validation
 - 🛡️ **Upload Security** - File size limits, MIME validation, filename sanitization
 - 💡 **Actionable Feedback** - Detailed suggestions to improve resume-job alignment
 
@@ -127,13 +130,14 @@ Skillora helps job seekers optimize their resumes by comparing them against targ
 
 | Layer | Technologies |
 |-------|-------------|
-| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS 4 |
-| **Backend API** | NestJS 11, TypeScript, PostgreSQL, Prisma ORM 7 |
-| **ML Service** | FastAPI, Python 3.11+, spaCy 3.7, Sentence-Transformers |
-| **Authentication** | JWT, Passport.js, OAuth 2.0 (GitHub, Google, Apple) |
-| **Email** | Nodemailer, Gmail SMTP |
-| **Infrastructure** | Docker, Docker Compose, PostgreSQL 15 |
-| **Security** | bcrypt, python-magic (MIME validation), slowapi (rate limiting) |
+| **Frontend** | Next.js 16, React 19, TypeScript, CSS Variables |
+| **Backend API** | NestJS 11, TypeScript, Prisma ORM 6, Sharp (image processing) |
+| **Database** | Supabase (PostgreSQL) |
+| **ML Service** | FastAPI, Python 3.11+, spaCy 3.7, Sentence-Transformers, langdetect |
+| **Authentication** | JWT, Passport.js, OAuth 2.0 (GitHub, Google) |
+| **Email** | Resend API |
+| **Infrastructure** | Docker, Docker Compose |
+| **Security** | bcrypt, python-magic (MIME validation), slowapi (rate limiting), Sharp (image security) |
 
 ## Getting Started
 
@@ -433,11 +437,15 @@ docker compose logs postgres-db
 ## Roadmap
 
 - [x] Support for more file formats (RTF, HTML)
-- [x] OAuth authentication (GitHub, Google, Apple)
+- [x] OAuth authentication (GitHub, Google)
 - [x] Email verification system
 - [x] Password reset functionality
 - [x] File upload security (size limits, MIME validation)
-- [ ] Multi-language resume analysis
+- [x] Multi-language resume analysis (12+ languages)
+- [x] User profile page with usage stats
+- [x] Secure profile image upload with resizing
+- [x] Resend email integration
+- [x] Supabase database integration
 - [ ] ATS (Applicant Tracking System) compatibility scoring
 - [ ] Resume template suggestions
 - [ ] Cover letter analysis

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 // Multilingual "Hello" greetings
 const greetings = [
@@ -49,6 +50,8 @@ function AnimatedGreeting() {
 }
 
 export default function Home() {
+  const { user, loading, logout } = useAuth();
+
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col">
       {/* Navigation */}
@@ -57,18 +60,58 @@ export default function Home() {
           Skillora
         </div>
         <div className="flex items-center gap-4">
-          <Link
-            href="/login"
-            className="text-[var(--foreground)] text-sm font-medium hover:text-[var(--accent)] transition-colors"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-full hover:bg-[var(--accent-hover)] transition-colors"
-          >
-            Get Started
-          </Link>
+          {loading ? (
+            <div className="w-6 h-6 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+          ) : user ? (
+            <>
+              <Link
+                href="/profile"
+                className="flex items-center gap-2 text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+              >
+                <div
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium"
+                  style={{
+                    background: user.image ? "transparent" : "linear-gradient(135deg, var(--accent), #0051a8)",
+                    color: "white",
+                  }}
+                >
+                  {user.image ? (
+                    <img src={user.image} alt="" className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()
+                  )}
+                </div>
+                {user.name || user.email}
+              </Link>
+              <Link
+                href="/dashboard"
+                className="text-[var(--foreground)] text-sm font-medium hover:text-[var(--accent)] transition-colors"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={logout}
+                className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-[var(--foreground)] text-sm font-medium hover:text-[var(--accent)] transition-colors"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-full hover:bg-[var(--accent-hover)] transition-colors"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 

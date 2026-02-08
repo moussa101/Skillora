@@ -1,11 +1,14 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards, Req, Res } from '@nestjs/common';
+import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards, Req, Res, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength, Matches } from 'class-validator';
 import type { Response, Request } from 'express';
+import { validateImageFile, processProfileImage } from '../utils/image-upload.util';
+import { UsersService } from '../users/users.service';
 
 // DTOs for new endpoints
 class VerifyEmailDto {
@@ -44,7 +47,10 @@ class ResendVerificationDto {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private usersService: UsersService,
+    ) { }
 
     @Post('register')
     @ApiOperation({ summary: 'Register a new user with email/password' })
@@ -185,4 +191,57 @@ export class AuthController {
             features,
         };
     }
+
+    // ============================================
+    // PROFILE IMAGE UPLOAD
+    // ============================================
+
+    @Post('profile-image')
+    @UseGuards(AuthGuard('jwt'))
+    @UseInterceptors(FileInterceptor('image', {
+        limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    }))
+    @ApiOperation({ summary: 'Upload profile image' })
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                image: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    })
+    @ApiResponse({ status: 200, description: 'Image uploaded successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid image file' })
+    async uploadProfileImage(
+        @Req() req: Request,
+        @UploadedFile() file: Express.Multer.File,
+    ) {
+        if (!file) {
+            throw new BadRequestException('No image file provided');
+        }
+
+        // Validate the image
+        const validation = validateImageFile(file.buffer, file.mimetype, file.size);
+        if (!validation.valid) {
+            throw new BadRequestException(validation.error);
+        }
+
+        // Process and resize the image
+        const processed = await processProfileImage(file.buffer);
+
+        // Update user's profile image
+        const userId = (req.user as any).id;
+        await this.usersService.updateProfileImage(userId, processed.dataUrl);
+
+        return {
+            message: 'Profile image uploaded successfully',
+            image: processed.dataUrl,
+            sizeBytes: processed.sizeBytes,
+        };
+    }
 }
+

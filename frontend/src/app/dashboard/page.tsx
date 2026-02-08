@@ -163,9 +163,25 @@ export default function Dashboard() {
                         Skillora
                     </Link>
                     <div className="flex items-center gap-4">
-                        <span className="text-[var(--gray-500)] text-sm">
-                            {user.email}
-                        </span>
+                        <Link
+                            href="/profile"
+                            className="flex items-center gap-2 text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+                        >
+                            <div
+                                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium"
+                                style={{
+                                    background: user.image ? "transparent" : "linear-gradient(135deg, var(--accent), #0051a8)",
+                                    color: "white",
+                                }}
+                            >
+                                {user.image ? (
+                                    <img src={user.image} alt="" className="w-full h-full object-cover rounded-full" />
+                                ) : (
+                                    user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()
+                                )}
+                            </div>
+                            {user.name || user.email}
+                        </Link>
                         <button
                             onClick={logout}
                             className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
