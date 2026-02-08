@@ -112,18 +112,27 @@ class ProfileAnalysis(BaseModel):
     urls_found: Dict[str, Any] = {}
 
 
+class LanguageInfo(BaseModel):
+    """Detected language information for the resume"""
+    language_code: str  # ISO 639-1 code (e.g., 'en', 'es', 'fr')
+    language_name: str  # Full name (e.g., 'English', 'Spanish')
+    confidence: float  # 0.0 to 1.0
+    is_rtl: bool = False  # Right-to-left language
+
+
 class AnalyzeResponse(BaseModel):
     score: float
     suspicious: bool = False  # NFR-SEC-04: Flag high scores
     suspicious_reason: Optional[str] = None
     security: Optional[SecurityInfo] = None
     skills_found: List[str]
-    profile_analysis: Optional[ProfileAnalysis] = None  # NEW: GitHub/LinkedIn analysis
+    profile_analysis: Optional[ProfileAnalysis] = None  # GitHub/LinkedIn analysis
     missing_keywords: List[str]
     contact_info: Optional[dict] = None
     education: Optional[List[dict]] = None
     experience: Optional[List[dict]] = None
     feedback: Optional[dict] = None
+    language: Optional[LanguageInfo] = None  # NEW: Detected language info
 
 
 class HealthResponse(BaseModel):
@@ -189,22 +198,38 @@ async def analyze_resume(request: AnalyzeRequest):
         )
     
     # Use real analyzer if available
+    language_info = None
     if ANALYZER_AVAILABLE and get_analyzer is not None:
         analyzer = get_analyzer()
         
         if resume_text:
-            # Direct text analysis
-            skills_found = analyzer.extract_skills(resume_text)
-            score = analyzer.calculate_semantic_similarity(resume_text, request.job_description)
-            missing_keywords = analyzer.find_missing_keywords(resume_text, request.job_description)
-            feedback = analyzer._generate_feedback(score, skills_found, missing_keywords)
+            # Direct text analysis with language detection
+            result = analyzer.analyze_text(resume_text, request.job_description)
+            score = result["score"]
+            skills_found = result["skills_found"]
+            missing_keywords = result["missing_keywords"]
+            feedback = result["feedback"]
+            if "language" in result:
+                language_info = LanguageInfo(
+                    language_code=result["language"]["language_code"],
+                    language_name=result["language"]["language_name"],
+                    confidence=result["language"]["confidence"],
+                    is_rtl=result["language"].get("is_rtl", False)
+                )
         elif file_exists:
-            # File-based analysis
+            # File-based analysis with language detection
             result = analyzer.analyze(request.file_path, request.job_description)
             score = result["score"]
             skills_found = result["skills_found"]
             missing_keywords = result["missing_keywords"]
             feedback = result["feedback"]
+            if "language" in result:
+                language_info = LanguageInfo(
+                    language_code=result["language"]["language_code"],
+                    language_name=result["language"]["language_name"],
+                    confidence=result["language"]["confidence"],
+                    is_rtl=result["language"].get("is_rtl", False)
+                )
         else:
             # No valid input
             score = 0.0
@@ -238,7 +263,8 @@ async def analyze_resume(request: AnalyzeRequest):
         security=security_info,
         skills_found=skills_found[:10],
         missing_keywords=missing_keywords[:8],
-        feedback=feedback
+        feedback=feedback,
+        language=language_info
     )
 
 
@@ -387,13 +413,22 @@ async def analyze_file(request: Request, file: UploadFile = File(...), job_descr
         if not text or len(text) < 10:
             raise HTTPException(status_code=400, detail="Could not extract text from file")
         
-        # Now analyze using the extracted text
+        # Now analyze using the extracted text with language detection
+        language_info = None
         if ANALYZER_AVAILABLE and get_analyzer is not None:
             analyzer = get_analyzer()
-            skills_found = analyzer.extract_skills(text)
-            score = analyzer.calculate_semantic_similarity(text, job_description)
-            missing_keywords = analyzer.find_missing_keywords(text, job_description)
-            feedback = analyzer._generate_feedback(score, skills_found, missing_keywords)
+            result = analyzer.analyze_text(text, job_description)
+            score = result["score"]
+            skills_found = result["skills_found"]
+            missing_keywords = result["missing_keywords"]
+            feedback = result["feedback"]
+            if "language" in result:
+                language_info = LanguageInfo(
+                    language_code=result["language"]["language_code"],
+                    language_name=result["language"]["language_name"],
+                    confidence=result["language"]["confidence"],
+                    is_rtl=result["language"].get("is_rtl", False)
+                )
         else:
             score = 50.0
             skills_found = ["Analyzer not available"]
@@ -446,7 +481,8 @@ async def analyze_file(request: Request, file: UploadFile = File(...), job_descr
             skills_found=skills_found[:10],
             missing_keywords=missing_keywords[:8],
             feedback=feedback,
-            profile_analysis=profile_analysis
+            profile_analysis=profile_analysis,
+            language=language_info
         )
     except HTTPException:
         raise

@@ -23,6 +23,9 @@ lxml==5.1.0  # HTML parser for BeautifulSoup
 python-magic==0.4.27  # MIME type validation
 slowapi==0.1.9  # Rate limiting
 
+# Language Detection
+langdetect==1.0.9  # Automatic language detection
+
 # Utilities
 python-dotenv==1.0.1
 httpx==0.27.0  # Async HTTP client for GitHub API
