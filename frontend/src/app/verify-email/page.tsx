@@ -75,7 +75,7 @@ function VerifyEmailContent() {
             if (!response.ok) throw new Error(data.message || 'Verification failed');
 
             setSuccess('Email verified successfully! Redirecting...');
-            setTimeout(() => router.push('/login?verified=true'), 2000);
+            setTimeout(() => router.push('/onboarding/user-type'), 2000);
         } catch (err: any) {
             setError(err.message);
         } finally {

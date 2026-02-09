@@ -11,27 +11,27 @@ const TIER_CONFIG = {
         color: "var(--gray-500)",
         bgColor: "rgba(142, 142, 147, 0.1)",
         borderColor: "rgba(142, 142, 147, 0.2)",
-        icon: "🆓",
-        limit: 1,
-        features: ["1 analysis per month", "Basic skill matching", "PDF export"],
+        icon: "free",
+        limit: 5,
+        features: ["5 analyses per month", "Basic skill matching", "PDF export"],
     },
     PRO: {
         name: "Premium",
         color: "var(--accent)",
         bgColor: "rgba(0, 122, 255, 0.1)",
         borderColor: "rgba(0, 122, 255, 0.2)",
-        icon: "⭐",
-        limit: 50,
-        features: ["50 analyses per month", "Advanced AI insights", "GitHub/LinkedIn analysis", "Priority support"],
+        icon: "star",
+        limit: -1,
+        features: ["Unlimited analyses", "Advanced AI insights", "GitHub/LinkedIn analysis", "Priority support"],
     },
     RECRUITER: {
         name: "Organization",
         color: "var(--success)",
         bgColor: "rgba(52, 199, 89, 0.1)",
         borderColor: "rgba(52, 199, 89, 0.2)",
-        icon: "🏢",
-        limit: 500,
-        features: ["500 analyses per month", "Team collaboration", "API access", "Custom branding", "Dedicated support"],
+        icon: "building",
+        limit: -1,
+        features: ["Unlimited analyses", "Team collaboration", "API access", "Custom branding", "Dedicated support"],
     },
 };
 
@@ -55,6 +55,7 @@ export default function ProfilePage() {
     const getUsagePercentage = () => {
         if (!user) return 0;
         const limit = user.analysesLimit || getTierConfig(user.tier).limit;
+        if (limit === -1) return 0; // unlimited
         return Math.min((user.analysesThisMonth / limit) * 100, 100);
     };
 
@@ -222,7 +223,21 @@ export default function ProfilePage() {
                                     color: tierConfig.color,
                                 }}
                             >
-                                <span>{tierConfig.icon}</span>
+                                {tierConfig.icon === "free" && (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                )}
+                                {tierConfig.icon === "star" && (
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                    </svg>
+                                )}
+                                {tierConfig.icon === "building" && (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                )}
                                 <span>{tierConfig.name} Plan</span>
                             </div>
                         </div>
@@ -241,7 +256,7 @@ export default function ProfilePage() {
                             <div className="flex justify-between text-sm mb-2">
                                 <span className="text-[var(--gray-500)]">Analyses Used</span>
                                 <span className="font-medium text-[var(--foreground)]">
-                                    {user.analysesThisMonth} / {limit}
+                                    {limit === -1 ? `${user.analysesThisMonth} / Unlimited` : `${user.analysesThisMonth} / ${limit}`}
                                 </span>
                             </div>
                             <div className="h-3 bg-[var(--gray-200)] rounded-full overflow-hidden">
@@ -269,13 +284,13 @@ export default function ProfilePage() {
                             </div>
                             <div className="text-center p-4 bg-[var(--gray-100)] rounded-xl">
                                 <div className="text-2xl font-semibold text-[var(--foreground)]">
-                                    {Math.max(0, limit - user.analysesThisMonth)}
+                                    {limit === -1 ? "∞" : Math.max(0, limit - user.analysesThisMonth)}
                                 </div>
                                 <div className="text-xs text-[var(--gray-500)] mt-1">Remaining</div>
                             </div>
                             <div className="text-center p-4 bg-[var(--gray-100)] rounded-xl">
                                 <div className="text-2xl font-semibold text-[var(--foreground)]">
-                                    {limit}
+                                    {limit === -1 ? "∞" : limit}
                                 </div>
                                 <div className="text-xs text-[var(--gray-500)] mt-1">Monthly Limit</div>
                             </div>

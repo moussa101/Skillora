@@ -23,7 +23,12 @@ function AuthCallbackContent() {
                 .then((res) => res.json())
                 .then((user) => {
                     localStorage.setItem("user", JSON.stringify(user));
-                    router.push("/dashboard");
+                    // Check if user has completed onboarding
+                    if (!user.onboardingComplete) {
+                        router.push("/onboarding/user-type");
+                    } else {
+                        router.push("/dashboard");
+                    }
                 })
                 .catch(() => {
                     router.push("/dashboard");

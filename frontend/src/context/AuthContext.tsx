@@ -12,6 +12,8 @@ interface User {
     image?: string;
     role: string;
     tier: "GUEST" | "PRO" | "RECRUITER";
+    userType?: "STUDENT" | "PROFESSIONAL" | "RECRUITER";
+    onboardingComplete?: boolean;
     analysesThisMonth: number;
     analysesLimit?: number;
     features?: string[];
@@ -91,7 +93,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
-        router.push("/dashboard");
+
+        // Check if user has completed onboarding
+        if (!data.user.onboardingComplete) {
+            router.push("/onboarding/user-type");
+        } else {
+            router.push("/dashboard");
+        }
     };
 
     const logout = () => {
@@ -108,7 +116,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const canAnalyze = (): boolean => {
         if (!user) return false;
-        const limit = user.analysesLimit || 1;
+        const limit = user.analysesLimit || 5;
+        if (limit === -1) return true; // unlimited
         return user.analysesThisMonth < limit;
     };
 
