@@ -4,20 +4,24 @@ import {
     Post,
     UseInterceptors,
     UploadedFile,
+    UploadedFiles,
     UseGuards,
     Request,
     Get,
     Param,
     ParseIntPipe,
     Body,
+    HttpException,
+    HttpStatus,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ResumesService } from './resumes.service';
 import { AuthService } from '../auth/auth.service';
 import { multerOptions } from './multer.config';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { MlService } from './ml.service';
+import * as multer from 'multer';
 
 @ApiTags('resumes')
 @ApiBearerAuth()
@@ -125,6 +129,42 @@ export class ResumesController {
     async findOne(@Param('id', ParseIntPipe) id: number, @Request() req) {
         // Verify ownership
         return this.resumesService.findOne(id, req.user.id);
+    }
+
+    @Post('batch-analyze')
+    @ApiOperation({ summary: 'Batch analyze multiple resumes (Recruiter only)' })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FilesInterceptor('files', 50, {
+        storage: multer.memoryStorage(),
+        limits: { fileSize: 10 * 1024 * 1024 },
+    }))
+    async batchAnalyze(
+        @UploadedFiles() files: Express.Multer.File[],
+        @Body() body: { jobDescription: string },
+        @Request() req,
+    ) {
+        // Check recruiter role/tier
+        if (req.user.role !== 'RECRUITER' && req.user.tier !== 'RECRUITER' && req.user.role !== 'ADMIN') {
+            throw new HttpException('Batch analysis is only available for Recruiter accounts', HttpStatus.FORBIDDEN);
+        }
+
+        if (!files || files.length === 0) {
+            throw new HttpException('No files provided', HttpStatus.BAD_REQUEST);
+        }
+
+        if (!body.jobDescription || body.jobDescription.trim().length < 10) {
+            throw new HttpException('Job description must be at least 10 characters', HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            const result = await this.mlService.batchAnalyze(files, body.jobDescription);
+            return result;
+        } catch (error) {
+            throw new HttpException(
+                `Batch analysis failed: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }
 

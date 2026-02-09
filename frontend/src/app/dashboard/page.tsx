@@ -82,13 +82,15 @@ export default function Dashboard() {
     const [result, setResult] = useState<AnalysisResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Redirect to login if not authenticated, admin to admin dashboard
+    // Redirect to login if not authenticated, admin/recruiter to their dashboards
     useEffect(() => {
         if (!authLoading) {
             if (!user) {
                 router.push("/login");
             } else if (isAdmin()) {
                 router.push("/admin");
+            } else if (user.role === 'RECRUITER' || user.tier === 'RECRUITER') {
+                router.push("/recruiter");
             }
         }
     }, [user, authLoading, router, isAdmin]);
@@ -219,6 +221,12 @@ export default function Dashboard() {
                             </div>
                             {user.name || user.email}
                         </Link>
+                        <Link
+                            href="/plans"
+                            className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+                        >
+                            Plans
+                        </Link>
                         {isAdmin() && (
                             <Link
                                 href="/admin"
@@ -240,8 +248,9 @@ export default function Dashboard() {
             <main className="max-w-6xl mx-auto px-6 py-12">
                 {/* Header */}
                 <header className="mb-12">
+                    <p className="text-sm text-[var(--gray-500)] mb-1">Welcome back,</p>
                     <h1 className="text-3xl font-semibold text-[var(--foreground)] tracking-tight">
-                        Resume Analysis
+                        {user.name || user.email.split("@")[0]} 👋
                     </h1>
                     <p className="mt-2 text-[var(--gray-500)]">
                         Upload your resume and paste a job description to get started

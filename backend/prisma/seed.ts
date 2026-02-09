@@ -23,10 +23,10 @@ async function main() {
     const adminPassword = 'Admin@123';
 
     try {
+        // Seed admin account
         const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
 
         if (existing) {
-            // Ensure the existing user has ADMIN role
             if (existing.role !== 'ADMIN') {
                 await prisma.user.update({
                     where: { email: adminEmail },
@@ -36,27 +36,50 @@ async function main() {
             } else {
                 console.log(`ℹ️  Admin account "${adminEmail}" already exists.`);
             }
-            return;
+        } else {
+            const hashedPassword = await bcrypt.hash(adminPassword, 10);
+            await prisma.user.create({
+                data: {
+                    email: adminEmail,
+                    password: hashedPassword,
+                    name: 'Admin',
+                    provider: 'EMAIL',
+                    role: 'ADMIN',
+                    tier: 'PRO',
+                    emailVerified: true,
+                    onboardingComplete: true,
+                },
+            });
+            console.log(`✅ Admin account created:`);
+            console.log(`   Email:    ${adminEmail}`);
+            console.log(`   Password: ${adminPassword}`);
         }
 
-        const hashedPassword = await bcrypt.hash(adminPassword, 10);
+        // Seed recruiter account
+        const recruiterEmail = 'recruiter@skillora.com';
+        const recruiterPassword = 'Recruiter@123';
 
-        await prisma.user.create({
-            data: {
-                email: adminEmail,
-                password: hashedPassword,
-                name: 'Admin',
-                provider: 'EMAIL',
-                role: 'ADMIN',
-                tier: 'PRO',
-                emailVerified: true,
-                onboardingComplete: true,
-            },
-        });
-
-        console.log(`✅ Admin account created:`);
-        console.log(`   Email:    ${adminEmail}`);
-        console.log(`   Password: ${adminPassword}`);
+        const existingRecruiter = await prisma.user.findUnique({ where: { email: recruiterEmail } });
+        if (!existingRecruiter) {
+            const hashedRecruiterPassword = await bcrypt.hash(recruiterPassword, 10);
+            await prisma.user.create({
+                data: {
+                    email: recruiterEmail,
+                    password: hashedRecruiterPassword,
+                    name: 'Recruiter',
+                    provider: 'EMAIL',
+                    role: 'RECRUITER',
+                    tier: 'RECRUITER',
+                    emailVerified: true,
+                    onboardingComplete: true,
+                },
+            });
+            console.log(`✅ Recruiter account created:`);
+            console.log(`   Email:    ${recruiterEmail}`);
+            console.log(`   Password: ${recruiterPassword}`);
+        } else {
+            console.log(`ℹ️  Recruiter account "${recruiterEmail}" already exists.`);
+        }
     } catch (error) {
         console.error('Seed error:', error);
         process.exit(1);

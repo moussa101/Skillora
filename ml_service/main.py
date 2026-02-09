@@ -568,6 +568,159 @@ async def analyze_file(request: Request, file: UploadFile = File(...), job_descr
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
+
+class BatchFileItem(BaseModel):
+    """Result for a single file in a batch"""
+    filename: str
+    score: float = 0.0
+    suspicious: bool = False
+    suspicious_reason: Optional[str] = None
+    skills_found: List[str] = []
+    missing_keywords: List[str] = []
+    feedback: Optional[dict] = None
+    ats_score: Optional[ATSScoreInfo] = None
+    error: Optional[str] = None
+
+
+class BatchAnalyzeResponse(BaseModel):
+    total: int
+    successful: int
+    failed: int
+    results: List[BatchFileItem]
+
+
+@app.post("/batch-analyze", response_model=BatchAnalyzeResponse)
+async def batch_analyze(
+    request: Request,
+    files: List[UploadFile] = File(...),
+    job_description: str = Form(...)
+):
+    """
+    Batch analyze multiple resume files against a single job description.
+    Max 50 files per batch.
+    """
+
+    if len(files) > 50:
+        raise HTTPException(status_code=400, detail="Maximum 50 files per batch")
+
+    if not job_description or len(job_description.strip()) < 10:
+        raise HTTPException(status_code=400, detail="Job description must be at least 10 characters")
+
+    async def process_single(file: UploadFile) -> BatchFileItem:
+        try:
+            content = await file.read()
+
+            if FILE_VALIDATION_AVAILABLE:
+                is_valid, error, safe_filename = full_file_validation(file.filename, content)
+                if not is_valid:
+                    return BatchFileItem(filename=file.filename, error=error)
+            else:
+                safe_filename = file.filename
+                if len(content) > MAX_FILE_SIZE:
+                    return BatchFileItem(filename=file.filename, error="File too large")
+
+            file_ext = os.path.splitext(safe_filename)[1].lower()
+            allowed_extensions = ['.pdf', '.docx', '.txt', '.rtf', '.html', '.htm']
+            if file_ext not in allowed_extensions:
+                return BatchFileItem(filename=file.filename, error=f"Unsupported file type: {file_ext}")
+
+            # Extract text
+            text = ""
+            if file_ext == '.pdf':
+                import fitz
+                doc = fitz.open(stream=content, filetype="pdf")
+                for page in doc:
+                    text += page.get_text()
+                doc.close()
+            elif file_ext == '.docx':
+                import docx as docx_module
+                from io import BytesIO
+                doc = docx_module.Document(BytesIO(content))
+                text = "\n".join([para.text for para in doc.paragraphs])
+            elif file_ext == '.txt':
+                text = content.decode('utf-8')
+            elif file_ext == '.rtf':
+                from striprtf.striprtf import rtf_to_text
+                text = rtf_to_text(content.decode('utf-8', errors='ignore'))
+            elif file_ext in ['.html', '.htm']:
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(content.decode('utf-8', errors='ignore'), 'lxml')
+                for script in soup(["script", "style"]):
+                    script.decompose()
+                text = soup.get_text(separator='\n', strip=True)
+
+            if not text or len(text) < 10:
+                return BatchFileItem(filename=file.filename, error="Could not extract text")
+
+            # Analyze
+            if ANALYZER_AVAILABLE and get_analyzer is not None:
+                analyzer = get_analyzer()
+                result = analyzer.analyze_text(text, job_description)
+                score = result["score"]
+                skills_found = result["skills_found"]
+                missing_keywords = result["missing_keywords"]
+                feedback = result["feedback"]
+            else:
+                score = 50.0
+                skills_found = []
+                missing_keywords = []
+                feedback = {"summary": "Analyzer not available", "suggestions": []}
+
+            suspicious = score >= 95.0
+            suspicious_reason = "Score >= 95% indicates possible JD copy-paste." if suspicious else None
+
+            # ATS scoring
+            ats_result = None
+            if ATS_SCORER_AVAILABLE and score_ats is not None and text:
+                try:
+                    ats_data = score_ats(text, job_description, skills_found, missing_keywords)
+                    ats_result = ATSScoreInfo(
+                        overall_score=ats_data["overall_score"],
+                        keyword_match_rate=ats_data["keyword_match_rate"],
+                        critical_issues=ats_data["critical_issues"],
+                        suggestions=ats_data["suggestions"],
+                        categories=[
+                            ATSCategoryInfo(
+                                name=cat["name"],
+                                score=cat["score"],
+                                checks=[ATSCheckInfo(**c) for c in cat["checks"]],
+                            )
+                            for cat in ats_data["categories"]
+                        ],
+                    )
+                except Exception as e:
+                    print(f"ATS scoring failed for {file.filename}: {e}")
+
+            return BatchFileItem(
+                filename=file.filename,
+                score=round(score, 1),
+                suspicious=suspicious,
+                suspicious_reason=suspicious_reason,
+                skills_found=skills_found[:10],
+                missing_keywords=missing_keywords[:8],
+                feedback=feedback,
+                ats_score=ats_result,
+            )
+        except Exception as e:
+            return BatchFileItem(filename=file.filename, error=str(e))
+
+    # Process all files sequentially (CPU-bound ML work)
+    results = []
+    for f in files:
+        r = await process_single(f)
+        results.append(r)
+
+    successful = sum(1 for r in results if r.error is None)
+    failed = sum(1 for r in results if r.error is not None)
+
+    return BatchAnalyzeResponse(
+        total=len(files),
+        successful=successful,
+        failed=failed,
+        results=results
+    )
+
+
 # Standalone profile analysis endpoint
 @app.post("/analyze-profiles", response_model=ProfileAnalysis)
 async def analyze_profiles(github_url: Optional[str] = None, linkedin_url: Optional[str] = None, resume_text: Optional[str] = None):

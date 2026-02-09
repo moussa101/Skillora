@@ -23,9 +23,11 @@ function AuthCallbackContent() {
                 .then((res) => res.json())
                 .then((user) => {
                     localStorage.setItem("user", JSON.stringify(user));
-                    // Admin goes to admin dashboard
+                    // Route based on role
                     if (user.role === 'ADMIN') {
                         router.push("/admin");
+                    } else if (user.role === 'RECRUITER' || user.tier === 'RECRUITER') {
+                        router.push("/recruiter");
                     } else if (!user.onboardingComplete) {
                         router.push("/onboarding/user-type");
                     } else {

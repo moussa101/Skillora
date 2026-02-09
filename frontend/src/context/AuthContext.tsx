@@ -95,9 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
 
-        // Admin goes straight to admin dashboard
+        // Route based on role
         if (data.user.role === 'ADMIN') {
             router.push("/admin");
+        } else if (data.user.role === 'RECRUITER' || data.user.tier === 'RECRUITER') {
+            router.push("/recruiter");
         } else if (!data.user.onboardingComplete) {
             router.push("/onboarding/user-type");
         } else {

@@ -331,10 +331,11 @@ export default function AdminDashboard() {
 
                 {/* Stats Cards */}
                 {stats && (
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                         <StatCard label="Total Users" value={stats.totalUsers} />
                         <StatCard label="Free Users" value={stats.tierBreakdown.guest} />
                         <StatCard label="Premium Users" value={stats.tierBreakdown.pro} color="var(--accent)" />
+                        <StatCard label="Recruiters" value={stats.tierBreakdown.recruiter} color="var(--success)" />
                         <StatCard label="Total Resumes" value={stats.totalResumes} />
                         <StatCard label="Total Analyses" value={stats.totalAnalyses} />
                     </div>
@@ -382,6 +383,7 @@ export default function AdminDashboard() {
                         >
                             <option value="">All Roles</option>
                             <option value="CANDIDATE">Candidate</option>
+                            <option value="RECRUITER">Recruiter</option>
                             <option value="ADMIN">Admin</option>
                         </select>
                         <button type="submit" className="btn-primary whitespace-nowrap">
@@ -548,17 +550,17 @@ export default function AdminDashboard() {
                             <div>
                                 <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Plan / Tier</label>
                                 <div className="flex gap-2">
-                                    {["GUEST", "PRO"].map((t) => (
+                                    {["GUEST", "PRO", "RECRUITER"].map((t) => (
                                         <button
                                             key={t}
                                             onClick={() => updateTier(selectedUser.id, t)}
                                             disabled={actionLoading || selectedUser.tier === t}
                                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedUser.tier === t
-                                                ? "bg-[var(--accent)] text-white"
+                                                ? (t === "RECRUITER" ? "bg-[var(--success)] text-white" : "bg-[var(--accent)] text-white")
                                                 : "border border-[var(--gray-300)] text-[var(--foreground)] hover:bg-[var(--gray-100)]"
                                                 } disabled:opacity-50`}
                                         >
-                                            {t === "GUEST" ? "Free" : "Premium"}
+                                            {t === "GUEST" ? "Free" : t === "PRO" ? "Premium" : "Recruiter"}
                                         </button>
                                     ))}
                                 </div>
@@ -568,13 +570,13 @@ export default function AdminDashboard() {
                             <div>
                                 <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Role</label>
                                 <div className="flex gap-2">
-                                    {["CANDIDATE", "ADMIN"].map((r) => (
+                                    {["CANDIDATE", "RECRUITER", "ADMIN"].map((r) => (
                                         <button
                                             key={r}
                                             onClick={() => updateRole(selectedUser.id, r)}
                                             disabled={actionLoading || selectedUser.role === r}
                                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedUser.role === r
-                                                ? (r === "ADMIN" ? "bg-[var(--error)] text-white" : "bg-[var(--accent)] text-white")
+                                                ? (r === "ADMIN" ? "bg-[var(--error)] text-white" : r === "RECRUITER" ? "bg-[var(--success)] text-white" : "bg-[var(--accent)] text-white")
                                                 : "border border-[var(--gray-300)] text-[var(--foreground)] hover:bg-[var(--gray-100)]"
                                                 } disabled:opacity-50`}
                                         >
@@ -679,6 +681,7 @@ export default function AdminDashboard() {
                                     >
                                         <option value="GUEST">Free</option>
                                         <option value="PRO">Premium</option>
+                                        <option value="RECRUITER">Recruiter</option>
                                     </select>
                                 </div>
                                 <div>
@@ -689,6 +692,7 @@ export default function AdminDashboard() {
                                         className="input-field w-full text-sm"
                                     >
                                         <option value="CANDIDATE">Candidate</option>
+                                        <option value="RECRUITER">Recruiter</option>
                                         <option value="ADMIN">Admin</option>
                                     </select>
                                 </div>

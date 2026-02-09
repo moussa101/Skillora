@@ -153,19 +153,11 @@ export default function ProfilePage() {
                     </Link>
                     <div className="flex items-center gap-4">
                         <Link
-                            href="/dashboard"
+                            href={isAdmin() ? '/admin' : (user.role === 'RECRUITER' || user.tier === 'RECRUITER') ? '/recruiter' : '/dashboard'}
                             className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
                         >
-                            Dashboard
+                            {isAdmin() ? 'Admin Panel' : (user.role === 'RECRUITER' || user.tier === 'RECRUITER') ? 'Recruiter Panel' : 'Dashboard'}
                         </Link>
-                        {isAdmin() && (
-                            <Link
-                                href="/admin"
-                                className="text-[var(--error)] text-sm font-medium hover:opacity-80 transition-opacity"
-                            >
-                                Admin
-                            </Link>
-                        )}
                         <button
                             onClick={logout}
                             className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"

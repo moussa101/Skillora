@@ -84,10 +84,16 @@ export default function Home() {
                 {user.name || user.email}
               </Link>
               <Link
-                href={user.role === 'ADMIN' ? '/admin' : '/dashboard'}
+                href={user.role === 'ADMIN' ? '/admin' : user.role === 'RECRUITER' || user.tier === 'RECRUITER' ? '/recruiter' : '/dashboard'}
                 className="text-[var(--foreground)] text-sm font-medium hover:text-[var(--accent)] transition-colors"
               >
-                {user.role === 'ADMIN' ? 'Admin Panel' : 'Dashboard'}
+                {user.role === 'ADMIN' ? 'Admin Panel' : user.role === 'RECRUITER' || user.tier === 'RECRUITER' ? 'Recruiter Panel' : 'Dashboard'}
+              </Link>
+              <Link
+                href="/plans"
+                className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+              >
+                Plans
               </Link>
               <button
                 onClick={logout}
@@ -98,6 +104,12 @@ export default function Home() {
             </>
           ) : (
             <>
+              <Link
+                href="/plans"
+                className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+              >
+                Pricing
+              </Link>
               <Link
                 href="/login"
                 className="text-[var(--foreground)] text-sm font-medium hover:text-[var(--accent)] transition-colors"
