@@ -50,7 +50,8 @@ Skillora helps job seekers optimize their resumes by comparing them against targ
 
 **Key capabilities:**
 - 🎯 **Smart Matching** - Semantic similarity scoring using spaCy and Sentence Transformers
-- 🔍 **Skill Detection** - Automatic extraction of technical skills, languages, and tools
+- � **ATS Compatibility Scoring** - Evaluates resume formatting, structure, keywords, and content for ATS readiness
+- �🔍 **Skill Detection** - Automatic extraction of technical skills, languages, and tools
 - 🌐 **Multi-Language Support** - Analyze resumes in English, Spanish, French, German, Arabic, Chinese & more
 - 📊 **GitHub Profile Analysis** - Evaluates developer profiles with repo stats, activity, and scoring
 - 🛡️ **Security Scanning** - Detects resume manipulation attempts (invisible text, homoglyphs)
@@ -101,6 +102,14 @@ Skillora helps job seekers optimize their resumes by comparing them against targ
   - **GitHub Integration**: Automatically extracts GitHub usernames and fetches profile data (repositories, stars, followers, recent activity)
   - **LinkedIn Detection**: Identifies and links to LinkedIn profiles
   - **Profile Scoring**: Calculates a developer profile score based on open-source contributions
+
+- **ATS Compatibility Scoring**
+  - Evaluates resume formatting and parsability for ATS systems
+  - Checks for standard section headers (Experience, Education, Skills, etc.)
+  - Measures keyword optimization and match rate against job description
+  - Validates contact information completeness (email, phone, LinkedIn, name)
+  - Assesses content quality (action verbs, quantified achievements, dates)
+  - Provides overall ATS score with per-category breakdowns and actionable tips
 
 - **Security & Anti-Cheat**
   - Detects invisible text (white text on white background)
@@ -238,6 +247,7 @@ docker compose up --build ml-service      # rebuild ML service only
 
 5. **Review the results:**
    - **Match Score**: Overall compatibility percentage (0-100%)
+   - **ATS Score**: ATS compatibility rating with category breakdowns (Formatting, Sections, Keywords, Contact, Content)
    - **Skills Found**: Technical skills detected in your resume
    - **Missing Keywords**: Important skills from the job description not found in your resume
    - **GitHub Profile**: Developer stats and profile score (if GitHub link detected)
@@ -278,8 +288,10 @@ AI-Resume-Analyzer/
 ├── ml_service/                 # Python ML analysis service
 │   ├── main.py                # FastAPI endpoints
 │   ├── analyzer.py            # Core NLP analysis logic
+│   ├── ats_scorer.py          # ATS compatibility scoring engine
 │   ├── profile_analyzer.py    # GitHub/LinkedIn extraction
-│   ├── security_scanner.py    # Resume security checks
+│   ├── security/              # Resume security scanning
+│   ├── skills/                # Language-specific skill dictionaries
 │   ├── Dockerfile
 │   └── requirements.txt
 │
@@ -290,9 +302,12 @@ AI-Resume-Analyzer/
 │       └── run_tests.py       # Automated test runner
 │
 ├── uploads/                    # Uploaded resume storage
-├── docs/                       # Documentation and images
-│   └── images/                # Screenshots and diagrams
+├── Documentation/              # Project documentation
+│   ├── PRD.md                 # Product Requirements Document
+│   └── Images/                # Screenshots and diagrams
 ├── docker-compose.yml          # Service orchestration
+├── DEPLOYMENT.md              # Deployment guide
+├── CONTRIBUTING.md            # Contribution guidelines
 ├── .env.example               # Environment template
 └── README.md
 ```
@@ -430,6 +445,7 @@ For detailed contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md) (if
 
 ### Getting Help
 
+- **PRD**: See the [Product Requirements Document](Documentation/PRD.md) for full feature specifications
 - **Documentation**: Check the [Documentation](Documentation/) folder for detailed guides
 - **Deployment Guide**: See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment instructions
 - **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/moussa101/AI-Resume-Analyzer/issues)
@@ -474,7 +490,7 @@ docker compose up --build backend-api
 - [x] Secure profile image upload with resizing
 - [x] Resend email integration
 - [x] Supabase database integration
-- [ ] ATS (Applicant Tracking System) compatibility scoring
+- [x] ATS (Applicant Tracking System) compatibility scoring
 - [ ] Resume template suggestions
 - [ ] Cover letter analysis
 - [ ] Batch processing for recruiters
