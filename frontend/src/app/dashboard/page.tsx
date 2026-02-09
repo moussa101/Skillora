@@ -250,7 +250,7 @@ export default function Dashboard() {
                 <header className="mb-12">
                     <p className="text-sm text-[var(--gray-500)] mb-1">Welcome back,</p>
                     <h1 className="text-3xl font-semibold text-[var(--foreground)] tracking-tight">
-                        {user.name || user.email.split("@")[0]} 👋
+                        {user.name || user.email.split("@")[0]}
                     </h1>
                     <p className="mt-2 text-[var(--gray-500)]">
                         Upload your resume and paste a job description to get started

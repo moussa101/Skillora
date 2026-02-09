@@ -184,7 +184,7 @@ export default function RecruiterDashboard() {
             <main className="max-w-7xl mx-auto px-6 py-8">
                 <p className="text-sm text-[var(--gray-500)] mb-1">Welcome back,</p>
                 <h1 className="text-3xl font-semibold text-[var(--foreground)] tracking-tight mb-2">
-                    {user.name || user.email.split("@")[0]} 👋
+                    {user.name || user.email.split("@")[0]}
                 </h1>
                 <p className="text-[var(--gray-500)] mb-8">
                     Upload multiple resumes and rank candidates against a job description
