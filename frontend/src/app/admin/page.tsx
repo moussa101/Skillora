@@ -65,6 +65,15 @@ export default function AdminDashboard() {
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [newUser, setNewUser] = useState({ email: "", password: "", name: "", role: "CANDIDATE", tier: "GUEST" });
+    const [activeTab, setActiveTab] = useState<"users" | "subscriptions">("users");
+    const [subs, setSubs] = useState<any[]>([]);
+    const [subStats, setSubStats] = useState<any>(null);
+    const [subFilter, setSubFilter] = useState("");
+    const [subLoading, setSubLoading] = useState(false);
+    const [showSubModal, setShowSubModal] = useState(false);
+    const [selectedSub, setSelectedSub] = useState<any>(null);
+    const [subDates, setSubDates] = useState({ startDate: "", endDate: "" });
+    const [adminNote, setAdminNote] = useState("");
 
     // Redirect if not admin
     useEffect(() => {
@@ -254,6 +263,125 @@ export default function AdminDashboard() {
         fetchUsers(1);
     };
 
+    const fetchSubs = useCallback(async () => {
+        setSubLoading(true);
+        try {
+            const params = new URLSearchParams({ limit: "100" });
+            if (subFilter) params.set("status", subFilter);
+            const res = await fetch(`${API_URL}/admin/subscriptions?${params}`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setSubs(data.subscriptions || []);
+            }
+        } catch { /* ignore */ } finally {
+            setSubLoading(false);
+        }
+    }, [subFilter]);
+
+    const fetchSubStats = useCallback(async () => {
+        try {
+            const res = await fetch(`${API_URL}/admin/subscriptions/stats`, {
+                headers: { Authorization: `Bearer ${getToken()}` },
+            });
+            if (res.ok) setSubStats(await res.json());
+        } catch { /* ignore */ }
+    }, []);
+
+    useEffect(() => {
+        if (activeTab === "subscriptions" && user && isAdmin()) {
+            fetchSubs();
+            fetchSubStats();
+        }
+    }, [activeTab, user, isAdmin, fetchSubs, fetchSubStats]);
+
+    const approveSub = async () => {
+        if (!selectedSub || !subDates.startDate || !subDates.endDate) {
+            showMessage("error", "Start and end dates are required");
+            return;
+        }
+        setActionLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/admin/subscriptions/${selectedSub.id}/approve`, {
+                method: "PATCH",
+                headers: { Authorization: `Bearer ${getToken()}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ startDate: subDates.startDate, endDate: subDates.endDate, adminNote }),
+            });
+            if (res.ok) {
+                showMessage("success", "Subscription approved");
+                setShowSubModal(false);
+                setSelectedSub(null);
+                await fetchSubs();
+                await fetchSubStats();
+                await fetchUsers(pagination.page);
+                await fetchStats();
+            } else {
+                const err = await res.json();
+                showMessage("error", err.message || "Failed to approve");
+            }
+        } catch { showMessage("error", "Network error"); } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const rejectSub = async (subId: number) => {
+        const note = prompt("Reason for rejection (optional):");
+        setActionLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/admin/subscriptions/${subId}/reject`, {
+                method: "PATCH",
+                headers: { Authorization: `Bearer ${getToken()}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ adminNote: note || "" }),
+            });
+            if (res.ok) {
+                showMessage("success", "Subscription rejected");
+                await fetchSubs();
+                await fetchSubStats();
+            } else {
+                const err = await res.json();
+                showMessage("error", err.message || "Failed to reject");
+            }
+        } catch { showMessage("error", "Network error"); } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const updateSubDates = async (subId: number) => {
+        if (!subDates.startDate || !subDates.endDate) {
+            showMessage("error", "Both dates required");
+            return;
+        }
+        setActionLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/admin/subscriptions/${subId}/dates`, {
+                method: "PATCH",
+                headers: { Authorization: `Bearer ${getToken()}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ startDate: subDates.startDate, endDate: subDates.endDate }),
+            });
+            if (res.ok) {
+                showMessage("success", "Dates updated");
+                setShowSubModal(false);
+                await fetchSubs();
+            } else {
+                const err = await res.json();
+                showMessage("error", err.message || "Failed to update dates");
+            }
+        } catch { showMessage("error", "Network error"); } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const openSubDetail = (sub: any) => {
+        setSelectedSub(sub);
+        setSubDates({
+            startDate: sub.startDate ? new Date(sub.startDate).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+            endDate: sub.endDate ? new Date(sub.endDate).toISOString().split("T")[0] : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        });
+        setAdminNote(sub.adminNote || "");
+        setShowSubModal(true);
+    };
+
     const tierBadge = (tier: string) => {
         const colors: Record<string, { bg: string; text: string }> = {
             GUEST: { bg: "rgba(142,142,147,0.15)", text: "var(--gray-500)" },
@@ -341,6 +469,28 @@ export default function AdminDashboard() {
                     </div>
                 )}
 
+                {/* Tab Navigation */}
+                <div className="flex gap-1 mb-6 p-1 rounded-xl bg-[var(--gray-100)] w-fit">
+                    <button
+                        onClick={() => setActiveTab("users")}
+                        className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === "users" ? "bg-[var(--background)] shadow-sm text-[var(--foreground)]" : "text-[var(--gray-500)] hover:text-[var(--foreground)]"}`}
+                    >
+                        Users
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("subscriptions")}
+                        className={`px-5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${activeTab === "subscriptions" ? "bg-[var(--background)] shadow-sm text-[var(--foreground)]" : "text-[var(--gray-500)] hover:text-[var(--foreground)]"}`}
+                    >
+                        Subscriptions
+                        {subStats?.pending > 0 && (
+                            <span className="w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center text-white" style={{ background: "var(--error)" }}>
+                                {subStats.pending}
+                            </span>
+                        )}
+                    </button>
+                </div>
+
+                {activeTab === "users" && (<>
                 {/* Create User Button */}
                 <div className="flex justify-end mb-4">
                     <button
@@ -494,6 +644,113 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
+                </>)}
+
+                {/* Subscriptions Tab */}
+                {activeTab === "subscriptions" && (
+                    <>
+                        {/* Subscription Stats */}
+                        {subStats && (
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                                <StatCard label="Pending" value={subStats.pending} color="var(--warning)" />
+                                <StatCard label="Approved" value={subStats.approved} color="var(--success)" />
+                                <StatCard label="Rejected" value={subStats.rejected} color="var(--error)" />
+                                <StatCard label="Expired" value={subStats.expired} />
+                                <div className="glass-card apple-shadow p-5 rounded-xl">
+                                    <div className="text-2xl font-semibold text-[var(--accent)]">
+                                        {subStats.totalRevenue?.toLocaleString() || 0} <span className="text-sm font-normal text-[var(--gray-500)]">EGP</span>
+                                    </div>
+                                    <div className="text-xs text-[var(--gray-500)] mt-1">Total Revenue</div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Sub Filters */}
+                        <div className="glass-card apple-shadow p-4 mb-6">
+                            <div className="flex gap-2 flex-wrap">
+                                {[
+                                    { value: "", label: "All" },
+                                    { value: "PENDING", label: "Pending" },
+                                    { value: "APPROVED", label: "Approved" },
+                                    { value: "REJECTED", label: "Rejected" },
+                                    { value: "EXPIRED", label: "Expired" },
+                                ].map((f) => (
+                                    <button
+                                        key={f.value}
+                                        onClick={() => setSubFilter(f.value)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${subFilter === f.value ? "bg-[var(--accent)] text-white" : "border border-[var(--gray-300)] text-[var(--foreground)] hover:bg-[var(--gray-100)]"}`}
+                                    >
+                                        {f.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Subscriptions List */}
+                        <div className="glass-card apple-shadow overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="border-b border-[var(--gray-200)]">
+                                            <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-6 py-4">User</th>
+                                            <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Plan</th>
+                                            <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Amount</th>
+                                            <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Status</th>
+                                            <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Dates</th>
+                                            <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Submitted</th>
+                                            <th className="text-right text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-6 py-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {subLoading ? (
+                                            <tr><td colSpan={7} className="px-6 py-12 text-center">
+                                                <div className="w-8 h-8 border-3 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                            </td></tr>
+                                        ) : subs.length === 0 ? (
+                                            <tr><td colSpan={7} className="px-6 py-12 text-center text-[var(--gray-400)]">No subscriptions found</td></tr>
+                                        ) : subs.map((sub) => (
+                                            <tr key={sub.id} className="border-b border-[var(--gray-200)] hover:bg-[var(--gray-100)] transition-colors">
+                                                <td className="px-6 py-4">
+                                                    <div className="text-sm font-medium text-[var(--foreground)]">{sub.user?.name || "—"}</div>
+                                                    <div className="text-xs text-[var(--gray-500)]">{sub.user?.email}</div>
+                                                </td>
+                                                <td className="px-4 py-4">{tierBadge(sub.plan)}</td>
+                                                <td className="px-4 py-4 text-sm text-[var(--foreground)]">{sub.amount} {sub.currency}</td>
+                                                <td className="px-4 py-4">{subStatusBadge(sub.status)}</td>
+                                                <td className="px-4 py-4 text-xs text-[var(--gray-500)]">
+                                                    {sub.startDate && sub.endDate ? (
+                                                        <>{new Date(sub.startDate).toLocaleDateString()} — {new Date(sub.endDate).toLocaleDateString()}</>
+                                                    ) : "—"}
+                                                </td>
+                                                <td className="px-4 py-4 text-xs text-[var(--gray-500)]">
+                                                    {new Date(sub.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <div className="flex gap-2 justify-end">
+                                                        <button
+                                                            onClick={() => openSubDetail(sub)}
+                                                            className="text-[var(--accent)] text-xs font-medium hover:underline"
+                                                        >
+                                                            View
+                                                        </button>
+                                                        {sub.status === "PENDING" && (
+                                                            <button
+                                                                onClick={() => rejectSub(sub.id)}
+                                                                className="text-[var(--error)] text-xs font-medium hover:underline"
+                                                            >
+                                                                Reject
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </>
+                )}
             </main>
 
             {/* User Detail Modal */}
@@ -708,7 +965,153 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             )}
+            {/* Subscription Detail Modal */}
+            {showSubModal && selectedSub && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
+                    <div className="glass-card apple-shadow w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl" style={{ background: "var(--background)" }}>
+                        <div className="flex items-center justify-between p-6 border-b border-[var(--gray-200)]">
+                            <h2 className="text-lg font-semibold text-[var(--foreground)]">Subscription Details</h2>
+                            <button onClick={() => { setShowSubModal(false); setSelectedSub(null); }} className="text-[var(--gray-400)] hover:text-[var(--foreground)] transition-colors">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-5">
+                            {/* User Info */}
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium" style={{
+                                    background: "linear-gradient(135deg, var(--accent), #0051a8)", color: "white"
+                                }}>
+                                    {(selectedSub.user?.name?.charAt(0) || selectedSub.user?.email?.charAt(0) || "?").toUpperCase()}
+                                </div>
+                                <div>
+                                    <div className="text-sm font-medium text-[var(--foreground)]">{selectedSub.user?.name || "—"}</div>
+                                    <div className="text-xs text-[var(--gray-500)]">{selectedSub.user?.email}</div>
+                                </div>
+                                <div className="ml-auto">{subStatusBadge(selectedSub.status)}</div>
+                            </div>
+
+                            {/* Subscription Info */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <InfoItem label="Plan" value={selectedSub.plan === "PRO" ? "Premium" : "Recruiter"} />
+                                <InfoItem label="Amount" value={`${selectedSub.amount} ${selectedSub.currency}`} />
+                                <InfoItem label="Payment Method" value={selectedSub.paymentMethod || "InstaPay"} />
+                                <InfoItem label="Submitted" value={new Date(selectedSub.createdAt).toLocaleString()} />
+                            </div>
+
+                            {/* Screenshot */}
+                            {selectedSub.screenshotPath && (
+                                <div>
+                                    <label className="block text-sm font-medium text-[var(--foreground)] mb-2">Payment Screenshot</label>
+                                    <div className="rounded-xl overflow-hidden border border-[var(--gray-200)]">
+                                        <img
+                                            src={`${API_URL}/admin/subscriptions/screenshot/${selectedSub.screenshotPath.split("/").pop()}`}
+                                            alt="Payment screenshot"
+                                            className="w-full max-h-[300px] object-contain bg-[var(--gray-100)]"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).style.display = "none";
+                                                (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="p-8 text-center text-sm" style="color: var(--gray-400)">Screenshot could not be loaded</div>';
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Date Pickers */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-xs font-medium text-[var(--gray-500)] mb-1">Start Date</label>
+                                    <input
+                                        type="date"
+                                        value={subDates.startDate}
+                                        onChange={(e) => setSubDates({ ...subDates, startDate: e.target.value })}
+                                        className="input-field w-full text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-[var(--gray-500)] mb-1">End Date</label>
+                                    <input
+                                        type="date"
+                                        value={subDates.endDate}
+                                        onChange={(e) => setSubDates({ ...subDates, endDate: e.target.value })}
+                                        className="input-field w-full text-sm"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Admin Note */}
+                            <div>
+                                <label className="block text-xs font-medium text-[var(--gray-500)] mb-1">Admin Note</label>
+                                <textarea
+                                    value={adminNote}
+                                    onChange={(e) => setAdminNote(e.target.value)}
+                                    placeholder="Optional note..."
+                                    rows={2}
+                                    className="input-field w-full text-sm resize-none"
+                                />
+                            </div>
+
+                            {/* Actions */}
+                            <div className="space-y-2 pt-2">
+                                {selectedSub.status === "PENDING" && (
+                                    <button
+                                        onClick={approveSub}
+                                        disabled={actionLoading}
+                                        className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:opacity-90"
+                                        style={{ background: "var(--success)" }}
+                                    >
+                                        {actionLoading ? "Processing..." : "Approve & Activate"}
+                                    </button>
+                                )}
+                                {selectedSub.status === "PENDING" && (
+                                    <button
+                                        onClick={() => rejectSub(selectedSub.id)}
+                                        disabled={actionLoading}
+                                        className="w-full py-2.5 rounded-xl text-sm font-semibold border border-[var(--error)] text-[var(--error)] hover:bg-[rgba(255,59,48,0.1)] transition-colors disabled:opacity-50"
+                                    >
+                                        Reject
+                                    </button>
+                                )}
+                                {selectedSub.status === "APPROVED" && (
+                                    <button
+                                        onClick={() => updateSubDates(selectedSub.id)}
+                                        disabled={actionLoading}
+                                        className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:opacity-90"
+                                        style={{ background: "var(--accent)" }}
+                                    >
+                                        {actionLoading ? "Updating..." : "Update Dates"}
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Existing Admin Note */}
+                            {selectedSub.adminNote && selectedSub.status !== "PENDING" && (
+                                <div className="p-3 rounded-lg bg-[var(--gray-100)]">
+                                    <div className="text-xs text-[var(--gray-500)]">Admin Note</div>
+                                    <div className="text-sm text-[var(--foreground)] mt-0.5">{selectedSub.adminNote}</div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
+    );
+}
+
+function subStatusBadge(status: string) {
+    const colors: Record<string, { bg: string; text: string }> = {
+        PENDING: { bg: "rgba(255,159,10,0.12)", text: "#c27803" },
+        APPROVED: { bg: "rgba(52,199,89,0.12)", text: "#15803d" },
+        REJECTED: { bg: "rgba(255,59,48,0.12)", text: "#dc2626" },
+        EXPIRED: { bg: "rgba(142,142,147,0.15)", text: "#6b7280" },
+    };
+    const c = colors[status] || colors.PENDING;
+    return (
+        <span style={{ background: c.bg, color: c.text }} className="px-2 py-1 rounded-full text-xs font-medium">
+            {status}
+        </span>
     );
 }
 
