@@ -23,8 +23,10 @@ function AuthCallbackContent() {
                 .then((res) => res.json())
                 .then((user) => {
                     localStorage.setItem("user", JSON.stringify(user));
-                    // Check if user has completed onboarding
-                    if (!user.onboardingComplete) {
+                    // Admin goes to admin dashboard
+                    if (user.role === 'ADMIN') {
+                        router.push("/admin");
+                    } else if (!user.onboardingComplete) {
                         router.push("/onboarding/user-type");
                     } else {
                         router.push("/dashboard");

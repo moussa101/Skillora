@@ -36,17 +36,21 @@ const TIER_CONFIG = {
 };
 
 export default function ProfilePage() {
-    const { user, loading: authLoading, logout, refreshUser } = useAuth();
+    const { user, loading: authLoading, logout, refreshUser, isAdmin } = useAuth();
     const router = useRouter();
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Redirect to login if not authenticated
+    // Redirect to login if not authenticated, admin to admin dashboard
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.push("/login");
+        if (!authLoading) {
+            if (!user) {
+                router.push("/login");
+            } else if (isAdmin()) {
+                router.push("/admin");
+            }
         }
-    }, [user, authLoading, router]);
+    }, [user, authLoading, router, isAdmin]);
 
     const getTierConfig = (tier: string) => {
         return TIER_CONFIG[tier as keyof typeof TIER_CONFIG] || TIER_CONFIG.GUEST;
@@ -154,6 +158,14 @@ export default function ProfilePage() {
                         >
                             Dashboard
                         </Link>
+                        {isAdmin() && (
+                            <Link
+                                href="/admin"
+                                className="text-[var(--error)] text-sm font-medium hover:opacity-80 transition-opacity"
+                            >
+                                Admin
+                            </Link>
+                        )}
                         <button
                             onClick={logout}
                             className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"

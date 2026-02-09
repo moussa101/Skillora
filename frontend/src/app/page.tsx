@@ -84,10 +84,10 @@ export default function Home() {
                 {user.name || user.email}
               </Link>
               <Link
-                href="/dashboard"
+                href={user.role === 'ADMIN' ? '/admin' : '/dashboard'}
                 className="text-[var(--foreground)] text-sm font-medium hover:text-[var(--accent)] transition-colors"
               >
-                Dashboard
+                {user.role === 'ADMIN' ? 'Admin Panel' : 'Dashboard'}
               </Link>
               <button
                 onClick={logout}

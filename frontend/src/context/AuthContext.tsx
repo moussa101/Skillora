@@ -10,7 +10,7 @@ interface User {
     email: string;
     name?: string;
     image?: string;
-    role: string;
+    role: "CANDIDATE" | "RECRUITER" | "ADMIN";
     tier: "GUEST" | "PRO" | "RECRUITER";
     userType?: "STUDENT" | "PROFESSIONAL" | "RECRUITER";
     onboardingComplete?: boolean;
@@ -27,6 +27,7 @@ interface AuthContextType {
     refreshUser: () => Promise<void>;
     checkFeature: (feature: string) => boolean;
     canAnalyze: () => boolean;
+    isAdmin: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -94,8 +95,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
 
-        // Check if user has completed onboarding
-        if (!data.user.onboardingComplete) {
+        // Admin goes straight to admin dashboard
+        if (data.user.role === 'ADMIN') {
+            router.push("/admin");
+        } else if (!data.user.onboardingComplete) {
             router.push("/onboarding/user-type");
         } else {
             router.push("/dashboard");
@@ -121,6 +124,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return user.analysesThisMonth < limit;
     };
 
+    const isAdmin = (): boolean => {
+        return user?.role === 'ADMIN';
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -131,6 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 refreshUser,
                 checkFeature,
                 canAnalyze,
+                isAdmin,
             }}
         >
             {children}

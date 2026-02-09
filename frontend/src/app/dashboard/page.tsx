@@ -74,7 +74,7 @@ interface AnalysisResult {
 }
 
 export default function Dashboard() {
-    const { user, loading: authLoading, logout } = useAuth();
+    const { user, loading: authLoading, logout, isAdmin } = useAuth();
     const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
     const [jobDescription, setJobDescription] = useState("");
@@ -82,12 +82,16 @@ export default function Dashboard() {
     const [result, setResult] = useState<AnalysisResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Redirect to login if not authenticated
+    // Redirect to login if not authenticated, admin to admin dashboard
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.push("/login");
+        if (!authLoading) {
+            if (!user) {
+                router.push("/login");
+            } else if (isAdmin()) {
+                router.push("/admin");
+            }
         }
-    }, [user, authLoading, router]);
+    }, [user, authLoading, router, isAdmin]);
 
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -215,6 +219,14 @@ export default function Dashboard() {
                             </div>
                             {user.name || user.email}
                         </Link>
+                        {isAdmin() && (
+                            <Link
+                                href="/admin"
+                                className="text-[var(--error)] text-sm font-medium hover:opacity-80 transition-opacity"
+                            >
+                                Admin
+                            </Link>
+                        )}
                         <button
                             onClick={logout}
                             className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
