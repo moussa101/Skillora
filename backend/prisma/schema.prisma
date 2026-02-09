@@ -39,6 +39,12 @@ enum AuthProvider {
   APPLE
 }
 
+enum UserType {
+  STUDENT
+  PROFESSIONAL
+  RECRUITER
+}
+
 // ============================================
 // MODELS
 // ============================================
@@ -55,9 +61,15 @@ model User {
   // Email verification
   emailVerified Boolean @default(false)
 
+  // Onboarding
+  userType           UserType?
+  onboardingComplete Boolean   @default(false)
+
   // OAuth fields
   provider   AuthProvider @default(EMAIL)
-  providerId String?      // ID from OAuth provider
+  providerId String?      // ID from OAuth provider (legacy / primary)
+  githubId   String?      // GitHub OAuth ID (for account linking)
+  googleId   String?      // Google OAuth ID (for account linking)
 
   // Subscription (Stripe prep)
   stripeCustomerId    String?
