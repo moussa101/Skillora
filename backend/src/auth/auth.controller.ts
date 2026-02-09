@@ -2,13 +2,13 @@ import { Controller, Post, Get, Body, HttpCode, HttpStatus, UseGuards, Req, Res,
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength, Matches } from 'class-validator';
-import type { Response, Request } from 'express';
+import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 import { validateImageFile, processProfileImage } from '../utils/image-upload.util';
-import { UsersService } from '../users/users.service';
+import type { Response, Request } from 'express';
 
 // DTOs for new endpoints
 class VerifyEmailDto {
@@ -32,10 +32,7 @@ class ResetPasswordDto {
     code: string;
 
     @IsString()
-    @MinLength(8, { message: 'Password must be at least 8 characters long' })
-    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, {
-        message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)'
-    })
+    @MinLength(8)
     newPassword: string;
 }
 
@@ -198,22 +195,9 @@ export class AuthController {
 
     @Post('profile-image')
     @UseGuards(AuthGuard('jwt'))
-    @UseInterceptors(FileInterceptor('image', {
-        limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-    }))
+    @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 5 * 1024 * 1024 } }))
     @ApiOperation({ summary: 'Upload profile image' })
     @ApiConsumes('multipart/form-data')
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                image: {
-                    type: 'string',
-                    format: 'binary',
-                },
-            },
-        },
-    })
     @ApiResponse({ status: 200, description: 'Image uploaded successfully' })
     @ApiResponse({ status: 400, description: 'Invalid image file' })
     async uploadProfileImage(
@@ -224,24 +208,23 @@ export class AuthController {
             throw new BadRequestException('No image file provided');
         }
 
+        const userId = (req.user as any).id;
+
         // Validate the image
         const validation = validateImageFile(file.buffer, file.mimetype, file.size);
         if (!validation.valid) {
             throw new BadRequestException(validation.error);
         }
 
-        // Process and resize the image
+        // Process image (resize to 200x200, convert to WebP, strip metadata)
         const processed = await processProfileImage(file.buffer);
 
-        // Update user's profile image
-        const userId = (req.user as any).id;
-        await this.usersService.updateProfileImage(userId, processed.dataUrl);
+        // Save to database
+        const updatedUser = await this.usersService.updateProfileImage(userId, processed.dataUrl);
 
         return {
-            message: 'Profile image uploaded successfully',
-            image: processed.dataUrl,
-            sizeBytes: processed.sizeBytes,
+            message: 'Profile image updated successfully',
+            image: updatedUser.image,
         };
     }
 }
-

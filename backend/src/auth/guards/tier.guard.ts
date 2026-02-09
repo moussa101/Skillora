@@ -15,11 +15,11 @@ export const RequiredTiers = (...tiers: UserTier[]) => {
 // Feature limits by tier
 export const TIER_LIMITS = {
     GUEST: {
-        analysesPerMonth: 1,
+        analysesPerMonth: 5,
         features: ['basic_parsing'],
     },
     PRO: {
-        analysesPerMonth: 50,
+        analysesPerMonth: -1, // unlimited
         features: ['basic_parsing', 'ai_critique', 'ats_scoring', 'pdf_export'],
     },
     RECRUITER: {
@@ -83,7 +83,8 @@ export class UsageLimitGuard implements CanActivate {
             return true;
         }
 
-        if (user.analysesThisMonth >= limits.analysesPerMonth) {
+        // -1 means unlimited
+        if (limits.analysesPerMonth !== -1 && user.analysesThisMonth >= limits.analysesPerMonth) {
             throw new ForbiddenException(
                 `You have reached your monthly limit of ${limits.analysesPerMonth} analyses. ` +
                 `Upgrade to ${user.tier === 'GUEST' ? 'Pro' : 'Recruiter'} for more analyses.`

@@ -155,6 +155,48 @@ export class AuthService {
     }
 
     // ============================================
+    // ONBOARDING
+    // ============================================
+
+    async completeOnboarding(userId: number, data: { userType: string; plan: string }): Promise<{ success: boolean; message: string; user: any }> {
+        // Map plan to tier
+        const tierMap: Record<string, 'GUEST' | 'PRO' | 'RECRUITER'> = {
+            'FREE': 'GUEST',
+            'PREMIUM': 'PRO',
+            'ORGANIZATION': 'RECRUITER',
+        };
+
+        const tier = tierMap[data.plan] || 'GUEST';
+        const userType = data.userType as 'STUDENT' | 'PROFESSIONAL' | 'RECRUITER';
+
+        const user = await this.prisma.user.update({
+            where: { id: userId },
+            data: {
+                userType,
+                tier,
+                onboardingComplete: true,
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                image: true,
+                role: true,
+                tier: true,
+                userType: true,
+                onboardingComplete: true,
+                analysesThisMonth: true,
+            },
+        });
+
+        return {
+            success: true,
+            message: 'Onboarding completed successfully',
+            user,
+        };
+    }
+
+    // ============================================
     // PASSWORD RESET
     // ============================================
 
@@ -229,13 +271,31 @@ export class AuthService {
     // ============================================
 
     async validateOAuthUser(data: OAuthUserData) {
-        // Check if user exists with this provider ID
+        // Determine the provider-specific ID field
+        const providerIdField = data.provider === 'GITHUB' ? 'githubId' : 'googleId';
+
+        // First, look up by provider-specific ID (returning user via this OAuth)
         let user = await this.prisma.user.findFirst({
-            where: {
-                provider: data.provider,
-                providerId: data.providerId,
-            },
+            where: { [providerIdField]: data.providerId },
         });
+
+        if (!user) {
+            // Also check legacy provider/providerId for backward compatibility
+            user = await this.prisma.user.findFirst({
+                where: {
+                    provider: data.provider,
+                    providerId: data.providerId,
+                },
+            });
+
+            // Migrate legacy user to new field
+            if (user) {
+                user = await this.prisma.user.update({
+                    where: { id: user.id },
+                    data: { [providerIdField]: data.providerId },
+                });
+            }
+        }
 
         if (!user) {
             // Check if email exists (link accounts)
@@ -244,16 +304,24 @@ export class AuthService {
             });
 
             if (user) {
-                // Update existing user with OAuth info
+                // Link OAuth to existing account without overwriting provider
+                // This preserves email/password login while adding OAuth
+                const updateData: Record<string, any> = {
+                    [providerIdField]: data.providerId,
+                    image: data.image || user.image,
+                    name: data.name || user.name,
+                    emailVerified: true, // OAuth emails are verified
+                };
+
+                // Only set provider/providerId if user has no primary auth yet
+                if (user.provider === 'EMAIL' && !user.password) {
+                    updateData.provider = data.provider;
+                    updateData.providerId = data.providerId;
+                }
+
                 user = await this.prisma.user.update({
                     where: { id: user.id },
-                    data: {
-                        provider: data.provider,
-                        providerId: data.providerId,
-                        image: data.image || user.image,
-                        name: data.name || user.name,
-                        emailVerified: true, // OAuth emails are verified
-                    },
+                    data: updateData,
                 });
             } else {
                 // Create new user (OAuth users are auto-verified)
@@ -264,6 +332,7 @@ export class AuthService {
                         image: data.image,
                         provider: data.provider,
                         providerId: data.providerId,
+                        [providerIdField]: data.providerId,
                         tier: 'GUEST',
                         emailVerified: true,
                     },
@@ -295,7 +364,9 @@ export class AuthService {
                 image: user.image,
                 role: user.role,
                 tier: user.tier,
+                userType: user.userType,
                 emailVerified: user.emailVerified,
+                onboardingComplete: user.onboardingComplete,
                 analysesThisMonth: user.analysesThisMonth,
                 analysesLimit: TIER_LIMITS[user.tier as keyof typeof TIER_LIMITS]?.analysesPerMonth || 1,
             },
@@ -371,7 +442,9 @@ export class AuthService {
                 image: true,
                 role: true,
                 tier: true,
+                userType: true,
                 emailVerified: true,
+                onboardingComplete: true,
                 analysesThisMonth: true,
                 analysesResetDate: true,
                 createdAt: true,

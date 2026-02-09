@@ -7,14 +7,11 @@ export class EmailService {
     private readonly fromEmail: string;
 
     constructor() {
-        const resendApiKey = process.env.RESEND_API_KEY;
-
-        // Resend's free tier uses 'onboarding@resend.dev' as the from address
-        // Once you add a custom domain, you can change this
+        const apiKey = process.env.RESEND_API_KEY;
         this.fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
-        if (resendApiKey) {
-            this.resend = new Resend(resendApiKey);
+        if (apiKey) {
+            this.resend = new Resend(apiKey);
             console.log('✅ Email service configured with Resend');
         } else {
             console.log('⚠️ Email service running in dev mode (no RESEND_API_KEY)');
@@ -61,7 +58,6 @@ export class EmailService {
     }
 
     private async sendEmail(to: string, subject: string, html: string, code?: string): Promise<boolean> {
-        // If no Resend client configured, log to console (development mode)
         if (!this.resend) {
             console.log('');
             console.log('╔════════════════════════════════════════════════════════════╗');
@@ -79,18 +75,12 @@ export class EmailService {
         }
 
         try {
-            const { error } = await this.resend.emails.send({
+            await this.resend.emails.send({
                 from: `Skillora <${this.fromEmail}>`,
-                to: [to],
+                to,
                 subject,
                 html,
             });
-
-            if (error) {
-                console.error('❌ Email send error:', error);
-                return false;
-            }
-
             console.log(`✅ Email sent to ${to}`);
             return true;
         } catch (error) {
