@@ -87,7 +87,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  resumes Resume[]
+  resumes       Resume[]
+  subscriptions Subscription[]
 
   @@index([email])
   @@index([providerId])
@@ -155,4 +156,43 @@ model VerificationCode {
   createdAt DateTime             @default(now())
 
   @@index([email, code, type])
+}
+
+// ============================================
+// SUBSCRIPTIONS (Instapay / Manual Payment)
+// ============================================
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+model Subscription {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  plan           UserTier      // PRO or RECRUITER
+  amount         Float         // e.g. 350 or 500
+  currency       String        @default("EGP")
+  paymentMethod  String        @default("instapay") // instapay, vodafone_cash, etc.
+  screenshotPath String?       // Path to uploaded payment screenshot
+  status         PaymentStatus @default(PENDING)
+
+  // Subscription dates (set by admin on approval)
+  startDate      DateTime?
+  endDate        DateTime?
+
+  // Admin notes
+  adminNote      String?
+  reviewedBy     Int?          // Admin user ID who reviewed
+  reviewedAt     DateTime?
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
 }

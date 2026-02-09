@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { CompleteOnboardingDto } from './dto/complete-onboarding.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 import { validateImageFile, processProfileImage } from '../utils/image-upload.util';
@@ -226,5 +227,19 @@ export class AuthController {
             message: 'Profile image updated successfully',
             image: updatedUser.image,
         };
+    }
+
+    @Post('onboarding')
+    @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Complete onboarding (set user type and plan)' })
+    @HttpCode(HttpStatus.OK)
+    async completeOnboarding(
+        @Body() dto: CompleteOnboardingDto,
+        @Req() req,
+    ) {
+        return this.authService.completeOnboarding((req as any).user.id, {
+            userType: dto.userType,
+            plan: dto.plan,
+        });
     }
 }
