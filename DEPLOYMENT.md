@@ -59,7 +59,7 @@ Skillora runs as **3 Docker containers** backed by a **Supabase** (hosted Postgr
 | Container | Base Image | Memory | Notes |
 |-----------|-----------|--------|-------|
 | `skillora_ml` | `python:3.11-slim` | ~2GB | Loads NLP models on startup |
-| `skillora_backend` | `node:20-alpine` | ~256MB | Runs Prisma migrations on start |
+| `skillora_backend` | `node:20-alpine` | ~256MB | Runs Prisma migrations + seed on start |
 | `skillora_frontend` | `node:20-alpine` | ~128MB | Static build served by Node |
 
 > **Recommended Docker memory:** 4GB+ (the ML service loads sentence-transformer models)
@@ -100,6 +100,15 @@ docker compose up --build
 | Backend API | http://localhost:3000 | Swagger at `/api` |
 | ML Service | http://localhost:8000/docs | FastAPI docs |
 | ML Health | http://localhost:8000/health | Returns `{"status":"healthy"}` |
+
+### 5. Pre-seeded accounts
+
+The backend automatically seeds these accounts on first run:
+
+| Account | Email | Password | Role | Tier |
+|---------|-------|----------|------|------|
+| Admin | `admin@skillora.com` | `Admin@123` | ADMIN | PRO |
+| Recruiter | `recruiter@skillora.com` | `Recruiter@123` | RECRUITER | RECRUITER |
 
 ### Useful commands
 

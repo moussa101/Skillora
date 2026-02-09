@@ -1,7 +1,7 @@
 # Skillora — Product Requirements Document (PRD)
 
 **Product Name:** Skillora
-**Version:** 1.2.0
+**Version:** 1.4.0
 **Last Updated:** February 9, 2026
 **Author:** moussa101
 **Status:** Active Development
@@ -124,29 +124,79 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
 - **Description:** User dashboard with profile management and usage tracking.
 - **Tiers:**
 
-| Tier | Monthly Analyses | Features |
-|------|-----------------|----------|
-| Guest (Free) | 5 | Basic parsing, skill extraction |
-| Pro | Unlimited | + AI critique, ATS scoring, PDF export |
-| Recruiter | Unlimited | + Batch processing, API access, candidate management |
+| Tier | Monthly Analyses | Key Features |
+|------|-----------------|------|
+| Guest (Free) | 5 | Skill matching, resume score, AI critique, ATS scoring, multi-language |
+| Pro | Unlimited | Everything in Free + GitHub/LinkedIn profile analysis, priority support, PDF export (coming soon) |
+| Recruiter | 1,000 | Everything in Pro + batch processing (50 resumes), candidate ranking, CSV export, team dashboard (coming soon), API access (coming soon) |
 
 - **Profile Features:** Avatar upload (Sharp-processed), usage stats, tier management.
+- **Plans Page:** `/plans` with pricing (Free: 0 EGP, Premium: 350 EGP/mo, Recruiter: 500 EGP/mo), FAQ, and current-plan badge.
 
 #### FR-09: File Upload & Processing
 - **Description:** Multi-format resume upload with security validation.
 - **Formats:** PDF, DOCX, TXT, RTF, HTML.
 - **Security:** 10MB size limit, MIME validation, filename sanitization, rate limiting.
 
+#### FR-10: Admin Dashboard
+- **Description:** Full admin panel for user management, platform oversight, and content moderation.
+- **Access:** ADMIN role only (seeded account: `admin@skillora.com` / `Admin@123`).
+- **Features:**
+  - Platform statistics (total users, analysis counts, tier/role breakdowns)
+  - User listing with search, filter (by role/tier), and pagination
+  - Inline user management: change role, change tier, reset usage, delete user
+  - User detail modal with full profile info on row click
+  - Create new users with role/tier assignment
+  - Admin-only routing with redirect guards
+
+#### FR-11: Recruiter Dashboard & Batch Processing
+- **Description:** Dedicated recruiter interface for screening multiple candidates against a job description.
+- **Access:** RECRUITER role/tier only (seeded account: `recruiter@skillora.com` / `Recruiter@123`).
+- **Features:**
+  - Batch upload up to 50 resumes per request (10 files per batch in UI)
+  - Candidate ranking and comparison by match score
+  - Per-candidate ATS scoring, AI critique, and skill analysis
+  - Stats summary (average score, top candidate, pass rate)
+  - Minimum score filter for results
+  - CSV export of all results
+  - Error-state cards for failed file processing
+  - Fallback to single-file analysis when batch endpoint unavailable
+
+#### FR-12: Plans & Pricing Page
+- **Description:** Public-facing pricing page with tier comparison.
+- **Features:**
+  - Three-tier pricing: Free (0 EGP), Premium (350 EGP/mo), Recruiter (500 EGP/mo)
+  - Feature comparison with checkmarks and limitations
+  - Current plan badge for authenticated users
+  - FAQ accordion section
+  - Role-aware navigation (Dashboard / Recruiter Panel / Admin)
+
 ### 5.2 Planned Features (Roadmap)
 
+#### Subscriptions & Payments
 | Feature | Priority | Description |
 |---------|----------|-------------|
-| Resume Templates | High | Suggest ATS-friendly resume templates based on analysis |
-| Cover Letter Analysis | Medium | Analyze cover letters with the same NLP pipeline |
-| Batch Processing for Recruiters | Medium | Upload multiple resumes and rank against a single JD |
+| Payment Gateway (Paymob) | High | Egyptian market payments — Vodafone Cash, Fawry, cards |
+| Stripe Integration | High | International payment processing |
+| Plan Upgrade/Downgrade Flow | High | Billing management with subscription lifecycle |
+| Invoice Generation | Medium | Usage-based billing and receipts |
+
+#### Feature Gating & Enhancements
+| Feature | Priority | Description |
+|---------|----------|-------------|
+| PDF Export | Medium | Export analysis results as formatted PDF report |
+| Recruiter Team Dashboard | Medium | Multi-user organizations with shared candidate pool |
+| API Key Authentication | Medium | REST API access for Recruiter tier integrations |
+| Feature Flags System | Low | Granular tier-based access control |
+
+#### Future
+| Feature | Priority | Description |
+|---------|----------|-------------|
+| Resume Templates | Medium | ATS-friendly resume template suggestions |
+| Cover Letter Analysis | Medium | Analyze cover letters with same NLP pipeline |
 | Browser Extension | Low | One-click analysis from job posting pages |
-| Stripe Subscriptions | High | Payment integration for Pro and Recruiter tiers |
-| PDF Export | Medium | Export analysis results as a formatted PDF report |
+| Interview Prep Assistant | Low | AI-powered interview question generation |
+| Webhook Notifications | Low | Callbacks for batch processing completion |
 
 ---
 
@@ -171,10 +221,10 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
 
 | Service | Technology | Responsibility |
 |---------|-----------|----------------|
-| **Frontend** | Next.js 16, React 19, TypeScript | User interface, file upload, results display |
-| **Backend API** | NestJS 11, Prisma ORM 6, Sharp | Auth, user management, file storage, DB operations |
-| **ML Service** | FastAPI, spaCy, Sentence-Transformers | NLP analysis, ATS scoring, profile scanning, security |
-| **Database** | Supabase (PostgreSQL) | Users, resumes, analyses, verification codes |
+| **Frontend** | Next.js 16, React 19, TypeScript | User interface, file upload, results display, admin panel, recruiter panel, plans page |
+| **Backend API** | NestJS 11, Prisma ORM 6, Sharp | Auth, user management, admin CRUD, file storage, batch processing proxy, DB operations |
+| **ML Service** | FastAPI, spaCy, Sentence-Transformers | NLP analysis, ATS scoring, batch analysis, profile scanning, security |
+| **Database** | Supabase (PostgreSQL) | Users, resumes, analyses, organizations, verification codes |
 
 ### 6.3 Data Models
 
@@ -351,3 +401,5 @@ See [DEPLOYMENT.md](../DEPLOYMENT.md) for full deployment instructions.
 | 1.0.0 | Jan 2026 | Initial release — core analysis, auth, multi-language |
 | 1.1.0 | Jan 2026 | OAuth account linking, tier system, GitHub profile analysis |
 | 1.2.0 | Feb 2026 | ATS compatibility scoring, Resend email, profile image upload, Supabase migration |
+| 1.3.0 | Feb 2026 | Admin dashboard (CRUD, search, filter, stats), recruiter dashboard with batch processing, plans & pricing page |
+| 1.4.0 | Feb 2026 | Recruiter seeded account, welcome messages, updated plans accuracy, ERD, documentation refresh |

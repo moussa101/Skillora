@@ -480,6 +480,7 @@ docker compose up --build backend-api
 
 ## Roadmap
 
+### Completed
 - [x] Support for more file formats (RTF, HTML)
 - [x] OAuth authentication (GitHub, Google)
 - [x] Email verification system
@@ -491,11 +492,31 @@ docker compose up --build backend-api
 - [x] Resend email integration
 - [x] Supabase database integration
 - [x] ATS (Applicant Tracking System) compatibility scoring
+- [x] Admin dashboard with user management
+- [x] Recruiter dashboard with batch processing (up to 50 resumes)
+- [x] Candidate ranking & CSV export
+- [x] Plans & pricing page
+- [x] Tier-based usage limits (Free: 5/mo, Pro: unlimited, Recruiter: 1000/mo)
+
+### Subscriptions & Payments (Planned)
+- [ ] Payment gateway integration (Paymob for Egyptian market — Vodafone Cash, Fawry, cards)
+- [ ] Stripe integration for international payments
+- [ ] Plan upgrade/downgrade flow with billing management
+- [ ] Subscription lifecycle (active, cancelled, past_due, renewal)
+- [ ] Usage-based billing and invoice generation
+
+### Feature Gating (Planned)
+- [ ] Tier-gated PDF export (Pro & Recruiter only)
+- [ ] Recruiter Team dashboard (multi-user organizations)
+- [ ] API key authentication for Recruiter tier
+- [ ] Feature flags system for tier-based access control
+
+### Future
 - [ ] Resume template suggestions
 - [ ] Cover letter analysis
-- [ ] Batch processing for recruiters
 - [ ] Browser extension for one-click analysis
-- [ ] Stripe subscription integration
+- [ ] Interview preparation assistant
+- [ ] Webhook notifications for batch processing completion
 
 ## License
 
