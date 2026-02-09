@@ -111,3 +111,5 @@ erDiagram
 | Resume | `userId` | Fast user resume listing |
 | Analysis | `resumeId` | Fast resume analysis listing |
 | VerificationCode | `email, code, type` | Fast code verification lookups |
+| Subscription | `userId` | Fast user subscription listing |
+| Subscription | `status` | Fast filtering by payment status |
