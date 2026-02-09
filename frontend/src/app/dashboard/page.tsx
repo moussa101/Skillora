@@ -33,6 +33,27 @@ interface ProfileAnalysis {
     urls_found: Record<string, string | string[] | null>;
 }
 
+interface ATSCheck {
+    name: string;
+    passed: boolean;
+    message: string;
+    severity: "critical" | "warning" | "info" | "good";
+}
+
+interface ATSCategory {
+    name: string;
+    score: number;
+    checks: ATSCheck[];
+}
+
+interface ATSScoreResult {
+    overallScore: number;
+    keywordMatchRate: number;
+    criticalIssues: string[];
+    suggestions: string[];
+    categories: ATSCategory[];
+}
+
 interface AnalysisResult {
     score: number;
     suspicious: boolean;
@@ -49,6 +70,7 @@ interface AnalysisResult {
         suggestions: string[];
     };
     profileAnalysis?: ProfileAnalysis;
+    atsScore?: ATSScoreResult;
 }
 
 export default function Dashboard() {
@@ -119,6 +141,17 @@ export default function Dashboard() {
                     profile_score: data.profile_analysis.profile_score,
                     profile_insights: data.profile_analysis.profile_insights || [],
                     urls_found: data.profile_analysis.urls_found || {}
+                } : undefined,
+                atsScore: data.ats_score ? {
+                    overallScore: data.ats_score.overall_score,
+                    keywordMatchRate: data.ats_score.keyword_match_rate,
+                    criticalIssues: data.ats_score.critical_issues || [],
+                    suggestions: data.ats_score.suggestions || [],
+                    categories: (data.ats_score.categories || []).map((cat: { name: string; score: number; checks: ATSCheck[] }) => ({
+                        name: cat.name,
+                        score: cat.score,
+                        checks: cat.checks || [],
+                    })),
                 } : undefined,
             });
         } catch (err) {
@@ -400,6 +433,159 @@ export default function Dashboard() {
                                                 </li>
                                             ))}
                                         </ul>
+                                    </div>
+                                )}
+
+                                {/* ATS Compatibility Score */}
+                                {result.atsScore && (
+                                    <div className="border-t border-[var(--gray-200)] pt-6">
+                                        <h3 className="text-sm font-medium text-[var(--foreground)] mb-4 flex items-center gap-2">
+                                            <svg className="w-5 h-5 text-[var(--accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            ATS Compatibility
+                                            <span
+                                                className="ml-auto text-xs px-2 py-1 rounded-full font-medium"
+                                                style={{
+                                                    backgroundColor: result.atsScore.overallScore >= 70
+                                                        ? "rgba(52,199,89,0.15)"
+                                                        : result.atsScore.overallScore >= 45
+                                                            ? "rgba(255,159,10,0.15)"
+                                                            : "rgba(255,59,48,0.15)",
+                                                    color: result.atsScore.overallScore >= 70
+                                                        ? "var(--success)"
+                                                        : result.atsScore.overallScore >= 45
+                                                            ? "var(--warning)"
+                                                            : "var(--error)",
+                                                }}
+                                            >
+                                                {Math.round(result.atsScore.overallScore)}% ATS Score
+                                            </span>
+                                        </h3>
+
+                                        {/* Category Bars */}
+                                        <div className="space-y-3 mb-4">
+                                            {result.atsScore.categories.map((cat) => (
+                                                <div key={cat.name}>
+                                                    <div className="flex justify-between items-center mb-1">
+                                                        <span className="text-xs text-[var(--gray-500)]">{cat.name}</span>
+                                                        <span className="text-xs font-medium text-[var(--foreground)]">
+                                                            {Math.round(cat.score)}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="w-full h-2 bg-[var(--gray-200)] rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full rounded-full transition-all duration-700 ease-out"
+                                                            style={{
+                                                                width: `${Math.min(100, cat.score)}%`,
+                                                                backgroundColor: cat.score >= 70
+                                                                    ? "var(--success)"
+                                                                    : cat.score >= 45
+                                                                        ? "var(--warning)"
+                                                                        : "var(--error)",
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Keyword Match Rate */}
+                                        {result.atsScore.keywordMatchRate > 0 && (
+                                            <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-[var(--gray-100)] rounded-lg">
+                                                <svg className="w-4 h-4 text-[var(--accent)] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                </svg>
+                                                <span className="text-xs text-[var(--gray-500)]">
+                                                    Keyword Match Rate: <strong className="text-[var(--foreground)]">{Math.round(result.atsScore.keywordMatchRate)}%</strong>
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {/* Critical Issues */}
+                                        {result.atsScore.criticalIssues.length > 0 && (
+                                            <div className="mb-4">
+                                                <h4 className="text-xs font-medium text-[var(--error)] mb-2 flex items-center gap-1">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                    Critical Issues
+                                                </h4>
+                                                <ul className="space-y-1.5">
+                                                    {result.atsScore.criticalIssues.map((issue, i) => (
+                                                        <li key={i} className="text-xs text-[var(--error)] flex items-start gap-2">
+                                                            <span className="mt-0.5">•</span>
+                                                            {issue}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+
+                                        {/* ATS Checks Details */}
+                                        <details className="group">
+                                            <summary className="text-xs text-[var(--accent)] cursor-pointer hover:underline flex items-center gap-1 select-none">
+                                                <svg className="w-3.5 h-3.5 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                                View detailed checks
+                                            </summary>
+                                            <div className="mt-3 space-y-3">
+                                                {result.atsScore.categories.map((cat) => (
+                                                    <div key={cat.name}>
+                                                        <p className="text-xs font-medium text-[var(--foreground)] mb-1.5">{cat.name}</p>
+                                                        <ul className="space-y-1">
+                                                            {cat.checks.map((check, i) => (
+                                                                <li key={i} className="flex items-start gap-2 text-xs">
+                                                                    {check.severity === "good" ? (
+                                                                        <svg className="w-3.5 h-3.5 text-[var(--success)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                        </svg>
+                                                                    ) : check.severity === "critical" ? (
+                                                                        <svg className="w-3.5 h-3.5 text-[var(--error)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                                        </svg>
+                                                                    ) : check.severity === "warning" ? (
+                                                                        <svg className="w-3.5 h-3.5 text-[var(--warning)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01" />
+                                                                        </svg>
+                                                                    ) : (
+                                                                        <svg className="w-3.5 h-3.5 text-[var(--gray-400)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                        </svg>
+                                                                    )}
+                                                                    <span className={
+                                                                        check.severity === "good" ? "text-[var(--gray-500)]" :
+                                                                        check.severity === "critical" ? "text-[var(--error)]" :
+                                                                        check.severity === "warning" ? "text-[var(--warning)]" :
+                                                                        "text-[var(--gray-500)]"
+                                                                    }>
+                                                                        {check.message}
+                                                                    </span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </details>
+
+                                        {/* ATS Suggestions */}
+                                        {result.atsScore.suggestions.length > 0 && (
+                                            <div className="mt-4">
+                                                <h4 className="text-xs font-medium text-[var(--foreground)] mb-2">ATS Tips</h4>
+                                                <ul className="space-y-1.5">
+                                                    {result.atsScore.suggestions.map((tip, i) => (
+                                                        <li key={i} className="flex items-start gap-2 text-xs text-[var(--gray-500)]">
+                                                            <svg className="w-3.5 h-3.5 text-[var(--accent)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                                            </svg>
+                                                            {tip}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 

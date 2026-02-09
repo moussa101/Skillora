@@ -53,6 +53,14 @@ except ImportError:
     PROFILE_ANALYZER_AVAILABLE = False
     ProfileAnalyzer = None
 
+# ATS Scorer import
+try:
+    from ats_scorer import score_ats
+    ATS_SCORER_AVAILABLE = True
+except ImportError:
+    ATS_SCORER_AVAILABLE = False
+    score_ats = None
+
 
 app = FastAPI(
     title="Skillora - ML Service",
@@ -120,6 +128,30 @@ class LanguageInfo(BaseModel):
     is_rtl: bool = False  # Right-to-left language
 
 
+class ATSCheckInfo(BaseModel):
+    """Individual ATS check result"""
+    name: str
+    passed: bool
+    message: str
+    severity: str  # "critical", "warning", "info", "good"
+
+
+class ATSCategoryInfo(BaseModel):
+    """ATS scoring category"""
+    name: str
+    score: float
+    checks: List[ATSCheckInfo] = []
+
+
+class ATSScoreInfo(BaseModel):
+    """ATS compatibility score breakdown"""
+    overall_score: float
+    keyword_match_rate: float = 0.0
+    critical_issues: List[str] = []
+    suggestions: List[str] = []
+    categories: List[ATSCategoryInfo] = []
+
+
 class AnalyzeResponse(BaseModel):
     score: float
     suspicious: bool = False  # NFR-SEC-04: Flag high scores
@@ -133,6 +165,7 @@ class AnalyzeResponse(BaseModel):
     experience: Optional[List[dict]] = None
     feedback: Optional[dict] = None
     language: Optional[LanguageInfo] = None  # NEW: Detected language info
+    ats_score: Optional[ATSScoreInfo] = None  # ATS compatibility scoring
 
 
 class HealthResponse(BaseModel):
@@ -256,6 +289,28 @@ async def analyze_resume(request: AnalyzeRequest):
         suspicious = True
         suspicious_reason = "Score >= 95% indicates possible JD copy-paste. Manual review required."
     
+    # ATS Compatibility Scoring
+    ats_result = None
+    if ATS_SCORER_AVAILABLE and score_ats is not None and resume_text:
+        try:
+            ats_data = score_ats(resume_text, request.job_description, skills_found, missing_keywords)
+            ats_result = ATSScoreInfo(
+                overall_score=ats_data["overall_score"],
+                keyword_match_rate=ats_data["keyword_match_rate"],
+                critical_issues=ats_data["critical_issues"],
+                suggestions=ats_data["suggestions"],
+                categories=[
+                    ATSCategoryInfo(
+                        name=cat["name"],
+                        score=cat["score"],
+                        checks=[ATSCheckInfo(**c) for c in cat["checks"]],
+                    )
+                    for cat in ats_data["categories"]
+                ],
+            )
+        except Exception as e:
+            print(f"ATS scoring failed: {e}")
+
     return AnalyzeResponse(
         score=round(score, 1),
         suspicious=suspicious,
@@ -264,7 +319,8 @@ async def analyze_resume(request: AnalyzeRequest):
         skills_found=skills_found[:10],
         missing_keywords=missing_keywords[:8],
         feedback=feedback,
-        language=language_info
+        language=language_info,
+        ats_score=ats_result,
     )
 
 
@@ -473,6 +529,28 @@ async def analyze_file(request: Request, file: UploadFile = File(...), job_descr
         suspicious = score >= 95.0
         suspicious_reason = "Score >= 95% indicates possible JD copy-paste." if suspicious else None
         
+        # ATS Compatibility Scoring
+        ats_result = None
+        if ATS_SCORER_AVAILABLE and score_ats is not None and text:
+            try:
+                ats_data = score_ats(text, job_description, skills_found, missing_keywords)
+                ats_result = ATSScoreInfo(
+                    overall_score=ats_data["overall_score"],
+                    keyword_match_rate=ats_data["keyword_match_rate"],
+                    critical_issues=ats_data["critical_issues"],
+                    suggestions=ats_data["suggestions"],
+                    categories=[
+                        ATSCategoryInfo(
+                            name=cat["name"],
+                            score=cat["score"],
+                            checks=[ATSCheckInfo(**c) for c in cat["checks"]],
+                        )
+                        for cat in ats_data["categories"]
+                    ],
+                )
+            except Exception as e:
+                print(f"ATS scoring failed: {e}")
+
         return AnalyzeResponse(
             score=round(score, 1),
             suspicious=suspicious,
@@ -482,7 +560,8 @@ async def analyze_file(request: Request, file: UploadFile = File(...), job_descr
             missing_keywords=missing_keywords[:8],
             feedback=feedback,
             profile_analysis=profile_analysis,
-            language=language_info
+            language=language_info,
+            ats_score=ats_result,
         )
     except HTTPException:
         raise
