@@ -6,7 +6,7 @@ services:
     build:
       context: ./ml_service
       dockerfile: Dockerfile
-    container_name: resume_analyzer_ml
+    container_name: skillora_ml
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -14,31 +14,40 @@ services:
       - ./uploads:/app/uploads:ro
     environment:
       - ML_PORT=8000
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
     command: uvicorn main:app --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   # NestJS Backend API
   backend-api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: resume_analyzer_backend
+    container_name: skillora_backend
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
       - ML_SERVICE_URL=http://ml-service:8000
-      - JWT_SECRET=${JWT_SECRET:-change-this-secret}
+      - JWT_SECRET=${JWT_SECRET:-change-this-secret-in-production}
       - JWT_EXPIRES_IN=7d
+      - PORT=3000
       # Email Service (Resend)
-      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
       - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-onboarding@resend.dev}
-      # OAuth
-      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
-      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      # OAuth (optional)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
       - GITHUB_CALLBACK_URL=${GITHUB_CALLBACK_URL:-http://localhost:3000/auth/github/callback}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL:-http://localhost:3000/auth/google/callback}
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3001}
     volumes:
@@ -52,7 +61,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: resume_analyzer_frontend
+    container_name: skillora_frontend
     restart: unless-stopped
     ports:
       - "3001:3000"

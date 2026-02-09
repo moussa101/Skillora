@@ -161,24 +161,21 @@ Before you begin, ensure you have the following installed:
    cd AI-Resume-Analyzer
    ```
 
-2. **Configure environment variables (optional)**
-
-   The application works out-of-the-box with default settings. For customization:
+2. **Configure environment variables**
 
    ```bash
    cp .env.example .env
    ```
 
-   Edit `.env` to configure:
-   - Database credentials
-   - JWT secret key
-   - Service URLs
-   - GitHub API token (recommended for profile analysis)
+   The app uses **Supabase** (hosted PostgreSQL) as its database. You must set `DATABASE_URL` and `DIRECT_URL` in `.env` with your Supabase project credentials.
 
-   ```env
-   # Add to ml_service/.env for GitHub integration
-   GITHUB_TOKEN=your_github_personal_access_token
-   ```
+   Edit `.env` to configure:
+   - `DATABASE_URL` / `DIRECT_URL` — your Supabase connection strings (**required**)
+   - `JWT_SECRET` — change for production
+   - `RESEND_API_KEY` — for email verification & password reset
+   - `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` — for GitHub OAuth login
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — for Google OAuth login
+   - `GITHUB_TOKEN` — for enhanced GitHub profile analysis (increases rate limits)
 
 ### Running the Application
 
@@ -190,16 +187,18 @@ docker compose up --build
 
 This command will:
 1. Build all Docker images (frontend, backend, ML service)
-2. Start PostgreSQL database
-3. Initialize database schema
-4. Launch all services
+2. Run database migrations against your Supabase database
+3. Launch all services
 
 **Access the application:**
 
-- **Frontend Dashboard**: http://localhost:3001
-- **Backend API**: http://localhost:3000
-- **ML Service API Docs**: http://localhost:8000/docs
-- **Database**: `postgresql://postgres:postgres@localhost:5432/resume_analyzer`
+| Service | URL |
+|---------|-----|
+| **Frontend** | http://localhost:3001 |
+| **Backend API** | http://localhost:3000 |
+| **API Docs (Swagger)** | http://localhost:3000/api |
+| **ML Service Docs** | http://localhost:8000/docs |
+| **Database** | Your Supabase PostgreSQL (see `.env`) |
 
 **To stop the services:**
 
@@ -207,10 +206,18 @@ This command will:
 docker compose down
 ```
 
-**To stop and remove all data:**
+**To stop and remove all data (including the database):**
 
 ```bash
 docker compose down -v
+```
+
+**To rebuild a single service after changes:**
+
+```bash
+docker compose up --build backend-api    # rebuild backend only
+docker compose up --build frontend-client # rebuild frontend only
+docker compose up --build ml-service      # rebuild ML service only
 ```
 
 ## Usage
@@ -339,10 +346,25 @@ Upload any combination to test different match scenarios.
 
 #### Root `.env`
 ```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/resume_analyzer
+# Database (Supabase)
+DATABASE_URL=postgresql://postgres.[YOUR-PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true
+DIRECT_URL=postgresql://postgres.[YOUR-PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
+
+# Backend
 JWT_SECRET=your-secret-key-change-in-production
-ML_SERVICE_URL=http://localhost:8000
+
+# Frontend
 NEXT_PUBLIC_API_URL=http://localhost:3000
+
+# Email (optional)
+RESEND_API_KEY=re_xxxxxxxxxx
+RESEND_FROM_EMAIL=onboarding@resend.dev
+
+# OAuth (optional)
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 ```
 
 #### ML Service Configuration
@@ -429,9 +451,15 @@ docker compose up --build
 
 **Problem**: Database connection errors
 ```bash
-# Solution: Verify PostgreSQL is running
-docker compose ps
-docker compose logs postgres-db
+# Solution: Verify your Supabase credentials in .env
+# Ensure DATABASE_URL and DIRECT_URL are correctly set
+cat .env | grep DATABASE_URL
+```
+
+**Problem**: Backend fails with migration errors
+```bash
+# Solution: Check Supabase dashboard for schema conflicts, then re-run
+docker compose up --build backend-api
 ```
 
 ## Roadmap

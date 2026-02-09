@@ -318,4 +318,4 @@ Contributors are recognized in:
 
 ---
 
-Thank you for contributing to Skillora! 🎉
+Thank you for contributing to Skillora! 
