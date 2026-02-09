@@ -498,12 +498,16 @@ docker compose up --build backend-api
 - [x] Plans & pricing page
 - [x] Tier-based usage limits (Free: 5/mo, Pro: unlimited, Recruiter: 1000/mo)
 
-### Subscriptions & Payments (Planned)
-- [ ] Payment gateway integration (Paymob for Egyptian market — Vodafone Cash, Fawry, cards)
+### Subscriptions & Payments
+- [x] InstaPay manual payment with screenshot upload
+- [x] Admin subscription approval/rejection workflow
+- [x] Subscription date management (start/end dates set by admin)
+- [x] Auto-expiry cron job (hourly check, downgrades expired users to Free)
+- [x] Subscription status banners on plans page (pending/active with days remaining)
+- [x] Payment screenshot review in admin panel with Subscriptions tab
+- [ ] Paymob integration — Vodafone Cash, Fawry, card payments (account under review, ETA: Feb 2026)
 - [ ] Stripe integration for international payments
-- [ ] Plan upgrade/downgrade flow with billing management
-- [ ] Subscription lifecycle (active, cancelled, past_due, renewal)
-- [ ] Usage-based billing and invoice generation
+- [ ] Invoice generation and payment receipts
 
 ### Feature Gating (Planned)
 - [ ] Tier-gated PDF export (Pro & Recruiter only)

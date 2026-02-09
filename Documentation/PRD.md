@@ -1,7 +1,7 @@
 # Skillora — Product Requirements Document (PRD)
 
 **Product Name:** Skillora
-**Version:** 1.4.0
+**Version:** 1.5.0
 **Last Updated:** February 9, 2026
 **Author:** moussa101
 **Status:** Active Development
@@ -171,15 +171,35 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
   - FAQ accordion section
   - Role-aware navigation (Dashboard / Recruiter Panel / Admin)
 
+#### FR-13: Subscription & Payment System (InstaPay)
+- **Description:** Manual payment flow with InstaPay screenshot upload and admin approval.
+- **Features:**
+  - InstaPay payment instructions with number displayed in modal
+  - Screenshot upload (JPG, PNG, WebP, GIF, PDF — max 10MB)
+  - Pending/active subscription banners with days remaining
+  - Admin Subscriptions tab with stats (pending, approved, rejected, expired, revenue)
+  - Admin approve with start/end date picker, reject with note
+  - Cron job (hourly) auto-downgrades expired subscriptions to Free tier
+  - Onboarding select-plan page with same payment flow
+  - Subscription date management (admin can adjust dates)
+- **Endpoints:**
+  - `POST /subscriptions/request` — User submits screenshot + plan
+  - `GET /subscriptions/my` — User gets active/pending/history
+  - `GET /admin/subscriptions` — Admin lists all (filterable by status)
+  - `GET /admin/subscriptions/stats` — Pending/approved/rejected/expired counts + revenue
+  - `PATCH /admin/subscriptions/:id/approve` — Approve with dates
+  - `PATCH /admin/subscriptions/:id/reject` — Reject with note
+  - `PATCH /admin/subscriptions/:id/dates` — Update dates
+  - `GET /admin/subscriptions/screenshot/:filename` — Serve screenshot
+
 ### 5.2 Planned Features (Roadmap)
 
 #### Subscriptions & Payments
 | Feature | Priority | Description |
 |---------|----------|-------------|
-| Payment Gateway (Paymob) | High | Egyptian market payments — Vodafone Cash, Fawry, cards |
-| Stripe Integration | High | International payment processing |
-| Plan Upgrade/Downgrade Flow | High | Billing management with subscription lifecycle |
-| Invoice Generation | Medium | Usage-based billing and receipts |
+| Payment Gateway (Paymob) | High | Egyptian market payments — Vodafone Cash, Fawry, cards. **Account under review, ETA Feb 2026.** |
+| Stripe Integration | Medium | International payment processing |
+| Invoice Generation | Medium | Payment receipts and billing history |
 
 #### Feature Gating & Enhancements
 | Feature | Priority | Description |
@@ -235,6 +255,14 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
 - Usage tracking: `analysesThisMonth`, `analysesResetDate`
 - Subscription fields (Stripe-ready)
 
+#### Subscription
+- User reference, plan (PRO/RECRUITER), amount, currency (EGP)
+- Payment method (instapay), screenshot path
+- Status (PENDING → APPROVED/REJECTED → EXPIRED)
+- Start/end dates set by admin on approval
+- Admin notes and review tracking
+- Auto-expiry via hourly cron job
+
 #### Resume
 - File metadata (path, name, size)
 - Parsed text content
@@ -271,11 +299,19 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
 | `GET` | `/auth/github` | GitHub OAuth redirect |
 | `GET` | `/auth/google` | Google OAuth redirect |
 | `POST` | `/auth/profile-image` | Upload profile image |
+| `POST` | `/auth/onboarding` | Complete onboarding (user type + plan) |
 | `GET` | `/auth/me` | Get current user |
 | `POST` | `/resumes` | Upload resume file |
 | `POST` | `/resumes/:id/analyze` | Analyze an uploaded resume |
 | `GET` | `/resumes` | List user's resumes |
 | `GET` | `/resumes/:id` | Get resume details |
+| `POST` | `/subscriptions/request` | Submit payment screenshot for plan upgrade |
+| `GET` | `/subscriptions/my` | Get user's subscription status |
+| `GET` | `/admin/subscriptions` | List all subscriptions (admin) |
+| `GET` | `/admin/subscriptions/stats` | Subscription statistics (admin) |
+| `PATCH` | `/admin/subscriptions/:id/approve` | Approve subscription with dates (admin) |
+| `PATCH` | `/admin/subscriptions/:id/reject` | Reject subscription (admin) |
+| `PATCH` | `/admin/subscriptions/:id/dates` | Update subscription dates (admin) |
 
 ---
 
@@ -328,6 +364,7 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
 | Sharp | — | Image processing |
 | Resend | — | Transactional email |
 | bcrypt | — | Password hashing |
+| @nestjs/schedule | 5 | Cron jobs (subscription expiry) |
 
 ### ML Service
 | Package | Version | Purpose |
