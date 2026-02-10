@@ -7,6 +7,8 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+**[Live Demo](https://skillora1.up.railway.app)** | **[API](https://backend-production-e2f3.up.railway.app)** | **[Documentation](Documentation/PRD.md)**
+
 ---
 
 ## About
@@ -57,7 +59,7 @@ Skillora helps job seekers optimize their resumes by comparing them against targ
 - 🛡️ **Security Scanning** - Detects resume manipulation attempts (invisible text, homoglyphs)
 - 📝 **Multi-Format Support** - PDF, DOCX, TXT, RTF, and HTML file uploads
 - 🔐 **Authentication** - OAuth (GitHub, Google), email verification, password reset
-- 📧 **Email System** - Automated verification and password reset via Resend
+- 📧 **Email System** - Automated verification and password reset via Resend (requires custom domain for delivery to all users — see [Roadmap](#roadmap))
 - 👤 **User Profiles** - Profile page with avatar upload, usage stats, and tier management
 - 🖼️ **Secure Image Upload** - Profile images with Sharp resizing and security validation
 - 🛡️ **Upload Security** - File size limits, MIME validation, filename sanitization
@@ -144,8 +146,8 @@ Skillora helps job seekers optimize their resumes by comparing them against targ
 | **Database** | Supabase (PostgreSQL) |
 | **ML Service** | FastAPI, Python 3.11+, spaCy 3.7, Sentence-Transformers, langdetect |
 | **Authentication** | JWT, Passport.js, OAuth 2.0 (GitHub, Google) |
-| **Email** | Resend API |
-| **Infrastructure** | Docker, Docker Compose |
+| **Email** | Resend API (requires custom domain for production delivery) |
+| **Infrastructure** | Docker, Docker Compose, Railway (production hosting) |
 | **Security** | bcrypt, python-magic (MIME validation), slowapi (rate limiting), Sharp (image security) |
 
 ## Getting Started
@@ -441,6 +443,18 @@ Contributions are welcome! Here's how you can help:
 
 For detailed contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md) (if available).
 
+### Production Deployment
+
+Skillora is deployed on **Railway** with 3 services:
+
+| Service | URL |
+|---------|-----|
+| **Frontend** | https://skillora1.up.railway.app |
+| **Backend API** | https://backend-production-e2f3.up.railway.app |
+| **ML Service** | https://ml-service-production-8b08.up.railway.app |
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for full deployment instructions.
+
 ## Support
 
 ### Getting Help
@@ -514,6 +528,12 @@ docker compose up --build backend-api
 - [ ] Recruiter Team dashboard (multi-user organizations)
 - [ ] API key authentication for Recruiter tier
 - [ ] Feature flags system for tier-based access control
+
+### Infrastructure & Domain (Planned)
+- [ ] Custom domain purchase (required for Resend email delivery to all users)
+- [ ] DNS configuration (MX, SPF, DKIM) for transactional emails
+- [ ] Custom domain for frontend (replace `skillora1.up.railway.app`)
+- [ ] Custom domain for backend API (replace `backend-production-e2f3.up.railway.app`)
 
 ### Future
 - [ ] Resume template suggestions

@@ -214,7 +214,7 @@ docker compose down -v
 | Variable | Used By | Description | Default |
 |----------|---------|-------------|---------|
 | `RESEND_API_KEY` | Backend | Resend API key for email | _(disabled)_ |
-| `RESEND_FROM_EMAIL` | Backend | Sender email address | `onboarding@resend.dev` |
+| `RESEND_FROM_EMAIL` | Backend | Sender email address. **Must be from a verified domain on Resend to send to all users.** Using `onboarding@resend.dev` only delivers to the account owner. See [Custom Domain Setup](#custom-domain-for-email). | `onboarding@resend.dev` |
 | `GITHUB_CLIENT_ID` | Backend | GitHub OAuth app client ID | _(disabled)_ |
 | `GITHUB_CLIENT_SECRET` | Backend | GitHub OAuth app secret | _(disabled)_ |
 | `GITHUB_CALLBACK_URL` | Backend | GitHub OAuth callback URL | `http://localhost:3000/auth/github/callback` |
@@ -226,7 +226,7 @@ docker compose down -v
 | `NEXT_PUBLIC_API_URL` | Frontend | Backend URL for API calls | `http://localhost:3000` |
 | `NEXT_PUBLIC_ML_URL` | Frontend | ML service URL (if direct calls) | `http://localhost:8000` |
 
-> **⚠️ Important:** `NEXT_PUBLIC_*` variables are **baked into the frontend at build time** (Next.js). On Railway/Render, you must set them _before_ the build runs, or trigger a rebuild after adding them.
+> **⚠️ Important:** `NEXT_PUBLIC_*` variables are **baked into the frontend at build time** (Next.js). The frontend Dockerfile uses a Docker `ARG` to accept `NEXT_PUBLIC_API_URL` at build time. On Railway/Render, set the variable _before_ the build runs, or trigger a rebuild after adding it.
 
 ---
 
@@ -250,6 +250,13 @@ Best for: **fastest setup**, generous free tier ($5/mo credit), auto-detects Doc
    - `ml-service` (port 8000)
    - `backend-api` (port 3000)
    - `frontend-client` (port 3001 → mapped to 3000 internally)
+
+   **Current production domains:**
+   | Service | URL |
+   |---------|-----|
+   | Frontend | https://skillora1.up.railway.app |
+   | Backend API | https://backend-production-e2f3.up.railway.app |
+   | ML Service | https://ml-service-production-8b08.up.railway.app |
 
 5. **Add environment variables** — click each service and go to **Variables**:
 
@@ -484,6 +491,24 @@ For quick demos without deploying to a server:
 
 ## SSL & Domain Configuration
 
+### Custom Domain for Email
+
+Resend's default sender (`onboarding@resend.dev`) can **only deliver to the account owner's email**. To send verification and password reset emails to all users, you need a custom domain:
+
+1. **Purchase a domain** (e.g., `skillora.xyz` for ~$1-2/year on [Namecheap](https://namecheap.com) or [Cloudflare](https://dash.cloudflare.com))
+2. **Add domain to Resend** at [resend.com/domains](https://resend.com/domains)
+3. **Add DNS records** — Resend will provide MX, TXT (SPF), and DKIM records to add to your domain's DNS
+4. **Verify domain** in Resend dashboard
+5. **Update Railway env var** on the backend service:
+   ```
+   RESEND_FROM_EMAIL=noreply@yourdomain.com
+   ```
+6. **Redeploy** the backend service
+
+> **Note:** Railway's `*.up.railway.app` subdomains cannot be used for email — you don't control their DNS.
+
+### SSL for Custom Domains
+
 For production, always use HTTPS:
 
 1. **Domain:** Point your domain's A record to your server IP
@@ -577,10 +602,16 @@ npx prisma migrate reset
 
 Update callback URLs in your GitHub/Google OAuth app settings to match your deployment:
 
-| Provider | Local | Railway/Render |
-|----------|-------|---------------|
-| GitHub | `http://localhost:3000/auth/github/callback` | `https://<backend-url>/auth/github/callback` |
-| Google | `http://localhost:3000/auth/google/callback` | `https://<backend-url>/auth/google/callback` |
+| Provider | Local | Production (Railway) |
+|----------|-------|---------------------|
+| GitHub | `http://localhost:3000/auth/github/callback` | `https://backend-production-e2f3.up.railway.app/auth/github/callback` |
+| Google | `http://localhost:3000/auth/google/callback` | `https://backend-production-e2f3.up.railway.app/auth/google/callback` |
+
+**Important notes:**
+- GitHub OAuth Apps only allow **one** callback URL. You need separate OAuth Apps for local dev and production.
+- Google OAuth allows multiple redirect URIs in the same app.
+- When switching between local and production, make sure `GITHUB_CALLBACK_URL`, `GOOGLE_CALLBACK_URL`, and `FRONTEND_URL` env vars match the deployment.
+- After changing Railway env vars, you must **trigger a redeploy** for the changes to take effect.
 
 ### Render cold starts
 

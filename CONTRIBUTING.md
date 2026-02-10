@@ -60,6 +60,11 @@ docker compose up --build
 # - ML Service: http://localhost:8000/docs
 ```
 
+> **Production URLs (Railway):**
+> - Frontend: https://skillora1.up.railway.app
+> - Backend API: https://backend-production-e2f3.up.railway.app
+> - ML Service: https://ml-service-production-8b08.up.railway.app
+
 ### Local Development
 
 #### Frontend
@@ -161,6 +166,12 @@ docs(readme): update installation instructions
    ```bash
    docker compose build
    ```
+
+4. **Check environment variables:**
+   - `NEXT_PUBLIC_*` vars are baked into the frontend at **build time**. If you change them, you must rebuild.
+   - OAuth callback URLs must match between your provider (GitHub/Google) settings and your env vars.
+   - For local dev, use `http://localhost:3000/auth/{provider}/callback`.
+   - For production, use `https://backend-production-e2f3.up.railway.app/auth/{provider}/callback`.
 
 ### PR Guidelines
 

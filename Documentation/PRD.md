@@ -119,6 +119,7 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
 - **Description:** Full authentication system with multiple sign-in methods.
 - **Methods:** Email/password, GitHub OAuth, Google OAuth.
 - **Features:** Email verification, password reset (via Resend), JWT sessions, account linking (OAuth + email).
+- **Known Limitation:** Email delivery (verification, password reset) currently only works for the app owner's email. Requires a custom domain configured in Resend to send to all users. See **§5.2 Infrastructure & Domain** roadmap.
 
 #### FR-08: User Profiles & Tier System
 - **Description:** User dashboard with profile management and usage tracking.
@@ -208,6 +209,14 @@ An intelligent, self-hosted platform that gives candidates transparent, data-dri
 | Recruiter Team Dashboard | Medium | Multi-user organizations with shared candidate pool |
 | API Key Authentication | Medium | REST API access for Recruiter tier integrations |
 | Feature Flags System | Low | Granular tier-based access control |
+
+#### Infrastructure & Domain
+| Feature | Priority | Description |
+|---------|----------|-------------|
+| Custom Domain | **High** | Purchase a domain (e.g., `skillora.xyz`) to enable Resend email delivery to all users. Currently using `onboarding@resend.dev` which only delivers to the account owner. Required for: email verification, password reset, and future transactional emails. |
+| DNS & SSL Configuration | **High** | Configure DNS records (MX, SPF, DKIM) for the custom domain on Resend. Set `RESEND_FROM_EMAIL=noreply@<domain>` in production. |
+| Custom Domain for Frontend | Medium | Point the custom domain to the Railway frontend deployment instead of `skillora1.up.railway.app`. |
+| Custom Domain for Backend API | Medium | Expose backend API via a subdomain (e.g., `api.skillora.xyz`) instead of `backend-production-e2f3.up.railway.app`. |
 
 #### Future
 | Feature | Priority | Description |
