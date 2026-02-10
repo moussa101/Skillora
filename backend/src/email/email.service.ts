@@ -3,25 +3,29 @@ import { Resend } from 'resend';
 
 @Injectable()
 export class EmailService {
-    private resend: Resend | null = null;
-    private readonly fromEmail: string;
+  private resend: Resend | null = null;
+  private readonly fromEmail: string;
 
-    constructor() {
-        const apiKey = process.env.RESEND_API_KEY;
-        this.fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+  constructor() {
+    const apiKey = process.env.RESEND_API_KEY;
+    this.fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
-        if (apiKey) {
-            this.resend = new Resend(apiKey);
-            console.log('✅ Email service configured with Resend');
-        } else {
-            console.log('⚠️ Email service running in dev mode (no RESEND_API_KEY)');
-            console.log('   Verification codes will be logged to console');
-        }
+    if (apiKey) {
+      this.resend = new Resend(apiKey);
+      console.log('✅ Email service configured with Resend');
+    } else {
+      console.log('⚠️ Email service running in dev mode (no RESEND_API_KEY)');
+      console.log('   Verification codes will be logged to console');
     }
+  }
 
-    async sendVerificationEmail(email: string, code: string, name?: string): Promise<boolean> {
-        const subject = 'Verify your Skillora account';
-        const html = `
+  async sendVerificationEmail(
+    email: string,
+    code: string,
+    name?: string,
+  ): Promise<boolean> {
+    const subject = 'Verify your Skillora account';
+    const html = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: #3B82F6;">Welcome to Skillora${name ? `, ${name}` : ''}!</h1>
                 <p>Thank you for signing up. Please verify your email address by entering this code:</p>
@@ -35,12 +39,12 @@ export class EmailService {
             </div>
         `;
 
-        return this.sendEmail(email, subject, html, code);
-    }
+    return this.sendEmail(email, subject, html, code);
+  }
 
-    async sendPasswordResetEmail(email: string, code: string): Promise<boolean> {
-        const subject = 'Reset your Skillora password';
-        const html = `
+  async sendPasswordResetEmail(email: string, code: string): Promise<boolean> {
+    const subject = 'Reset your Skillora password';
+    const html = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: #3B82F6;">Password Reset Request</h1>
                 <p>We received a request to reset your password. Enter this code to set a new password:</p>
@@ -54,42 +58,59 @@ export class EmailService {
             </div>
         `;
 
-        return this.sendEmail(email, subject, html, code);
+    return this.sendEmail(email, subject, html, code);
+  }
+
+  private async sendEmail(
+    to: string,
+    subject: string,
+    html: string,
+    code?: string,
+  ): Promise<boolean> {
+    if (!this.resend) {
+      console.log('');
+      console.log(
+        '╔════════════════════════════════════════════════════════════╗',
+      );
+      console.log(
+        '║  📧 EMAIL (dev mode - Resend not configured)               ║',
+      );
+      console.log(
+        '╠════════════════════════════════════════════════════════════╣',
+      );
+      console.log(`║  To: ${to.padEnd(52)}║`);
+      console.log(`║  Subject: ${subject.padEnd(48)}║`);
+      if (code) {
+        console.log(
+          '╠════════════════════════════════════════════════════════════╣',
+        );
+        console.log(
+          `║  🔑 VERIFICATION CODE: ${code}                              ║`,
+        );
+      }
+      console.log(
+        '╚════════════════════════════════════════════════════════════╝',
+      );
+      console.log('');
+      return true;
     }
 
-    private async sendEmail(to: string, subject: string, html: string, code?: string): Promise<boolean> {
-        if (!this.resend) {
-            console.log('');
-            console.log('╔════════════════════════════════════════════════════════════╗');
-            console.log('║  📧 EMAIL (dev mode - Resend not configured)               ║');
-            console.log('╠════════════════════════════════════════════════════════════╣');
-            console.log(`║  To: ${to.padEnd(52)}║`);
-            console.log(`║  Subject: ${subject.padEnd(48)}║`);
-            if (code) {
-                console.log('╠════════════════════════════════════════════════════════════╣');
-                console.log(`║  🔑 VERIFICATION CODE: ${code}                              ║`);
-            }
-            console.log('╚════════════════════════════════════════════════════════════╝');
-            console.log('');
-            return true;
-        }
-
-        try {
-            await this.resend.emails.send({
-                from: `Skillora <${this.fromEmail}>`,
-                to,
-                subject,
-                html,
-            });
-            console.log(`✅ Email sent to ${to}`);
-            return true;
-        } catch (error) {
-            console.error('❌ Email send error:', error);
-            return false;
-        }
+    try {
+      await this.resend.emails.send({
+        from: `Skillora <${this.fromEmail}>`,
+        to,
+        subject,
+        html,
+      });
+      console.log(`✅ Email sent to ${to}`);
+      return true;
+    } catch (error) {
+      console.error('❌ Email send error:', error);
+      return false;
     }
+  }
 
-    generateCode(): string {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-    }
+  generateCode(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
 }

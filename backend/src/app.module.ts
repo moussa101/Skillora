@@ -13,10 +13,12 @@ import { FeedbackModule } from './feedback/feedback.module';
 @Module({
   imports: [
     // Rate limiting: 10 requests per hour per user (NFR-SEC-03)
-    ThrottlerModule.forRoot([{
-      ttl: 3600000, // 1 hour in ms
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 3600000, // 1 hour in ms
+        limit: 10,
+      },
+    ]),
     AuthModule,
     UsersModule,
     ResumesModule,
@@ -33,5 +35,4 @@ import { FeedbackModule } from './feedback/feedback.module';
     },
   ],
 })
-export class AppModule { }
-
+export class AppModule {}
