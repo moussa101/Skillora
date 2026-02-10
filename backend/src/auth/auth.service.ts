@@ -279,6 +279,14 @@ export class AuthService {
             where: { [providerIdField]: data.providerId },
         });
 
+        // Existing OAuth user — ensure onboardingComplete so they land on dashboard
+        if (user && !user.onboardingComplete) {
+            user = await this.prisma.user.update({
+                where: { id: user.id },
+                data: { onboardingComplete: true },
+            });
+        }
+
         if (!user) {
             // Also check legacy provider/providerId for backward compatibility
             user = await this.prisma.user.findFirst({
@@ -292,7 +300,7 @@ export class AuthService {
             if (user) {
                 user = await this.prisma.user.update({
                     where: { id: user.id },
-                    data: { [providerIdField]: data.providerId },
+                    data: { [providerIdField]: data.providerId, onboardingComplete: true },
                 });
             }
         }
@@ -311,6 +319,7 @@ export class AuthService {
                     image: data.image || user.image,
                     name: data.name || user.name,
                     emailVerified: true, // OAuth emails are verified
+                    onboardingComplete: true,
                 };
 
                 // Only set provider/providerId if user has no primary auth yet
@@ -335,6 +344,7 @@ export class AuthService {
                         [providerIdField]: data.providerId,
                         tier: 'GUEST',
                         emailVerified: true,
+                        onboardingComplete: true,
                     },
                 });
             }
