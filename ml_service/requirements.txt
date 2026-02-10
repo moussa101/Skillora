@@ -6,6 +6,7 @@ pydantic==2.6.1
 
 # NLP and ML
 spacy==3.7.4
+# torch is installed separately in the Dockerfile (CPU-only) to keep the image small
 sentence-transformers==2.3.1
 scikit-learn==1.4.0
 numpy==1.26.4
