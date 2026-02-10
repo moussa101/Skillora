@@ -52,19 +52,19 @@ This is an **open-source**, **self-hosted** solution that gives you complete con
 Skillora helps job seekers optimize their resumes by comparing them against target job descriptions. Using semantic similarity algorithms and NLP techniques, it identifies skill gaps, suggests improvements, and provides a comprehensive match score to increase your chances of landing interviews.
 
 **Key capabilities:**
-- 🎯 **Smart Matching** - Semantic similarity scoring using spaCy and Sentence Transformers
-- � **ATS Compatibility Scoring** - Evaluates resume formatting, structure, keywords, and content for ATS readiness
-- �🔍 **Skill Detection** - Automatic extraction of technical skills, languages, and tools
-- 🌐 **Multi-Language Support** - Analyze resumes in English, Spanish, French, German, Arabic, Chinese & more
-- 📊 **GitHub Profile Analysis** - Evaluates developer profiles with repo stats, activity, and scoring
-- 🛡️ **Security Scanning** - Detects resume manipulation attempts (invisible text, homoglyphs)
-- 📝 **Multi-Format Support** - PDF, DOCX, TXT, RTF, and HTML file uploads
-- 🔐 **Authentication** - OAuth (GitHub, Google), email verification, password reset
-- 📧 **Email System** - Automated verification and password reset via Resend (requires custom domain for delivery to all users — see [Roadmap](#roadmap))
-- 👤 **User Profiles** - Profile page with avatar upload, usage stats, and tier management
-- 🖼️ **Secure Image Upload** - Profile images with Sharp resizing and security validation
-- 🛡️ **Upload Security** - File size limits, MIME validation, filename sanitization
-- 💡 **Actionable Feedback** - Detailed suggestions to improve resume-job alignment
+- **Smart Matching** - Semantic similarity scoring using spaCy and Sentence Transformers
+- **ATS Compatibility Scoring** - Evaluates resume formatting, structure, keywords, and content for ATS readiness
+- **Skill Detection** - Automatic extraction of technical skills, languages, and tools
+- **Multi-Language Support** - Analyze resumes in English, Spanish, French, German, Arabic, Chinese & more
+- **GitHub Profile Analysis** - Evaluates developer profiles with repo stats, activity, and scoring
+- **Security Scanning** - Detects resume manipulation attempts (invisible text, homoglyphs)
+- **Multi-Format Support** - PDF, DOCX, TXT, RTF, and HTML file uploads
+- **Authentication** - OAuth (GitHub, Google), email verification, password reset
+- **Email System** - Automated verification and password reset via Resend (requires custom domain for delivery to all users — see [Roadmap](#roadmap))
+- **User Profiles** - Profile page with avatar upload, usage stats, and tier management
+- **Secure Image Upload** - Profile images with Sharp resizing and security validation
+- **Upload Security** - File size limits, MIME validation, filename sanitization
+- **Actionable Feedback** - Detailed suggestions to improve resume-job alignment
 
 ## Table of Contents
 
