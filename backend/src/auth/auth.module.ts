@@ -17,7 +17,7 @@ import { EmailModule } from '../email/email.module';
     imports: [
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({
-            secret: process.env.JWT_SECRET || 'skillora-secret-key-change-in-production',
+            secret: process.env.JWT_SECRET || 'dev-only-secret-do-not-use-in-production',
             signOptions: { expiresIn: '7d' },
         }),
         UsersModule,

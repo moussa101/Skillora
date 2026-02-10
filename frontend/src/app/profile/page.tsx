@@ -40,6 +40,7 @@ export default function ProfilePage() {
     const router = useRouter();
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     // Redirect to login if not authenticated, admin to admin dashboard
     useEffect(() => {
@@ -151,7 +152,8 @@ export default function ProfilePage() {
                     <Link href="/" className="text-[var(--foreground)] font-semibold text-lg tracking-tight">
                         Skillora
                     </Link>
-                    <div className="flex items-center gap-4">
+                    {/* Desktop nav */}
+                    <div className="hidden md:flex items-center gap-4">
                         <Link
                             href={isAdmin() ? '/admin' : (user.role === 'RECRUITER' || user.tier === 'RECRUITER') ? '/recruiter' : '/dashboard'}
                             className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
@@ -165,10 +167,46 @@ export default function ProfilePage() {
                             Sign out
                         </button>
                     </div>
+                    {/* Mobile hamburger */}
+                    <button onClick={() => setMenuOpen(true)} className="hamburger-btn md:hidden">
+                        <svg className="w-6 h-6 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
                 </div>
             </nav>
 
-            <main className="max-w-4xl mx-auto px-6 py-12">
+            {/* Mobile menu */}
+            <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`} onClick={() => setMenuOpen(false)} />
+            <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
+                <div className="flex justify-between items-center mb-6">
+                    <span className="font-semibold text-lg text-[var(--foreground)]">Menu</span>
+                    <button onClick={() => setMenuOpen(false)} className="hamburger-btn">
+                        <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <Link
+                    href={isAdmin() ? '/admin' : (user.role === 'RECRUITER' || user.tier === 'RECRUITER') ? '/recruiter' : '/dashboard'}
+                    onClick={() => setMenuOpen(false)}
+                    className="mobile-menu-link"
+                >
+                    <svg className="w-5 h-5 flex-shrink-0 text-[var(--gray-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zm0 9.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zm0 9.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+                    {isAdmin() ? 'Admin Panel' : (user.role === 'RECRUITER' || user.tier === 'RECRUITER') ? 'Recruiter Panel' : 'Dashboard'}
+                </Link>
+                <Link href="/plans" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+                    <svg className="w-5 h-5 flex-shrink-0 text-[var(--gray-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 6h.008v.008H6V6z" /></svg>
+                    Plans
+                </Link>
+                <div className="mobile-menu-divider" />
+                <button onClick={() => { logout(); setMenuOpen(false); }} className="mobile-menu-link danger">
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                    Sign out
+                </button>
+            </div>
+
+            <main className="max-w-4xl mx-auto px-6 py-8 md:py-12">
                 {/* Profile Header */}
                 <div className="glass-card apple-shadow p-8 mb-8">
                     <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -279,7 +317,7 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-3 gap-4 pt-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
                             <div className="text-center p-4 bg-[var(--gray-100)] rounded-xl">
                                 <div className="text-2xl font-semibold text-[var(--foreground)]">
                                     {user.analysesThisMonth}

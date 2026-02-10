@@ -6,9 +6,9 @@ import * as bcrypt from 'bcrypt';
 
 /**
  * Seed a default admin account.
- * Credentials:
- *   Email:    admin@skillora.com
- *   Password: Admin@123
+ * Credentials sourced from environment variables:
+ *   ADMIN_EMAIL    (default: admin@skillora.com)
+ *   ADMIN_PASSWORD (default: Admin@123)
  */
 async function main() {
     const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/resume_analyzer';
@@ -19,8 +19,8 @@ async function main() {
     const adapter = new PrismaPg(pool);
     const prisma = new PrismaClient({ adapter });
 
-    const adminEmail = 'admin@skillora.com';
-    const adminPassword = 'Admin@123';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@skillora.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@123';
 
     try {
         // Seed admin account
@@ -56,8 +56,8 @@ async function main() {
         }
 
         // Seed recruiter account
-        const recruiterEmail = 'recruiter@skillora.com';
-        const recruiterPassword = 'Recruiter@123';
+        const recruiterEmail = process.env.RECRUITER_EMAIL || 'recruiter@skillora.com';
+        const recruiterPassword = process.env.RECRUITER_PASSWORD || 'Recruiter@123';
 
         const existingRecruiter = await prisma.user.findUnique({ where: { email: recruiterEmail } });
         if (!existingRecruiter) {

@@ -74,6 +74,7 @@ export default function AdminDashboard() {
     const [selectedSub, setSelectedSub] = useState<any>(null);
     const [subDates, setSubDates] = useState({ startDate: "", endDate: "" });
     const [adminNote, setAdminNote] = useState("");
+    const [menuOpen, setMenuOpen] = useState(false);
 
     // Redirect if not admin
     useEffect(() => {
@@ -425,7 +426,7 @@ export default function AdminDashboard() {
             {/* Navigation */}
             <nav className="w-full py-4 px-6 border-b border-[var(--gray-200)]">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                         <Link href="/" className="text-[var(--foreground)] font-semibold text-lg tracking-tight">
                             Skillora
                         </Link>
@@ -433,13 +434,43 @@ export default function AdminDashboard() {
                             Admin
                         </span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    {/* Desktop nav */}
+                    <div className="hidden md:flex items-center gap-4">
+                        <Link href="/profile" className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors">Profile</Link>
                         <button onClick={logout} className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors">
                             Sign out
                         </button>
                     </div>
+                    {/* Mobile hamburger */}
+                    <button onClick={() => setMenuOpen(true)} className="hamburger-btn md:hidden">
+                        <svg className="w-6 h-6 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
                 </div>
             </nav>
+
+            {/* Mobile menu */}
+            <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`} onClick={() => setMenuOpen(false)} />
+            <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
+                <div className="flex justify-between items-center mb-6">
+                    <span className="font-semibold text-lg text-[var(--foreground)]">Menu</span>
+                    <button onClick={() => setMenuOpen(false)} className="hamburger-btn">
+                        <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <Link href="/profile" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+                    <svg className="w-5 h-5 flex-shrink-0 text-[var(--gray-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                    Profile
+                </Link>
+                <div className="mobile-menu-divider" />
+                <button onClick={() => { logout(); setMenuOpen(false); }} className="mobile-menu-link danger">
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                    Sign out
+                </button>
+            </div>
 
             {/* Toast */}
             {message && (
@@ -453,7 +484,7 @@ export default function AdminDashboard() {
             )}
 
             <main className="max-w-7xl mx-auto px-6 py-8">
-                <h1 className="text-3xl font-semibold text-[var(--foreground)] tracking-tight mb-8">
+                <h1 className="text-2xl md:text-3xl font-semibold text-[var(--foreground)] tracking-tight mb-8">
                     Admin Dashboard
                 </h1>
 
@@ -491,159 +522,159 @@ export default function AdminDashboard() {
                 </div>
 
                 {activeTab === "users" && (<>
-                {/* Create User Button */}
-                <div className="flex justify-end mb-4">
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="btn-primary flex items-center gap-2 text-sm"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        Create User
-                    </button>
-                </div>
-
-                {/* Search & Filters */}
-                <div className="glass-card apple-shadow p-4 mb-6">
-                    <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 items-center">
-                        <div className="flex-1 max-w-md relative">
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Search by email or name..."
-                                className="input-field w-full text-sm py-2"
-                            />
-                        </div>
-                        <select
-                            value={filterTier}
-                            onChange={(e) => { setFilterTier(e.target.value); }}
-                            className="input-field w-full sm:w-40"
+                    {/* Create User Button */}
+                    <div className="flex justify-end mb-4">
+                        <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="btn-primary flex items-center gap-2 text-sm"
                         >
-                            <option value="">All Tiers</option>
-                            <option value="GUEST">Free</option>
-                            <option value="PRO">Premium</option>
-                            <option value="RECRUITER">Recruiter</option>
-                        </select>
-                        <select
-                            value={filterRole}
-                            onChange={(e) => { setFilterRole(e.target.value); }}
-                            className="input-field w-full sm:w-40"
-                        >
-                            <option value="">All Roles</option>
-                            <option value="CANDIDATE">Candidate</option>
-                            <option value="RECRUITER">Recruiter</option>
-                            <option value="ADMIN">Admin</option>
-                        </select>
-                        <button type="submit" className="btn-primary whitespace-nowrap">
-                            Search
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Create User
                         </button>
-                    </form>
-                </div>
-
-                {/* Users Table */}
-                <div className="glass-card apple-shadow overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-[var(--gray-200)]">
-                                    <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-6 py-4">User</th>
-                                    <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Plan</th>
-                                    <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Role</th>
-                                    <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Provider</th>
-                                    <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Analyses</th>
-                                    <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Resumes</th>
-                                    <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Joined</th>
-                                    <th className="text-right text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-6 py-4"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loading ? (
-                                    <tr><td colSpan={8} className="px-6 py-12 text-center text-[var(--gray-400)]">
-                                        <div className="w-8 h-8 border-3 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto"></div>
-                                    </td></tr>
-                                ) : users.length === 0 ? (
-                                    <tr><td colSpan={8} className="px-6 py-12 text-center text-[var(--gray-400)]">No users found</td></tr>
-                                ) : (
-                                    users.map((u) => (
-                                        <tr key={u.id} onClick={() => openUserDetail(u.id)} className="border-b border-[var(--gray-200)] hover:bg-[var(--gray-100)] transition-colors cursor-pointer">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium overflow-hidden flex-shrink-0" style={{
-                                                        background: u.image ? "transparent" : "linear-gradient(135deg, var(--accent), #0051a8)",
-                                                        color: "white",
-                                                    }}>
-                                                        {u.image ? (
-                                                            <img src={u.image} alt="" className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            (u.name?.charAt(0) || u.email.charAt(0)).toUpperCase()
-                                                        )}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <div className="text-sm font-medium text-[var(--foreground)] truncate">{u.name || "—"}</div>
-                                                        <div className="text-xs text-[var(--gray-500)] truncate">{u.email}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4">{tierBadge(u.tier)}</td>
-                                            <td className="px-4 py-4">{roleBadge(u.role)}</td>
-                                            <td className="px-4 py-4">
-                                                <span className="text-xs text-[var(--gray-500)]">{u.provider}</span>
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <span className="text-sm text-[var(--foreground)]">{u.analysesThisMonth}</span>
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <span className="text-sm text-[var(--foreground)]">{u._count.resumes}</span>
-                                            </td>
-                                            <td className="px-4 py-4">
-                                                <span className="text-xs text-[var(--gray-500)]">
-                                                    {new Date(u.createdAt).toLocaleDateString()}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                {u.role !== "ADMIN" && (
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); if (confirm(`Delete user ${u.email}?`)) deleteUser(u.id); }}
-                                                        className="text-[var(--error)] text-sm hover:underline"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
                     </div>
 
-                    {/* Pagination */}
-                    {pagination.totalPages > 1 && (
-                        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--gray-200)]">
-                            <span className="text-sm text-[var(--gray-500)]">
-                                Showing {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
-                            </span>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => fetchUsers(pagination.page - 1)}
-                                    disabled={pagination.page <= 1}
-                                    className="px-3 py-1.5 text-sm rounded-lg border border-[var(--gray-300)] text-[var(--foreground)] disabled:opacity-40 hover:bg-[var(--gray-100)] transition-colors"
-                                >
-                                    Previous
-                                </button>
-                                <button
-                                    onClick={() => fetchUsers(pagination.page + 1)}
-                                    disabled={pagination.page >= pagination.totalPages}
-                                    className="px-3 py-1.5 text-sm rounded-lg border border-[var(--gray-300)] text-[var(--foreground)] disabled:opacity-40 hover:bg-[var(--gray-100)] transition-colors"
-                                >
-                                    Next
-                                </button>
+                    {/* Search & Filters */}
+                    <div className="glass-card apple-shadow p-4 mb-6">
+                        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 items-center">
+                            <div className="flex-1 max-w-md relative">
+                                <input
+                                    type="text"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="Search by email or name..."
+                                    className="input-field w-full text-sm py-2"
+                                />
                             </div>
+                            <select
+                                value={filterTier}
+                                onChange={(e) => { setFilterTier(e.target.value); }}
+                                className="input-field w-full sm:w-40"
+                            >
+                                <option value="">All Tiers</option>
+                                <option value="GUEST">Free</option>
+                                <option value="PRO">Premium</option>
+                                <option value="RECRUITER">Recruiter</option>
+                            </select>
+                            <select
+                                value={filterRole}
+                                onChange={(e) => { setFilterRole(e.target.value); }}
+                                className="input-field w-full sm:w-40"
+                            >
+                                <option value="">All Roles</option>
+                                <option value="CANDIDATE">Candidate</option>
+                                <option value="RECRUITER">Recruiter</option>
+                                <option value="ADMIN">Admin</option>
+                            </select>
+                            <button type="submit" className="btn-primary whitespace-nowrap">
+                                Search
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Users Table */}
+                    <div className="glass-card apple-shadow overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                    <tr className="border-b border-[var(--gray-200)]">
+                                        <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-6 py-4">User</th>
+                                        <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Plan</th>
+                                        <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Role</th>
+                                        <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Provider</th>
+                                        <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Analyses</th>
+                                        <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Resumes</th>
+                                        <th className="text-left text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-4 py-4">Joined</th>
+                                        <th className="text-right text-xs font-medium text-[var(--gray-500)] uppercase tracking-wider px-6 py-4"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {loading ? (
+                                        <tr><td colSpan={8} className="px-6 py-12 text-center text-[var(--gray-400)]">
+                                            <div className="w-8 h-8 border-3 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                        </td></tr>
+                                    ) : users.length === 0 ? (
+                                        <tr><td colSpan={8} className="px-6 py-12 text-center text-[var(--gray-400)]">No users found</td></tr>
+                                    ) : (
+                                        users.map((u) => (
+                                            <tr key={u.id} onClick={() => openUserDetail(u.id)} className="border-b border-[var(--gray-200)] hover:bg-[var(--gray-100)] transition-colors cursor-pointer">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium overflow-hidden flex-shrink-0" style={{
+                                                            background: u.image ? "transparent" : "linear-gradient(135deg, var(--accent), #0051a8)",
+                                                            color: "white",
+                                                        }}>
+                                                            {u.image ? (
+                                                                <img src={u.image} alt="" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                (u.name?.charAt(0) || u.email.charAt(0)).toUpperCase()
+                                                            )}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <div className="text-sm font-medium text-[var(--foreground)] truncate">{u.name || "—"}</div>
+                                                            <div className="text-xs text-[var(--gray-500)] truncate">{u.email}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-4">{tierBadge(u.tier)}</td>
+                                                <td className="px-4 py-4">{roleBadge(u.role)}</td>
+                                                <td className="px-4 py-4">
+                                                    <span className="text-xs text-[var(--gray-500)]">{u.provider}</span>
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    <span className="text-sm text-[var(--foreground)]">{u.analysesThisMonth}</span>
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    <span className="text-sm text-[var(--foreground)]">{u._count.resumes}</span>
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    <span className="text-xs text-[var(--gray-500)]">
+                                                        {new Date(u.createdAt).toLocaleDateString()}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    {u.role !== "ADMIN" && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); if (confirm(`Delete user ${u.email}?`)) deleteUser(u.id); }}
+                                                            className="text-[var(--error)] text-sm hover:underline"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
-                    )}
-                </div>
+
+                        {/* Pagination */}
+                        {pagination.totalPages > 1 && (
+                            <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--gray-200)]">
+                                <span className="text-sm text-[var(--gray-500)]">
+                                    Showing {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+                                </span>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => fetchUsers(pagination.page - 1)}
+                                        disabled={pagination.page <= 1}
+                                        className="px-3 py-1.5 text-sm rounded-lg border border-[var(--gray-300)] text-[var(--foreground)] disabled:opacity-40 hover:bg-[var(--gray-100)] transition-colors"
+                                    >
+                                        Previous
+                                    </button>
+                                    <button
+                                        onClick={() => fetchUsers(pagination.page + 1)}
+                                        disabled={pagination.page >= pagination.totalPages}
+                                        className="px-3 py-1.5 text-sm rounded-lg border border-[var(--gray-300)] text-[var(--foreground)] disabled:opacity-40 hover:bg-[var(--gray-100)] transition-colors"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </>)}
 
                 {/* Subscriptions Tab */}

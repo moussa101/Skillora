@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
+const ML_URL = process.env.NEXT_PUBLIC_ML_URL || "http://localhost:8000";
+
 interface GitHubProfile {
     username: string;
     name?: string;
@@ -81,6 +83,7 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<AnalysisResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     // Redirect to login if not authenticated, admin/recruiter to their dashboards
     useEffect(() => {
@@ -117,7 +120,7 @@ export default function Dashboard() {
             formData.append("file", file);
             formData.append("job_description", jobDescription);
 
-            const mlResponse = await fetch("http://localhost:8000/analyze-file", {
+            const mlResponse = await fetch(`${ML_URL}/analyze-file`, {
                 method: "POST",
                 body: formData,
             });
@@ -201,13 +204,14 @@ export default function Dashboard() {
                     <Link href="/" className="text-[var(--foreground)] font-semibold text-lg tracking-tight">
                         Skillora
                     </Link>
-                    <div className="flex items-center gap-4">
+                    {/* Desktop nav */}
+                    <div className="hidden md:flex items-center gap-4">
                         <Link
                             href="/profile"
-                            className="flex items-center gap-2 text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
+                            className="flex items-center gap-2 text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors max-w-[160px]"
                         >
                             <div
-                                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium"
+                                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0"
                                 style={{
                                     background: user.image ? "transparent" : "linear-gradient(135deg, var(--accent), #0051a8)",
                                     color: "white",
@@ -219,7 +223,7 @@ export default function Dashboard() {
                                     user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()
                                 )}
                             </div>
-                            {user.name || user.email}
+                            <span className="truncate">{user.name || user.email}</span>
                         </Link>
                         <Link
                             href="/plans"
@@ -242,14 +246,55 @@ export default function Dashboard() {
                             Sign out
                         </button>
                     </div>
+                    {/* Mobile hamburger */}
+                    <button onClick={() => setMenuOpen(true)} className="hamburger-btn md:hidden">
+                        <svg className="w-6 h-6 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
                 </div>
             </nav>
 
-            <main className="max-w-6xl mx-auto px-6 py-12">
+            {/* Mobile menu */}
+            <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`} onClick={() => setMenuOpen(false)} />
+            <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
+                <div className="flex justify-between items-center mb-6">
+                    <span className="font-semibold text-lg text-[var(--foreground)]">Menu</span>
+                    <button onClick={() => setMenuOpen(false)} className="hamburger-btn">
+                        <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <Link href="/profile" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0" style={{ background: user.image ? "transparent" : "linear-gradient(135deg, var(--accent), #0051a8)", color: "white" }}>
+                        {user.image ? <img src={user.image} alt="" className="w-full h-full object-cover rounded-full" /> : (user.name?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase())}
+                    </div>
+                    <span className="truncate">{user.name || user.email}</span>
+                </Link>
+                <div className="mobile-menu-divider" />
+                <Link href="/plans" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+                    <svg className="w-5 h-5 flex-shrink-0 text-[var(--gray-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 6h.008v.008H6V6z" /></svg>
+                    Plans
+                </Link>
+                {isAdmin() && (
+                    <Link href="/admin" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+                        <svg className="w-5 h-5 flex-shrink-0 text-[var(--error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        Admin Panel
+                    </Link>
+                )}
+                <div className="mobile-menu-divider" />
+                <button onClick={() => { logout(); setMenuOpen(false); }} className="mobile-menu-link danger">
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                    Sign out
+                </button>
+            </div>
+
+            <main className="max-w-6xl mx-auto px-6 py-8 md:py-12">
                 {/* Header */}
-                <header className="mb-12">
+                <header className="mb-8 md:mb-12">
                     <p className="text-sm text-[var(--gray-500)] mb-1">Welcome back,</p>
-                    <h1 className="text-3xl font-semibold text-[var(--foreground)] tracking-tight">
+                    <h1 className="text-2xl md:text-3xl font-semibold text-[var(--foreground)] tracking-tight">
                         {user.name || user.email.split("@")[0]}
                     </h1>
                     <p className="mt-2 text-[var(--gray-500)]">
@@ -577,9 +622,9 @@ export default function Dashboard() {
                                                                     )}
                                                                     <span className={
                                                                         check.severity === "good" ? "text-[var(--gray-500)]" :
-                                                                        check.severity === "critical" ? "text-[var(--error)]" :
-                                                                        check.severity === "warning" ? "text-[var(--warning)]" :
-                                                                        "text-[var(--gray-500)]"
+                                                                            check.severity === "critical" ? "text-[var(--error)]" :
+                                                                                check.severity === "warning" ? "text-[var(--warning)]" :
+                                                                                    "text-[var(--gray-500)]"
                                                                     }>
                                                                         {check.message}
                                                                     </span>

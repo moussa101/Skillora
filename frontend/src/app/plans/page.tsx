@@ -100,6 +100,7 @@ export default function PlansPage() {
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
     const [subInfo, setSubInfo] = useState<SubInfo | null>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const currentTier = user?.tier || "GUEST";
     const getToken = () => localStorage.getItem("token");
@@ -163,9 +164,10 @@ export default function PlansPage() {
                     <Link href="/" className="text-[var(--foreground)] font-semibold text-lg tracking-tight">
                         Skillora
                     </Link>
-                    <div className="flex items-center gap-4">
-                        {user ? (
-                            <>
+                    {user ? (
+                        <>
+                            {/* Desktop nav */}
+                            <div className="hidden md:flex items-center gap-4">
                                 <Link
                                     href={user.role === "ADMIN" ? "/admin" : user.role === "RECRUITER" || user.tier === "RECRUITER" ? "/recruiter" : "/dashboard"}
                                     className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors"
@@ -175,28 +177,63 @@ export default function PlansPage() {
                                 <Link href="/profile" className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors">
                                     Profile
                                 </Link>
-                            </>
-                        ) : (
-                            <>
-                                <Link href="/login" className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors">
-                                    Sign in
-                                </Link>
-                                <Link href="/signup" className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-full hover:bg-[var(--accent-hover)] transition-colors">
-                                    Get Started
-                                </Link>
-                            </>
-                        )}
-                    </div>
+                            </div>
+                            {/* Mobile hamburger */}
+                            <button onClick={() => setMenuOpen(true)} className="hamburger-btn md:hidden">
+                                <svg className="w-6 h-6 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                                </svg>
+                            </button>
+                        </>
+                    ) : (
+                        <div className="flex items-center gap-4">
+                            <Link href="/login" className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors">
+                                Sign in
+                            </Link>
+                            <Link href="/signup" className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-full hover:bg-[var(--accent-hover)] transition-colors">
+                                Get Started
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </nav>
 
-            <main className="max-w-5xl mx-auto px-6 py-16">
+            {/* Mobile menu */}
+            {user && (
+                <>
+                    <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`} onClick={() => setMenuOpen(false)} />
+                    <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
+                        <div className="flex justify-between items-center mb-6">
+                            <span className="font-semibold text-lg text-[var(--foreground)]">Menu</span>
+                            <button onClick={() => setMenuOpen(false)} className="hamburger-btn">
+                                <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <Link
+                            href={user.role === "ADMIN" ? "/admin" : user.role === "RECRUITER" || user.tier === "RECRUITER" ? "/recruiter" : "/dashboard"}
+                            onClick={() => setMenuOpen(false)}
+                            className="mobile-menu-link"
+                        >
+                            <svg className="w-5 h-5 flex-shrink-0 text-[var(--gray-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zm0 9.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zm0 9.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+                            {user.role === "ADMIN" ? "Admin Panel" : user.role === "RECRUITER" || user.tier === "RECRUITER" ? "Recruiter Panel" : "Dashboard"}
+                        </Link>
+                        <Link href="/profile" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+                            <svg className="w-5 h-5 flex-shrink-0 text-[var(--gray-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                            Profile
+                        </Link>
+                    </div>
+                </>
+            )}
+
+            <main className="max-w-5xl mx-auto px-6 py-10 md:py-16">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-semibold text-[var(--foreground)] tracking-tight mb-3">
+                    <h1 className="text-3xl md:text-4xl font-semibold text-[var(--foreground)] tracking-tight mb-3">
                         Choose your plan
                     </h1>
-                    <p className="text-lg text-[var(--gray-500)] max-w-lg mx-auto">
+                    <p className="text-base md:text-lg text-[var(--gray-500)] max-w-lg mx-auto">
                         From free analysis to full recruiter tools — pick what fits your needs.
                     </p>
                 </div>
@@ -333,15 +370,14 @@ export default function PlansPage() {
                                     <button
                                         disabled={isCurrent || !!hasPending || plan.tier === "GUEST"}
                                         onClick={() => handleUpgrade(plan)}
-                                        className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
-                                            isCurrent || hasPending
+                                        className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${isCurrent || hasPending
                                                 ? "bg-[var(--gray-100)] text-[var(--gray-400)] cursor-default"
                                                 : plan.popular
                                                     ? "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] hover:scale-[1.02] active:scale-100"
                                                     : plan.tier === "GUEST"
                                                         ? "bg-[var(--gray-100)] text-[var(--gray-400)] cursor-default"
                                                         : "border border-[var(--gray-300)] text-[var(--foreground)] hover:bg-[var(--gray-100)] hover:scale-[1.02] active:scale-100"
-                                        }`}
+                                            }`}
                                     >
                                         {isCurrent ? "Current Plan" : hasPending ? "Payment Under Review" : plan.tier === "GUEST" ? "Free Forever" : plan.cta}
                                     </button>
@@ -485,11 +521,10 @@ export default function PlansPage() {
 
                         {/* Message */}
                         {message && (
-                            <div className={`mb-4 p-3 rounded-xl text-sm border ${
-                                message.type === "success"
+                            <div className={`mb-4 p-3 rounded-xl text-sm border ${message.type === "success"
                                     ? "text-green-700 border-green-300"
                                     : "text-red-700 border-red-300"
-                            }`} style={{ background: message.type === "success" ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)" }}>
+                                }`} style={{ background: message.type === "success" ? "rgba(34,197,94,0.08)" : "rgba(239,68,68,0.08)" }}>
                                 {message.text}
                             </div>
                         )}
@@ -498,11 +533,10 @@ export default function PlansPage() {
                         <button
                             onClick={handleSubmitPayment}
                             disabled={!screenshot || submitting}
-                            className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${
-                                !screenshot || submitting
+                            className={`w-full py-3 rounded-xl text-sm font-semibold transition-all ${!screenshot || submitting
                                     ? "bg-[var(--gray-200)] text-[var(--gray-400)] cursor-not-allowed"
                                     : "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
-                            }`}
+                                }`}
                         >
                             {submitting ? "Submitting..." : "Submit Payment Proof"}
                         </button>

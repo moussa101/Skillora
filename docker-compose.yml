@@ -15,6 +15,7 @@ services:
     environment:
       - ML_PORT=8000
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:3001}
     command: uvicorn main:app --host 0.0.0.0 --port 8000
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
@@ -36,7 +37,9 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - DIRECT_URL=${DIRECT_URL}
       - ML_SERVICE_URL=http://ml-service:8000
-      - JWT_SECRET=${JWT_SECRET:-change-this-secret-in-production}
+      - NODE_ENV=production
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3001}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET must be set}
       - JWT_EXPIRES_IN=7d
       - PORT=3000
       # Email Service (Resend)
@@ -52,9 +55,15 @@ services:
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3001}
     volumes:
       - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     depends_on:
       ml-service:
-        condition: service_started
+        condition: service_healthy
 
   # Next.js Frontend
   frontend-client:
@@ -66,8 +75,10 @@ services:
     ports:
       - "3001:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - NEXT_PUBLIC_API_URL=${FRONTEND_API_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_ML_URL=${FRONTEND_ML_URL:-http://localhost:8000}
     depends_on:
-      - backend-api
+      backend-api:
+        condition: service_healthy
 
 volumes: {}

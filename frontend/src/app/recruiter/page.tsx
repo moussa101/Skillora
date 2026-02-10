@@ -31,6 +31,7 @@ export default function RecruiterDashboard() {
     const [sortBy, setSortBy] = useState<"score" | "atsScore" | "name">("score");
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
         if (!authLoading) {
@@ -170,7 +171,8 @@ export default function RecruiterDashboard() {
                             Recruiter
                         </span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    {/* Desktop nav */}
+                    <div className="hidden md:flex items-center gap-4">
                         <Link href="/profile" className="text-[var(--gray-500)] text-sm hover:text-[var(--foreground)] transition-colors">
                             Profile
                         </Link>
@@ -178,15 +180,43 @@ export default function RecruiterDashboard() {
                             Sign out
                         </button>
                     </div>
+                    {/* Mobile hamburger */}
+                    <button onClick={() => setMenuOpen(true)} className="hamburger-btn md:hidden">
+                        <svg className="w-6 h-6 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
                 </div>
             </nav>
 
+            {/* Mobile menu */}
+            <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`} onClick={() => setMenuOpen(false)} />
+            <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
+                <div className="flex justify-between items-center mb-6">
+                    <span className="font-semibold text-lg text-[var(--foreground)]">Menu</span>
+                    <button onClick={() => setMenuOpen(false)} className="hamburger-btn">
+                        <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <Link href="/profile" onClick={() => setMenuOpen(false)} className="mobile-menu-link">
+                    <svg className="w-5 h-5 flex-shrink-0 text-[var(--gray-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                    Profile
+                </Link>
+                <div className="mobile-menu-divider" />
+                <button onClick={() => { logout(); setMenuOpen(false); }} className="mobile-menu-link danger">
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                    Sign out
+                </button>
+            </div>
+
             <main className="max-w-7xl mx-auto px-6 py-8">
                 <p className="text-sm text-[var(--gray-500)] mb-1">Welcome back,</p>
-                <h1 className="text-3xl font-semibold text-[var(--foreground)] tracking-tight mb-2">
+                <h1 className="text-2xl md:text-3xl font-semibold text-[var(--foreground)] tracking-tight mb-2">
                     {user.name || user.email.split("@")[0]}
                 </h1>
-                <p className="text-[var(--gray-500)] mb-8">
+                <p className="text-sm md:text-base text-[var(--gray-500)] mb-8">
                     Upload multiple resumes and rank candidates against a job description
                 </p>
 
@@ -325,7 +355,7 @@ export default function RecruiterDashboard() {
                                     No candidates yet
                                 </h3>
                                 <p className="text-sm text-[var(--gray-500)] max-w-md mx-auto">
-                                    Upload resumes and enter a job description to start screening candidates. 
+                                    Upload resumes and enter a job description to start screening candidates.
                                     Results will be ranked by match score.
                                 </p>
                             </div>
