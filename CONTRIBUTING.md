@@ -8,6 +8,7 @@ Thank you for your interest in contributing to Skillora! This document provides 
 - [Getting Started](#getting-started)
 - [Development Setup](#development-setup)
 - [Making Changes](#making-changes)
+- [CI Pipeline & Branch Protection](#ci-pipeline--branch-protection)
 - [Pull Request Process](#pull-request-process)
 - [Coding Standards](#coding-standards)
 - [Testing Guidelines](#testing-guidelines)
@@ -140,34 +141,60 @@ fix(ml): handle empty resume text gracefully
 docs(readme): update installation instructions
 ```
 
+## CI Pipeline & Branch Protection
+
+The `main` branch is **protected**. All changes must go through a Pull Request and pass CI before merging.
+
+### CI Workflow (`.github/workflows/ci.yml`)
+
+Every push/PR to `main` triggers three parallel jobs:
+
+| Job | What it does |
+|-----|-------------|
+| **Backend Tests** | npm ci → ESLint → tsc → Prisma validate → Jest unit tests → Jest e2e tests → build |
+| **Frontend Build** | npm ci → ESLint → tsc → next build |
+| **ML Service Tests** | pip install → spaCy model → syntax check → pytest |
+| **Docker Build** | Builds all 3 images *(only on push to main, not PRs)* |
+
+All three test jobs must pass before a PR can be merged.
+
+### Setting Up Branch Protection (Repo Admin)
+
+1. Go to **Settings → Branches → Add branch protection rule**
+2. Branch name pattern: `main`
+3. Enable these settings:
+   - [x] **Require a pull request before merging**
+     - [x] Require approvals (1)
+     - [x] Dismiss stale pull request approvals when new commits are pushed
+   - [x] **Require status checks to pass before merging**
+     - [x] Require branches to be up to date before merging
+     - Search and add these **required** status checks:
+       - `Backend Tests`
+       - `Frontend Build`
+       - `ML Service Tests`
+   - [x] **Require conversation resolution before merging**
+   - [x] **Do not allow bypassing the above settings**
+4. Click **Create** / **Save changes**
+
+> After your first push of the workflow file, the status check names will appear in the search dropdown.
+
 ## Pull Request Process
 
 ### Before Submitting
 
-1. **Sync with upstream:**
+1. **Run the pre-push checklist:**
+   ```bash
+   ./pre-push-checklist.sh --quick   # fast: lint + tests + build
+   ./pre-push-checklist.sh           # full: includes Docker builds
+   ```
+
+2. **Sync with upstream:**
    ```bash
    git fetch upstream
    git rebase upstream/main
    ```
 
-2. **Run tests:**
-   ```bash
-   # Frontend
-   cd frontend && npm run lint
-   
-   # Backend
-   cd backend && npm run lint
-   
-   # ML Service
-   cd ml_service && python -m pytest
-   ```
-
-3. **Ensure Docker builds:**
-   ```bash
-   docker compose build
-   ```
-
-4. **Check environment variables:**
+3. **Check environment variables:**
    - `NEXT_PUBLIC_*` vars are baked into the frontend at **build time**. If you change them, you must rebuild.
    - OAuth callback URLs must match between your provider (GitHub/Google) settings and your env vars.
    - For local dev, use `http://localhost:3000/auth/{provider}/callback`.
@@ -183,7 +210,7 @@ docs(readme): update installation instructions
 
 ### Review Process
 
-1. Automated checks must pass
+1. **CI must pass** — all three jobs (Backend Tests, Frontend Build, ML Service Tests) must be green
 2. At least one maintainer approval required
 3. All discussions must be resolved
 4. Branch must be up-to-date with main
@@ -244,25 +271,43 @@ def process_resume(text: str) -> AnalysisResult:
 
 ## Testing Guidelines
 
+### Backend Tests (Jest)
+```bash
+cd backend
+npm run test          # Unit tests (auth, resumes, email, app controller)
+npm run test:e2e      # E2E tests (health, auth endpoints, protected routes, OAuth)
+npm run test:cov      # Unit tests with coverage report
+```
+
+**Test files:**
+| File | Type | What it covers |
+|------|------|----------------|
+| `src/auth/auth.service.spec.ts` | Unit | Registration, login, email verification, password reset, OAuth, usage tracking, onboarding |
+| `src/resumes/resumes.service.spec.ts` | Unit | CRUD operations, analysis creation |
+| `src/email/email.service.spec.ts` | Unit | Code generation, verification/reset emails |
+| `src/app.controller.spec.ts` | Unit | Health check, root endpoint |
+| `test/auth.integration.spec.ts` | Integration | Full registration flow, JWT validation, password reset, tier-based limits |
+| `test/app.e2e-spec.ts` | E2E | All HTTP endpoints, validation, auth guards, OAuth redirects |
+
+### ML Service Tests (pytest)
+```bash
+cd ml_service
+python -m pytest tests/ -v              # All ML tests
+python -m pytest tests/test_api.py -v   # API endpoint tests
+python -m pytest tests/test_units.py -v # Module unit tests
+```
+
+**Test files:**
+| File | Type | What it covers |
+|------|------|----------------|
+| `tests/test_api.py` | API / Integration | Health, /analyze, /security-scan, /batch-analyze, /analyze-profiles, response shapes |
+| `tests/test_units.py` | Unit | Language detector, ATS scorer, profile analyzer, file validator, ResumeAnalyzer, skills module |
+
 ### Frontend Tests
 ```bash
 cd frontend
-npm run test        # Unit tests
-npm run test:e2e    # End-to-end tests (if available)
-```
-
-### Backend Tests
-```bash
-cd backend
-npm run test        # Unit tests
-npm run test:e2e    # Integration tests
-```
-
-### ML Service Tests
-```bash
-cd ml_service
-python -m pytest tests/
-python test_data/real_world/run_tests.py  # Integration tests
+npm run lint          # ESLint checks
+npx tsc --noEmit      # TypeScript type checking
 ```
 
 ### Test Coverage
@@ -270,6 +315,39 @@ python test_data/real_world/run_tests.py  # Integration tests
 - Aim for >80% coverage on new code
 - Write tests for bug fixes to prevent regression
 - Include edge cases and error scenarios
+
+## Pre-Push Checklist
+
+**Before pushing to `main`, run the checklist script:**
+
+```bash
+# Full check (includes Docker builds)
+./pre-push-checklist.sh
+
+# Quick check (skips Docker builds)
+./pre-push-checklist.sh --quick
+```
+
+The script runs:
+1. **Git status** — uncommitted changes, branch check
+2. **Backend** — npm install, ESLint, TypeScript, unit tests, e2e tests, Prisma validation, build
+3. **Frontend** — npm install, ESLint, TypeScript, build
+4. **ML Service** — pytest, Python syntax check
+5. **Docker** — builds all 3 images (skipped with `--quick`)
+6. **Config** — .env not tracked, .gitignore complete, TODO/FIXME audit, console.log audit
+
+### Manual checklist (if not using the script)
+
+- [ ] All tests pass (`npm test` in backend, `pytest` in ml_service)
+- [ ] No lint errors (`npm run lint` in backend and frontend)
+- [ ] TypeScript compiles (`npx tsc --noEmit` in backend and frontend)
+- [ ] Prisma schema is valid (`npx prisma validate` in backend)
+- [ ] Backend builds (`npm run build` in backend)
+- [ ] Frontend builds with production API URL
+- [ ] No `.env` files committed
+- [ ] No `console.log` in production code
+- [ ] PR description updated with changes
+- [ ] Documentation updated if API changed
 
 ## Documentation
 
