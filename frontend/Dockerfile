@@ -10,6 +10,11 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# NEXT_PUBLIC_* vars must be present at build time for Next.js to inline them.
+# Railway injects env vars at build time via ARG.
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Build the application
 RUN npm run build
 
