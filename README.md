@@ -2,12 +2,13 @@
 
 > An intelligent, AI-powered platform that analyzes resumes against job descriptions using advanced NLP to provide match scoring, skill extraction, and actionable feedback.
 
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**[Live Demo](https://skillora1.up.railway.app)** | **[API](https://backend-production-e2f3.up.railway.app)** | **[Documentation](Documentation/PRD.md)**
+**[Live Demo](https://skillora1.up.railway.app)** | **[API](https://backend-production-e2f3.up.railway.app)** | **[Documentation](Documentation/PRD.md)** | **[Changelog](CHANGELOG.md)**
 
 ---
 
