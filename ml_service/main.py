@@ -4,6 +4,7 @@ FastAPI application for resume parsing and analysis
 With Adversarial Defense (SRS v1.1)
 """
 
+from __version__ import __version__
 from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -65,7 +66,7 @@ except ImportError:
 app = FastAPI(
     title="Skillora - ML Service",
     description="ML service for resume parsing, NER extraction, and semantic similarity scoring with adversarial defense",
-    version="1.2.0"
+    version=__version__
 )
 
 # Add rate limiting if available
