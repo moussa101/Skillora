@@ -169,8 +169,8 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/moussa101/AI-Resume-Analyzer.git
-   cd AI-Resume-Analyzer
+   git clone https://github.com/moussa101/Skillora.git
+   cd Skillora
    ```
 
 2. **Configure environment variables**
@@ -271,7 +271,7 @@ docker compose up --build ml-service      # rebuild ML service only
 ## Project Structure
 
 ```
-AI-Resume-Analyzer/
+Skillora/
 ├── frontend/                   # Next.js frontend application
 │   ├── src/
 │   │   ├── app/               # App router pages
@@ -463,7 +463,7 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for full deployment instructions.
 - **PRD**: See the [Product Requirements Document](Documentation/PRD.md) for full feature specifications
 - **Documentation**: Check the [Documentation](Documentation/) folder for detailed guides
 - **Deployment Guide**: See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment instructions
-- **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/moussa101/AI-Resume-Analyzer/issues)
+- **Issues**: Report bugs or request features via [GitHub Issues](https://github.com/moussa101/Skillora/issues)
 
 ### Common Issues
 
