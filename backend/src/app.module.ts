@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ResumesModule } from './resumes/resumes.module';
 import { AdminModule } from './admin/admin.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     ResumesModule,
     AdminModule,
     SubscriptionModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [

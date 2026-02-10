@@ -196,3 +196,18 @@ model Subscription {
   @@index([userId])
   @@index([status])
 }
+
+// ============================================
+// FEEDBACK (User Opinion/Feedback)
+// ============================================
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  rating    Int      // 1-5 star rating
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
