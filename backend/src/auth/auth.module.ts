@@ -14,26 +14,27 @@ import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
 
 @Module({
-    imports: [
-        PassportModule.register({ defaultStrategy: 'jwt' }),
-        JwtModule.register({
-            secret: process.env.JWT_SECRET || 'dev-only-secret-do-not-use-in-production',
-            signOptions: { expiresIn: '7d' },
-        }),
-        UsersModule,
-        EmailModule,
-    ],
-    controllers: [AuthController],
-    providers: [
-        AuthService,
-        PrismaService,
-        JwtStrategy,
-        GithubStrategy,
-        GoogleStrategy,
-        // AppleStrategy, // Uncomment when Apple OAuth is configured
-        TierGuard,
-        UsageLimitGuard,
-    ],
-    exports: [AuthService, TierGuard, UsageLimitGuard],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret:
+        process.env.JWT_SECRET || 'dev-only-secret-do-not-use-in-production',
+      signOptions: { expiresIn: '7d' },
+    }),
+    UsersModule,
+    EmailModule,
+  ],
+  controllers: [AuthController],
+  providers: [
+    AuthService,
+    PrismaService,
+    JwtStrategy,
+    GithubStrategy,
+    GoogleStrategy,
+    // AppleStrategy, // Uncomment when Apple OAuth is configured
+    TierGuard,
+    UsageLimitGuard,
+  ],
+  exports: [AuthService, TierGuard, UsageLimitGuard],
 })
-export class AuthModule { }
+export class AuthModule {}
