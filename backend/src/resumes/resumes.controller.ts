@@ -139,6 +139,51 @@ export class ResumesController {
     return this.resumesService.findOne(id, req.user.id);
   }
 
+  @Post('analyze-file')
+  @ApiOperation({ summary: 'Upload and analyze a resume file directly' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary' },
+        job_description: { type: 'string' },
+      },
+      required: ['file', 'job_description'],
+    },
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: multer.memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
+  async analyzeFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: { job_description: string },
+    @Request() req,
+  ) {
+    if (!file) {
+      throw new HttpException('No file provided', HttpStatus.BAD_REQUEST);
+    }
+    if (!body.job_description || body.job_description.trim().length < 10) {
+      throw new HttpException(
+        'Job description must be at least 10 characters',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      const result = await this.mlService.analyzeFile(file, body.job_description);
+      return result;
+    } catch (error) {
+      throw new HttpException(
+        `Analysis failed: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Post('batch-analyze')
   @ApiOperation({ summary: 'Batch analyze multiple resumes (Recruiter only)' })
   @ApiConsumes('multipart/form-data')

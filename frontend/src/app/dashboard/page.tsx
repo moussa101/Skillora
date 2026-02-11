@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
-const ML_URL = process.env.NEXT_PUBLIC_ML_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 interface GitHubProfile {
     username: string;
@@ -120,8 +120,12 @@ export default function Dashboard() {
             formData.append("file", file);
             formData.append("job_description", jobDescription);
 
-            const mlResponse = await fetch(`${ML_URL}/analyze-file`, {
+            const token = localStorage.getItem("token");
+            const mlResponse = await fetch(`${API_URL}/resumes/analyze-file`, {
                 method: "POST",
+                headers: {
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: formData,
             });
 

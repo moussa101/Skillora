@@ -100,6 +100,41 @@ export class MlService {
     }
   }
 
+  async analyzeFile(
+    file: Express.Multer.File,
+    jobDescription: string,
+  ): Promise<Record<string, unknown>> {
+    try {
+      this.logger.log(`Analyzing uploaded file: ${file.originalname}`);
+
+      const formData = new FormData();
+      formData.append('file', file.buffer, {
+        filename: file.originalname,
+        contentType: file.mimetype,
+      });
+      formData.append('job_description', jobDescription);
+
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.mlServiceUrl}/analyze-file`,
+          formData,
+          {
+            headers: formData.getHeaders(),
+            maxContentLength: 10 * 1024 * 1024,
+            maxBodyLength: 10 * 1024 * 1024,
+            timeout: 120000,
+          },
+        ),
+      );
+
+      this.logger.log(`File analysis complete. Score: ${response.data.score}`);
+      return response.data;
+    } catch (error) {
+      this.logger.error(`ML Service analyze-file error: ${error.message}`);
+      throw error;
+    }
+  }
+
   async batchAnalyze(
     files: Express.Multer.File[],
     jobDescription: string,
