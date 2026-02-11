@@ -115,16 +115,12 @@ export class MlService {
       formData.append('job_description', jobDescription);
 
       const response = await firstValueFrom(
-        this.httpService.post(
-          `${this.mlServiceUrl}/analyze-file`,
-          formData,
-          {
-            headers: formData.getHeaders(),
-            maxContentLength: 10 * 1024 * 1024,
-            maxBodyLength: 10 * 1024 * 1024,
-            timeout: 120000,
-          },
-        ),
+        this.httpService.post(`${this.mlServiceUrl}/analyze-file`, formData, {
+          headers: formData.getHeaders(),
+          maxContentLength: 10 * 1024 * 1024,
+          maxBodyLength: 10 * 1024 * 1024,
+          timeout: 120000,
+        }),
       );
 
       this.logger.log(`File analysis complete. Score: ${response.data.score}`);

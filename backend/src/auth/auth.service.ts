@@ -451,7 +451,8 @@ export class AuthService {
       });
       return {
         allowed: true,
-        remaining: limits.analysesPerMonth === -1 ? -1 : limits.analysesPerMonth - 1,
+        remaining:
+          limits.analysesPerMonth === -1 ? -1 : limits.analysesPerMonth - 1,
       };
     }
 

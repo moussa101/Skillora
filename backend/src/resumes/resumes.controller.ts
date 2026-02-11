@@ -183,7 +183,10 @@ export class ResumesController {
     }
 
     try {
-      const result = await this.mlService.analyzeFile(file, body.job_description);
+      const result = await this.mlService.analyzeFile(
+        file,
+        body.job_description,
+      );
       return { ...result, usage: { remaining: usage.remaining } };
     } catch (error) {
       throw new HttpException(
