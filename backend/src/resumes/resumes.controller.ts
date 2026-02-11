@@ -173,9 +173,18 @@ export class ResumesController {
       );
     }
 
+    // Check usage limits
+    const usage = await this.authService.checkAndIncrementUsage(req.user.id);
+    if (!usage.allowed) {
+      throw new HttpException(
+        'Monthly analysis limit reached. Upgrade to Pro for more.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     try {
       const result = await this.mlService.analyzeFile(file, body.job_description);
-      return result;
+      return { ...result, usage: { remaining: usage.remaining } };
     } catch (error) {
       throw new HttpException(
         `Analysis failed: ${error.message}`,
@@ -221,12 +230,21 @@ export class ResumesController {
       );
     }
 
+    // Check usage limits for each file in the batch
+    const usage = await this.authService.checkAndIncrementUsage(req.user.id);
+    if (!usage.allowed) {
+      throw new HttpException(
+        'Monthly analysis limit reached.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     try {
       const result = await this.mlService.batchAnalyze(
         files,
         body.jobDescription,
       );
-      return result;
+      return { ...result, usage: { remaining: usage.remaining } };
     } catch (error) {
       throw new HttpException(
         `Batch analysis failed: ${error.message}`,

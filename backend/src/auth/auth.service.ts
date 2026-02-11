@@ -449,10 +449,17 @@ export class AuthService {
           analysesResetDate: now,
         },
       });
-      return { allowed: true, remaining: limits.analysesPerMonth - 1 };
+      return {
+        allowed: true,
+        remaining: limits.analysesPerMonth === -1 ? -1 : limits.analysesPerMonth - 1,
+      };
     }
 
-    if (user.analysesThisMonth >= limits.analysesPerMonth) {
+    // -1 means unlimited
+    if (
+      limits.analysesPerMonth !== -1 &&
+      user.analysesThisMonth >= limits.analysesPerMonth
+    ) {
       return { allowed: false, remaining: 0 };
     }
 
@@ -466,7 +473,10 @@ export class AuthService {
 
     return {
       allowed: true,
-      remaining: limits.analysesPerMonth - user.analysesThisMonth - 1,
+      remaining:
+        limits.analysesPerMonth === -1
+          ? -1
+          : limits.analysesPerMonth - user.analysesThisMonth - 1,
     };
   }
 

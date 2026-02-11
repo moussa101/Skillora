@@ -20,7 +20,7 @@ interface CandidateResult {
 }
 
 export default function RecruiterDashboard() {
-    const { user, loading: authLoading, logout } = useAuth();
+    const { user, loading: authLoading, logout, refreshUser } = useAuth();
     const router = useRouter();
 
     const [jobDescription, setJobDescription] = useState("");
@@ -131,6 +131,8 @@ export default function RecruiterDashboard() {
         setFiles([]);
         setAnalyzing(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
+        // Refresh user data to update quota display
+        if (refreshUser) refreshUser();
     };
 
     const sortedCandidates = [...candidates].sort((a, b) => {

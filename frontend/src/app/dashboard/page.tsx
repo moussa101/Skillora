@@ -76,7 +76,7 @@ interface AnalysisResult {
 }
 
 export default function Dashboard() {
-    const { user, loading: authLoading, logout, isAdmin } = useAuth();
+    const { user, loading: authLoading, logout, isAdmin, refreshUser } = useAuth();
     const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
     const [jobDescription, setJobDescription] = useState("");
@@ -135,6 +135,11 @@ export default function Dashboard() {
             }
 
             const data = await mlResponse.json();
+
+            // Refresh user data to update quota display
+            if (refreshUser) {
+              refreshUser();
+            }
 
             setResult({
                 score: data.score,
